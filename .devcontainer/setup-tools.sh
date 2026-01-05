@@ -14,7 +14,8 @@ CHEZMOI_REPO=${CHEZMOI_REPO:-"https://github.com/your-user/dotfiles.git"}
 # Install chezmoi for dotfile management
 if ! command_exists chezmoi; then
     echo "📦 Installing chezmoi..."
-    sh -c "$(curl -fsLS https://chezmoi.io/get)" -- -b /usr/local/bin
+    sh -c "$(curl -fsLS https://chezmoi.io/get)" -- -b ~/.local/bin
+    export PATH="$PATH:$HOME/.local/bin"
 else
     echo "✅ chezmoi already installed"
 fi

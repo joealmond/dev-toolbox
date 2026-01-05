@@ -13,7 +13,7 @@
   "forwardPorts": [3000, 3001],
   "postCreateCommand": "bash .devcontainer/setup-tools.sh",
   "remoteEnv": {
-    "CHEZMOI_REPO": "your-gitea-url/dotfiles.git"
+    "CHEZMOI_REPO": "ssh://git@git.mandulaj.stream:2222/mandulaj/dev01-dotfiles.git"
   },
   "containerEnv": {
     "OLLAMA_HOST": "http://host.docker.internal:11434"
