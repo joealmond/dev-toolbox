@@ -39,6 +39,20 @@ Automated ticket processing system that uses **Kilo Code CLI (kodu)** with **Oll
 └─────────────┘     └──────────────┘
 ```
 
+## Related Repositories
+
+This project uses several related repositories for development and deployment:
+
+- **Main Project**: Current repository
+- **Dotfiles**: [`dev01-dotfiles`](https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git)
+  - Managed with chezmoi at `~/.local/share/chezmoi-dev01`
+  - Contains SSH config, git config, and shell aliases for containers
+- **Dev Container**: [`dev01-conatainer`](https://git.mandulaj.stream/mandulaj/dev01-conatainer.git)
+  - Contains devcontainer configuration, Dockerfile, and setup scripts
+  - Used for VS Code remote development
+
+See [DEVCONTAINER-SETUP.md](DEVCONTAINER-SETUP.md) for detailed setup instructions.
+
 ## Quick Start
 
 ### Prerequisites

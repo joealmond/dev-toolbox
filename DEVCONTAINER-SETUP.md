@@ -16,7 +16,9 @@
 - [ ] **Ollama server**: `brew install ollama && brew services start ollama`
 
 ### Create Repos
-- [ ] **Dotfiles Repo** (private, on Gitea NAS):
+- [x] **Dotfiles Repo** (private, on Gitea NAS):
+  - **Location**: `https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git`
+  - **Local Path**: `~/.local/share/chezmoi-dev01`
   - Purpose: Store SSH config, git config, shell aliases needed in containers
   - Example structure:
     ```
@@ -27,7 +29,6 @@
     │   └── config.template    # SSH hosts (keep real IPs private)
     └── dot_bashrc             # Shell customizations
     ```
-  - Push to: `your-nas.local/gitea/dotfiles.git`
 
 ### Dotfiles Focus
 Only include **project-relevant configs**:
@@ -36,24 +37,27 @@ Only include **project-relevant configs**:
 - ✅ `~/.bash_aliases` (project-related aliases)
 - ❌ Skip: `.vscode/`, `.npm/`, other editor bloat
 
-### Create & Push Dotfiles Repo
+### Create & Push Dotfiles Repo ✅ COMPLETED
+**Repository**: `https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git`  
+**Local Path**: `~/.local/share/chezmoi-dev01`
+
 ```bash
 # Initialize chezmoi
 cd ~
-chezmoi init
+chezmoi init ~/.local/share/chezmoi-dev01
 
 # Add configs
 chezmoi add ~/.gitconfig
 chezmoi add ~/.bash_aliases
 
 # For SSH config (sensitive), add as template
-mkdir -p ~/.local/share/chezmoi/dot_ssh
-cp ~/.ssh/config ~/.local/share/chezmoi/dot_ssh/config
+mkdir -p ~/.local/share/chezmoi-dev01/dot_ssh
+cp ~/.ssh/config ~/.local/share/chezmoi-dev01/dot_ssh/config
 chezmoi edit ~/.ssh/config  # Replace IPs with placeholders if public repo
 
 # Push to Gitea
-cd ~/.local/share/chezmoi
-git remote add origin ssh://git.example.com:2222/your-user/dotfiles.git
+cd ~/.local/share/chezmoi-dev01
+git remote add origin https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git
 git add .
 git commit -m "Initial dotfiles"
 git push -u origin main
@@ -61,7 +65,7 @@ git push -u origin main
 
 ### Test Locally
 ```bash
-chezmoi init --apply ssh://git.example.com:2222/your-user/dotfiles.git
+chezmoi init --apply https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git
 git config --global user.name  # Should show your name
 chezmoi edit ~/.ssh/config     # Verify it shows your config
 ```
@@ -91,8 +95,7 @@ curl http://host.docker.internal:11434/api/tags  # Test Ollama host
 Everything is automated. Just update `devcontainer.json`:
 ```jsonc
 "remoteEnv": {
-  "CHEZMOI_REPO": "ssh://your-nas.local:2222/git/dotfiles.git"
-  // Or: "https://your-nas.local/gitea/dotfiles.git"
+  "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
 }
 ```
 
@@ -113,7 +116,7 @@ Installs:
 
 ### Optional: Sync Dotfiles
 ```bash
-chezmoi init --apply ssh://your-nas.local:2222/git/dotfiles.git
+chemzoi init --apply https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git
 ```
 
 ### Verify Ollama
@@ -135,22 +138,25 @@ curl http://localhost:11434/api/tags  # Works locally
 
 ## Repos to Create
 
-### 1. Dotfiles (Private, on Gitea NAS)
+### 1. Dotfiles (Private, on Gitea NAS) ✅ COMPLETED
+- **Repository**: `https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git`
+- **Local Path**: `~/.local/share/chezmoi-dev01`
+
 ```bash
 # Initialize chezmoi and add configs
 cd ~
-chezmoi init
+chezmoi init ~/.local/share/chezmoi-dev01
 chezmoi add ~/.gitconfig
 chezmoi add ~/.bash_aliases
 
 # Add SSH config (handle sensitive data carefully)
-mkdir -p ~/.local/share/chezmoi/dot_ssh
-cp ~/.ssh/config ~/.local/share/chezmoi/dot_ssh/config
+mkdir -p ~/.local/share/chezmoi-dev01/dot_ssh
+cp ~/.ssh/config ~/.local/share/chezmoi-dev01/dot_ssh/config
 chezmoi edit ~/.ssh/config  # Replace real IPs with placeholders if needed
 
 # Push to Gitea
-cd ~/.local/share/chezmoi
-git remote add origin ssh://git.example.com:2222/your-user/dotfiles.git
+cd ~/.local/share/chezmoi-dev01
+git remote add origin https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git
 git add . && git commit -m "Initial dotfiles"
 git push -u origin main
 ```
@@ -160,13 +166,17 @@ git push -u origin main
 - `.bash_aliases` → project shortcuts
 - `.ssh/config` → SSH hosts (use templates for sensitive data)
 
-### 2. This Repo (mycoder)
-Already exists. Update `devcontainer.json`:
+### 2. Dev Container ✅ COMPLETED
+- **Repository**: `https://git.mandulaj.stream/mandulaj/dev01-conatainer.git`
+- Contains: devcontainer configuration, Dockerfile, setup scripts
+
+### 3. This Repo (dev01)
+Update `devcontainer.json`:
 ```jsonc
 {
   "name": "ticket-processor",
   "remoteEnv": {
-    "CHEZMOI_REPO": "ssh://your-nas.local:2222/git/dotfiles.git"
+    "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
   }
   // ... rest of config
 }
@@ -211,12 +221,12 @@ chezmoi add ~/.gitconfig ~/.bash_aliases
 mkdir -p ~/.local/share/chezmoi/dot_ssh
 cp ~/.ssh/config ~/.local/share/chezmoi/dot_ssh/config
 # Edit and push to Gitea
-cd ~/.local/share/chezmoi
-git remote add origin ssh://git.example.com:2222/your-user/dotfiles.git
+cd ~/.local/share/chezmoi-dev01
+git remote add origin https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git
 git push -u origin main
 
-# 3. Update mycoder devcontainer.json
-cd ~/code/mycoder
+# 3. Update dev01 devcontainer.json
+cd ~/code/dev01
 # Edit .devcontainer/devcontainer.json, set CHEZMOI_REPO
 
 # 4. Open in devcontainer

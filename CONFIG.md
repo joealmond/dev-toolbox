@@ -2,6 +2,15 @@
 
 Complete reference for all configuration options in the Ticket Processor system.
 
+## Related Repositories
+
+- **Dotfiles Repository**: `https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git`
+  - Local path: `~/.local/share/chezmoi-dev01`
+  - Managed with chezmoi for container environment configuration
+  
+- **Dev Container Repository**: `https://git.mandulaj.stream/mandulaj/dev01-conatainer.git`
+  - Contains devcontainer setup, Dockerfile, and initialization scripts
+
 ## Configuration Files
 
 - **`config.json`** - Main application configuration
