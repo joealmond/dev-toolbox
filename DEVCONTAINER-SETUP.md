@@ -75,29 +75,66 @@ chezmoi edit ~/.ssh/config     # Verify it shows your config
 ## 2. Mac Devcontainer (Running in OrbStack)
 
 ### Automatic on "Reopen in Container"
-These run automatically via `setup-tools.sh`:
-- [ ] Install chezmoi
-- [ ] Clone your dotfiles repo from Gitea
-- [ ] Apply configs (SSH, git, aliases)
-- [ ] Install Ollama CLI, PM2, kodu, backlog.md
-- [ ] `npm install`
+These run automatically via Docker build and `setup-tools.sh`:
+
+### Docker Build (One-time, cached)
+The `Dockerfile` builds the container with:
+- **Base Image**: `node:24-bookworm` (Debian Linux)
+- **Node/npm**: Node 24 with npm 11.7.0 (pinned for stability)
+- **System Tools**: git, curl, openssh-client, cloudflared
+- **Ollama CLI**: Binary installation only
+- **Global npm tools**: PM2, backlog.md, @kilocode/cli (pre-installed, no per-container download)
+- **Project dependencies**: Copied and installed from `package*.json`
+
+### Container Setup (Every creation, gracefully handles offline)
+When the container starts, `setup-tools.sh` runs:
+1. **Installs chezmoi** (if not already available)
+2. **Clones dotfiles** from `CHEZMOI_REPO` (HTTPS) — *skipped gracefully if offline*
+3. **Applies SSH config overrides** - Merges `.devcontainer/ssh_config` with dotfiles SSH config
+4. **Applies other configs** - git user/email, bash aliases — *skipped if dotfiles unavailable*
+5. **Verifies global tools** - PM2, backlog.md, kilocode (already in image)
+6. **Fixes npm cache** - Resolves permission issues
+7. **Runs npm install** - Project dependencies (uses `package-lock.json` if offline)
 
 ### Verify on First Startup
 ```bash
 # Inside container after "Reopen in Container"
 chezmoi status           # Shows synced configs
 cat ~/.gitconfig         # Check git is configured
-ssh -T git@github.com    # Test SSH via mounted ~/.ssh
-curl http://host.docker.internal:11434/api/tags  # Test Ollama host
+ssh nas ls ~             # Test SSH tunneling via cloudflared (if configured)
+ollama --version         # Test Ollama CLI available
+curl http://host.docker.internal:11434/api/tags  # Test Ollama host connection
 ```
 
-### No Manual Setup Needed
-Everything is automated. Just update `devcontainer.json`:
+### Configuration
+Key settings in `devcontainer.json`:
 ```jsonc
 "remoteEnv": {
   "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
-}
+},
+"containerEnv": {
+  "OLLAMA_HOST": "http://host.docker.internal:11434"
+},
+"mounts": []  // npm uses local .npm directory (no volume mount)
 ```
+
+**Why HTTPS for dotfiles?** Uses HTTPS URL to avoid SSH key setup in container. SSH with cloudflared tunneling is available for other hosts (like NAS).
+
+### SSH Tunneling Setup
+- **cloudflared** is pre-installed in Docker image
+- **SSH config** from dotfiles may specify `ProxyCommand cloudflared access ssh` for tunneling
+- **.devcontainer/ssh_config** provides container-specific overrides (e.g., direct SSH to NAS)
+- Container setup automatically merges these configurations
+
+**Host prerequisites (per machine)**
+- Install cloudflared on the host and authenticate to your Access app so `~/.cloudflared` has the cert/token.
+- Do **not** store `~/.cloudflared` in dotfiles/git; it is secret and machine-specific.
+- The devcontainer mounts host `~/.cloudflared` read-only into `/home/node/.cloudflared`.
+
+**To configure your NAS access:**
+1. Update `.devcontainer/ssh_config` with your NAS IP and username
+2. Ensure your dotfiles `.ssh/config` has the ProxyCommand or let the container config take precedence
+3. After updating/refreshing the host cert (step above), reopen/rebuild the devcontainer so the mount picks it up
 
 ---
 
@@ -109,10 +146,10 @@ bash install/install-linux.sh
 ```
 Installs:
 - [ ] Podman + Compose
-- [ ] Node.js 20+
+- [ ] Node.js 24
 - [ ] Ollama server (systemd service)
 - [ ] chezmoi
-- [ ] PM2, kodu, backlog.md
+- [ ] PM2, kilocode, backlog.md
 
 ### Optional: Sync Dotfiles
 ```bash

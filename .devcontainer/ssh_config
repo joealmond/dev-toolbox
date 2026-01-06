@@ -1,0 +1,5 @@
+# Container-specific SSH config - Only add what's not in dotfiles
+# Since 'nas' is already in dotfiles, don't duplicate it here.
+# If you need container-specific hosts, add them here.
+
+
