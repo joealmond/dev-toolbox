@@ -166,7 +166,7 @@ EOF
 sudo systemctl restart docker
 ```
 
-### 5.2 On macOS/Windows (Docker Desktop)
+### 5.2 On macOS with Docker Desktop
 
 1. Open **Docker Desktop** application
 2. Click the **Settings gear icon** (top-right)
@@ -180,6 +180,54 @@ sudo systemctl restart docker
 }
 ```
 5. Click **Apply & Restart**
+
+### 5.3 On macOS with Orbstack
+
+1. Open **Orbstack** application
+2. Click the **Settings gear icon** (or menu)
+3. Go to **Docker Engine** or **Configuration** section
+4. Find the Docker daemon configuration (often at `~/.orbstack/config/docker.json`)
+5. Add or edit:
+```json
+{
+  "insecure-registries": [
+    "192.168.0.5:3000"
+  ]
+}
+```
+6. Restart Orbstack
+
+Or edit directly:
+
+```bash
+mkdir -p ~/.orbstack/config
+cat > ~/.orbstack/docker.json << 'EOF'
+{
+  "insecure-registries": [
+    "192.168.0.5:3000"
+  ]
+}
+EOF
+```
+
+Then restart Orbstack from the menu.
+
+### 5.4 On Windows with Docker Desktop
+
+1. Open **Docker Desktop** application
+2. Click the **Settings gear icon** (bottom-right system tray)
+3. Go to **Docker Engine** tab
+4. Find or add this configuration:
+```json
+{
+  "insecure-registries": [
+    "192.168.0.5:3000"
+  ]
+}
+```
+5. Click **Apply & Restart**
+
+Alternatively, edit `C:\Users\<YourUsername>\AppData\Roaming\Docker\daemon.json` directly.
 
 **Why?** Your local NAS uses HTTP (not HTTPS), so Docker needs permission to connect insecurely over the local network.
 
