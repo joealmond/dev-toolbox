@@ -88,7 +88,22 @@ ssh -T git@github.com
 
 ### Dotfiles
 
-Dotfiles are applied from `/Users/mandulaj/dev/dev01dot` (mounted as read-only) via chezmoi:
+Dotfiles are applied from `/workspaces/dev01dot` (local mount) via chezmoi. The setup script automatically handles recent configuration changes (e.g., `[data]` vs top-level keys) to ensure compatibility.
+
+**Robust Templates:**
+To support all environments, your templates now use the `dig` function for fail-safe variable access:
+
+```ini
+# gitconfig example
+name = {{ dig "data" "name" (dig "name" "Your Name" .) . }}
+```
+
+```ssh
+# ssh/config example
+Host {{ dig "data" "ssh" "nas_host" (dig "ssh" "nas_host" "nas" .) . }}
+```
+
+See `dotfiles-template/` directory for full reference implementations.
 
 ```bash
 # Dotfiles source priority:
