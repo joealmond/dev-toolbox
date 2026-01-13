@@ -137,8 +137,6 @@ if [ "$USE_LOCAL" = true ]; then
   # Use local dotfiles
   echo "Initializing chezmoi with local dotfiles..."
   chezmoi init --source="$DOTFILES_SOURCE" --apply=false 2>/dev/null || true
-  echo "Template data preview (chezmoi data):"
-  chezmoi data 2>/dev/null || true
   
   echo "Applying dotfiles from local source..."
   chezmoi apply --force --source="$DOTFILES_SOURCE" 2>/dev/null && {

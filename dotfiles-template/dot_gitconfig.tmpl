@@ -1,0 +1,41 @@
+# Git configuration
+# Managed by chezmoi - edit in dotfiles repo
+
+[user]
+    # Robustly retrieve name/email either from nested [data.name] (legacy) or top-level [name] (standard)
+    name = {{ dig "data" "name" (dig "name" "Your Name" .) . }}
+    email = {{ dig "data" "email" (dig "email" "you@example.com" .) . }}
+
+[core]
+    editor = vim
+    autocrlf = input
+    excludesfile = ~/.gitignore_global
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    lg = log --oneline --graph --decorate --all
+    last = log -1 HEAD
+    unstage = reset HEAD --
+    
+[color]
+    ui = auto
+
+[diff]
+    tool = vimdiff
+
+[merge]
+    tool = vimdiff
+    conflictstyle = diff3

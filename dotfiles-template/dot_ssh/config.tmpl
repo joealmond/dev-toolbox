@@ -1,0 +1,40 @@
+# SSH configuration
+# Managed by chezmoi - edit in dotfiles repo
+
+# NAS host via cloudflared tunnel
+Host {{ dig "data" "ssh" "nas_host" (dig "ssh" "nas_host" "nas.INVALID" .) . }}
+    HostName {{ dig "data" "ssh" "cloudflared_tunnel" (dig "ssh" "cloudflared_tunnel" "tunnel.INVALID" .) . }}
+    User {{ dig "data" "ssh" "nas_user" (dig "ssh" "nas_user" "root" .) . }}
+    Port 22
+    ProxyCommand cloudflared access ssh --hostname %h
+    IdentityFile ~/.ssh/id_ed25519
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+
+# Linux Mint host (local network)
+Host {{ dig "data" "ssh" "mint_host" (dig "ssh" "mint_host" "mint.INVALID" .) . }}
+    HostName {{ dig "data" "ssh" "mint_hostname" (dig "ssh" "mint_hostname" "192.168.0.x" .) . }}
+    User {{ dig "data" "ssh" "mint_user" (dig "ssh" "mint_user" "mandulaj" .) . }}
+    Port 22
+    IdentityFile ~/.ssh/id_ed25519
+
+# OCI host via Mint jump host
+Host {{ dig "data" "ssh" "oci_host" (dig "ssh" "oci_host" "oci.INVALID" .) . }}
+    HostName {{ dig "data" "ssh" "oci_hostname" (dig "ssh" "oci_hostname" "oci.hostname" .) . }}
+    User {{ dig "data" "ssh" "oci_user" (dig "ssh" "oci_user" "ubuntu" .) . }}
+    Port 22
+    ProxyJump {{ dig "data" "ssh" "mint_host" (dig "ssh" "mint_host" "mint" .) . }}
+    IdentityFile ~/.ssh/id_ed25519
+
+# GitHub
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/id_ed25519
+    AddKeysToAgent yes
+
+# Default settings for all hosts
+Host *
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentitiesOnly yes
