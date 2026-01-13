@@ -2,8 +2,9 @@
 # Managed by chezmoi - edit in dotfiles repo
 
 [user]
-    name = {{ .name }}
-    email = {{ .email }}
+    # Support both data shapes: top-level or under [data]
+    name = {{ or .data.name .name }}
+    email = {{ or .data.email .email }}
 
 [core]
     editor = vim

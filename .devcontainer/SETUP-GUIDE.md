@@ -102,6 +102,44 @@ Dotfiles are applied from `/Users/mandulaj/dev/dev01dot` (mounted as read-only) 
 - ~/.zshrc (if using zsh)
 ```
 
+#### Chezmoi config location & template variables
+
+- The container copies `/workspaces/dev01dot/.chezmoi.toml` into `~/.config/chezmoi/chezmoi.toml`.
+- Chezmoi template data may appear as top-level keys (e.g., `name`, `email`) or under a `[data]` section.
+- To keep templates resilient, prefer this form in templates:
+
+```
+[user]
+  name = {{ or .data.name .name }}
+  email = {{ or .data.email .email }}
+```
+
+- If you only use top-level keys, you can use:
+
+```
+[user]
+  name = {{ .name }}
+  email = {{ .email }}
+```
+
+- Ensure `~/.config/chezmoi/chezmoi.toml` has the values you expect:
+
+```
+[data]
+  name = "Your Name"
+  email = "your@email"
+
+[data.ssh]
+  nas_host = "nas"
+  mint_hostname = "192.168.0.10"
+```
+
+- Debug template data:
+
+```bash
+/home/node/.local/bin/chezmoi data
+```
+
 ### Ollama Host Detection
 
 `OLLAMA_HOST` is auto-detected on container start:
