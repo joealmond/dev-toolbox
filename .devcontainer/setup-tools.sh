@@ -1,98 +1,130 @@
 #!/bin/bash
-# setup-tools.sh — Main provisioning script (runs on postCreateCommand)
-# Delegates to modular scripts for maintainability
+set -e
 
 echo "🔧 Setting up development tools..."
-
-# Set workspace root
-WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces/dev01}"
-SCRIPTS_DIR="$WORKSPACE_ROOT/.devcontainer/scripts"
 
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# 1. Apply dotfiles (non-blocking)
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 1: Dotfiles Setup"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-if [ -f "$SCRIPTS_DIR/dotfiles-setup.sh" ]; then
-    bash "$SCRIPTS_DIR/dotfiles-setup.sh" || {
-        echo "⚠️  Warning: Dotfiles setup failed (continuing anyway)"
-    }
+# Always write Git "global" config to XDG path to avoid
+# read-only bind mount at ~/.gitconfig defined in devcontainer.json
+mkdir -p "$HOME/.config/git"
+GIT_GLOBAL_FILE="$HOME/.config/git/config"
+git_global() {
+    git config --global --file "$GIT_GLOBAL_FILE" "$@"
+}
+
+# CRITICAL: Prevent git from hanging on credential prompts in non-interactive container
+# Container gets SSH keys from ~/.ssh mount, no need for interactive auth
+git_global core.askPass /bin/false
+git_global credential.helper store
+git_global --add safe.directory '*'  # Needed for mounted repos
+echo "✅ Git configured for non-interactive container use (XDG global config)"
+
+# Verify git user config (from mounted .gitconfig or set defaults)
+GIT_USER=$(git config --global user.name 2>/dev/null || echo "")
+GIT_EMAIL=$(git config --global user.email 2>/dev/null || echo "")
+
+if [ -z "$GIT_USER" ] || [ -z "$GIT_EMAIL" ]; then
+    echo "⚠️  Git user.name or user.email not configured"
+    echo "   Setting from environment or defaults..."
+    
+    # Set from environment variables or use defaults
+    git_global user.name "${GIT_AUTHOR_NAME:-Dev Container User}"
+    git_global user.email "${GIT_AUTHOR_EMAIL:-dev@container.local}"
+    
+    echo "   📝 Git configured as: $(git config --global user.name) <$(git config --global user.email)>"
+    echo "   💡 To change: Edit remoteEnv in .devcontainer/devcontainer.json"
 else
-    echo "⚠️  Warning: dotfiles-setup.sh not found, skipping..."
+    echo "✅ Git user: $GIT_USER <$GIT_EMAIL>"
 fi
 
-# 2. Verify global tools (PM2, Backlog, Kilo Code) - already in Docker image
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 2: Verify Global Tools"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+# Skip chezmoi/dotfiles sync in containers
+# Problem: git.mandulaj.stream is tunneled, causes 4+ minute hang
+# Solution: Containers don't need dotfiles - they get SSH keys from ~/.ssh mount
+# Dotfiles are only for host machine configuration
+echo "📝 Skipping dotfiles sync (containers use mounted SSH keys instead)"
 
-# Ollama CLI
+# SSH config is already mounted from ~/.ssh/config - no need to append anything
+# The setup script used to append .devcontainer/ssh_config, but since your 
+# ssh_config is empty and host config is already mounted, we skip this
+if [ -f "/workspaces/dev01/.devcontainer/ssh_config" ] && [ -s "/workspaces/dev01/.devcontainer/ssh_config" ]; then
+    echo "🔐 Merging container-specific SSH config..."
+    cat /workspaces/dev01/.devcontainer/ssh_config >> ~/.ssh/config 2>/dev/null || true
+    chmod 600 ~/.ssh/config 2>/dev/null || true
+else
+    echo "✅ Using SSH config from host (already mounted)"
+fi
+
+# Ensure SSH keys are readable
+if [ -d "$HOME/.ssh" ]; then
+    chmod 700 ~/.ssh
+    chmod 600 ~/.ssh/* 2>/dev/null || true
+    echo "✅ SSH keys permissions fixed"
+fi
+
+# Source bash aliases from host if available (wake-on-lan, etc.)
+if [ -f "$HOME/.bash_aliases" ]; then
+    # Add to current session
+    source "$HOME/.bash_aliases"
+    # Ensure it's sourced in future bash sessions
+    if ! grep -q "source ~/.bash_aliases" ~/.bashrc 2>/dev/null; then
+        echo "" >> ~/.bashrc
+        echo "# Source host aliases" >> ~/.bashrc
+        echo "[ -f ~/.bash_aliases ] && source ~/.bash_aliases" >> ~/.bashrc
+    fi
+    # Cache a copy of host aliases for reliability (in case mount changes later)
+    if [ -s "$HOME/.bash_aliases" ]; then
+        cp "$HOME/.bash_aliases" "$HOME/.bash_aliases_cache" 2>/dev/null || true
+        if ! grep -q "source ~/.bash_aliases_cache" ~/.bashrc 2>/dev/null; then
+            echo "[ -f ~/.bash_aliases_cache ] && source ~/.bash_aliases_cache" >> ~/.bashrc
+        fi
+    fi
+    echo "✅ Bash aliases loaded from host and cached"
+fi
+
+# Source host bashrc functions if available
+if [ -f "$HOME/.bashrc_host" ]; then
+    source "$HOME/.bashrc_host"
+    echo "✅ Host bashrc functions loaded"
+fi
+
+# Ollama CLI verification
 if command_exists ollama; then
     echo "✅ Ollama CLI available"
 else
     echo "⚠️  Ollama CLI not found"
 fi
 
-# PM2
-if command_exists pm2; then
-    echo "✅ PM2 available"
-else
-    echo "⚠️  PM2 not found - installing..."
-    npm install -g pm2 || echo "❌ PM2 install failed (offline?)"
-fi
-
-# Backlog.md CLI
-if command_exists backlog; then
-    echo "✅ Backlog.md CLI available"
-else
-    echo "⚠️  Backlog.md CLI not found - installing..."
-    npm install -g backlog.md || echo "❌ Backlog.md install failed (offline?)"
-fi
-
-# Kilo Code CLI (kilo) - pre-installed in Dockerfile, check availability
-if command_exists kilo; then
-    echo "✅ Kilo Code CLI (kilo) available - version $(kilo --version 2>/dev/null || echo 'unknown')"
-else
-    echo "⚠️  Kilo Code CLI not found (should be pre-installed in Dockerfile)"
-    echo "   Binary name: 'kilo' (not 'kodu')"
-fi
-
-# 3. Install project dependencies
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "Step 3: Project Dependencies"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-if [ -f "$WORKSPACE_ROOT/package.json" ]; then
-    echo "📦 Installing npm dependencies..."
-    cd "$WORKSPACE_ROOT"
-    npm install || {
-        echo "❌ npm install failed"
-        exit 1  # Critical failure - can't continue without dependencies
-    }
-    echo "✅ Dependencies installed"
-else
-    echo "⚠️  No package.json found, skipping npm install"
-fi
-
-# 4. Fix npm cache permissions (common issue)
+# Fix npm cache permissions
 if [ -d "$HOME/.npm" ]; then
     chmod -R u+w "$HOME/.npm" 2>/dev/null || true
 fi
 
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Tool setup complete!"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "Next steps:"
-echo "  → PM2 will start automatically via postStartCommand"
-echo "  → View logs: pm2 logs ticket-processor"
-echo "  → Monitor: pm2 monit"
-echo ""
+# Verify global tools (don't install - should be in Docker image)
+echo "🔍 Verifying global tools..."
+for tool in pm2 backlog kilocode; do
+    if command_exists "$tool"; then
+        echo "✅ $tool available"
+    else
+        echo "⚠️  $tool not found"
+    fi
+done
 
+# Verify Ollama connection with timeout
+echo "🔍 Checking Ollama connection..."
+if timeout 3 curl -s "${OLLAMA_HOST:-http://host.docker.internal:11434}/api/tags" >/dev/null 2>&1; then
+    echo "✅ Ollama reachable at ${OLLAMA_HOST:-http://host.docker.internal:11434}"
+else
+    echo "⚠️  Cannot reach Ollama (will retry at runtime)"
+fi
+
+# Install project dependencies
+if [ -f "package.json" ]; then
+    echo "📦 Installing npm dependencies..."
+    npm install || npm install --legacy-peer-deps || echo "⚠️  npm install had issues"
+fi
+
+echo "✅ Setup complete!"
