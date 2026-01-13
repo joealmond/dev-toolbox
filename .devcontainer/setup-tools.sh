@@ -1,134 +1,98 @@
 #!/bin/bash
-set -e
+# setup-tools.sh — Main provisioning script (runs on postCreateCommand)
+# Delegates to modular scripts for maintainability
 
 echo "🔧 Setting up development tools..."
+
+# Set workspace root
+WORKSPACE_ROOT="${WORKSPACE_ROOT:-/workspaces/dev01}"
+SCRIPTS_DIR="$WORKSPACE_ROOT/.devcontainer/scripts"
 
 # Function to check if a command exists
 command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Function to retry commands with exponential backoff
-retry_cmd() {
-    local max_attempts=3
-    local timeout=10
-    local attempt=1
-    local exitCode=0
-    
-    while [ $attempt -le $max_attempts ]
-    do
-        if "$@"
-        then
-            return 0
-        else
-            exitCode=$?
-        fi
-        
-        if [ $attempt -lt $max_attempts ]
-        then
-            local wait=$((timeout * (2 ** ($attempt - 1))))
-            echo "⚠️  Attempt $attempt failed. Retrying in ${wait}s..."
-            sleep $wait
-        fi
-        attempt=$((attempt + 1))
-    done
-    
-    return $exitCode
-}
-
-# Set default CHEZMOI_REPO if not provided
-CHEZMOI_REPO=${CHEZMOI_REPO:-"https://github.com/your-user/dotfiles.git"}
-
-# Install chezmoi for dotfile management
-if ! command_exists chezmoi; then
-    echo "📦 Installing chezmoi..."
-    retry_cmd sh -c "$(curl -fsLS https://chezmoi.io/get)" -- -b ~/.local/bin
-    export PATH="$PATH:$HOME/.local/bin"
-else
-    echo "✅ chezmoi already installed"
-fi
-
-# Initialize chezmoi and apply dotfiles
-echo "🔍 Applying dotfiles from $CHEZMOI_REPO..."
-if [ -n "$CHEZMOI_REPO" ] && [ "$CHEZMOI_REPO" != "https://github.com/your-user/dotfiles.git" ]; then
-    chezmoi init --apply "$CHEZMOI_REPO" || {
-        echo "⚠️  chezmoi init failed - offline or repo unavailable"
-        echo "   Skipping dotfile sync (continue without .gitconfig, .ssh/config)"
+# 1. Apply dotfiles (non-blocking)
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Step 1: Dotfiles Setup"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if [ -f "$SCRIPTS_DIR/dotfiles-setup.sh" ]; then
+    bash "$SCRIPTS_DIR/dotfiles-setup.sh" || {
+        echo "⚠️  Warning: Dotfiles setup failed (continuing anyway)"
     }
 else
-    echo "⚠️  CHEZMOI_REPO not configured, skipping dotfile sync"
+    echo "⚠️  Warning: dotfiles-setup.sh not found, skipping..."
 fi
 
-# Apply container-specific SSH config overrides (after chezmoi to override dotfiles config)
-if [ -f "/workspaces/dev01/.devcontainer/ssh_config" ]; then
-    echo "🔐 Applying container SSH config..."
-    cat /workspaces/dev01/.devcontainer/ssh_config >> ~/.ssh/config 2>/dev/null || {
-        mkdir -p ~/.ssh
-        cat /workspaces/dev01/.devcontainer/ssh_config >> ~/.ssh/config
-    }
-fi
+# 2. Verify global tools (PM2, Backlog, Kilo Code) - already in Docker image
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Step 2: Verify Global Tools"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Check if cloudflared credentials are mounted (required for SSH tunneling)
-if [ ! -d "$HOME/.cloudflared" ]; then
-    echo ""
-    echo "⚠️  WARNING: ~/.cloudflared not found!"
-    echo "   SSH tunneling via cloudflared will not work until you:"
-    echo "   1. On host: Run 'cloudflared access ssh --hostname ssh.mandulaj.stream'"
-    echo "   2. Verify host ~/.cloudflared exists with cert/token files"
-    echo "   3. Uncomment the cloudflared mount in .devcontainer/devcontainer.json"
-    echo "   4. Rebuild the devcontainer"
-    echo ""
-fi
-
-# Ollama CLI is already installed in the Dockerfile
+# Ollama CLI
 if command_exists ollama; then
     echo "✅ Ollama CLI available"
 else
     echo "⚠️  Ollama CLI not found"
 fi
 
-# Fix npm cache permissions if needed
+# PM2
+if command_exists pm2; then
+    echo "✅ PM2 available"
+else
+    echo "⚠️  PM2 not found - installing..."
+    npm install -g pm2 || echo "❌ PM2 install failed (offline?)"
+fi
+
+# Backlog.md CLI
+if command_exists backlog; then
+    echo "✅ Backlog.md CLI available"
+else
+    echo "⚠️  Backlog.md CLI not found - installing..."
+    npm install -g backlog.md || echo "❌ Backlog.md install failed (offline?)"
+fi
+
+# Kilo Code CLI (kilo) - pre-installed in Dockerfile, check availability
+if command_exists kilo; then
+    echo "✅ Kilo Code CLI (kilo) available - version $(kilo --version 2>/dev/null || echo 'unknown')"
+else
+    echo "⚠️  Kilo Code CLI not found (should be pre-installed in Dockerfile)"
+    echo "   Binary name: 'kilo' (not 'kodu')"
+fi
+
+# 3. Install project dependencies
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "Step 3: Project Dependencies"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+if [ -f "$WORKSPACE_ROOT/package.json" ]; then
+    echo "📦 Installing npm dependencies..."
+    cd "$WORKSPACE_ROOT"
+    npm install || {
+        echo "❌ npm install failed"
+        exit 1  # Critical failure - can't continue without dependencies
+    }
+    echo "✅ Dependencies installed"
+else
+    echo "⚠️  No package.json found, skipping npm install"
+fi
+
+# 4. Fix npm cache permissions (common issue)
 if [ -d "$HOME/.npm" ]; then
     chmod -R u+w "$HOME/.npm" 2>/dev/null || true
 fi
 
-# Install PM2 globally (already in Docker image, just verify)
-if ! command_exists pm2; then
-    echo "📦 Installing PM2..."
-    npm install -g pm2 || echo "⚠️  PM2 install skipped (offline?)"
-else
-    echo "✅ PM2 available"
-fi
-
-# Install Backlog.md CLI (already in Docker image, just verify)
-if ! command_exists backlog; then
-    echo "📦 Installing Backlog.md CLI..."
-    npm install -g backlog.md || echo "⚠️  Backlog.md install skipped (offline?)"
-else
-    echo "✅ Backlog.md CLI available"
-fi
-
-# Install Kilo Code CLI (already in Docker image, just verify)
-if ! command_exists kilocode; then
-    echo "📦 Installing Kilo Code CLI..."
-    npm install -g @kilocode/cli || echo "⚠️  Kilo Code CLI install skipped (offline?)"
-else
-    echo "✅ Kilo Code CLI available"
-fi
-
-# Verify Ollama connection to host
-echo "🔍 Checking Ollama connection..."
-if curl -s "${OLLAMA_HOST:-http://host.docker.internal:11434}/api/tags" >/dev/null 2>&1; then
-    echo "✅ Ollama host reachable at ${OLLAMA_HOST:-http://host.docker.internal:11434}"
-else
-    echo "⚠️  Warning: Cannot reach Ollama at ${OLLAMA_HOST:-http://host.docker.internal:11434}"
-    echo "   Make sure Ollama is running on your host machine"
-fi
-
-# Install project dependencies
-if [ -f "package.json" ]; then
-    echo "📦 Installing npm dependencies..."
-    npm install
-fi
-
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "✅ Tool setup complete!"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "Next steps:"
+echo "  → PM2 will start automatically via postStartCommand"
+echo "  → View logs: pm2 logs ticket-processor"
+echo "  → Monitor: pm2 monit"
+echo ""
+

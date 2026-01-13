@@ -9,12 +9,15 @@
   ],
   "mounts": [
     // Mount SSH keys from host for authentication (read-write so container can append SSH config)
-    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind"
+    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind",
+    // Mount local dotfiles directory for chezmoi
+    "source=${localEnv:HOME}/dev/dev01dot,target=/workspaces/dev01dot,type=bind,readonly"
     // Uncomment when host ~/.cloudflared exists (for SSH tunneling via cloudflared)
     // "source=${localEnv:HOME}/.cloudflared,target=/home/node/.cloudflared,type=bind,readonly"
   ],
   "forwardPorts": [3000, 3001],
   "postCreateCommand": "bash .devcontainer/setup-tools.sh",
+  "postStartCommand": "bash .devcontainer/scripts/pm2-run.sh",
   "remoteEnv": {
     "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
   },

@@ -43,22 +43,36 @@ Automated ticket processing system that uses **Kilo Code CLI (kodu)** with **Oll
 
 This project uses several related repositories for development and deployment:
 
-- **Main Project**: Current repository
+- **Main Project**: Current repository (ticket processor application)
 - **Dotfiles**: [`dev01-dotfiles`](https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git)
-  - Managed with chezmoi at `~/.local/share/chezmoi-dev01`
-  - Contains SSH config, git config, and shell aliases for containers
-- **Dev Container**: [`dev01-conatainer`](https://git.mandulaj.stream/mandulaj/dev01-conatainer.git)
-  - Contains devcontainer configuration, Dockerfile, and setup scripts
-  - Used for VS Code remote development
+  - Chezmoi-based dotfiles for reproducible dev environment
+  - Contains SSH config, git config, and shell aliases
+  - Local path: `/Users/mandulaj/dev/dev01dot` (mounted in devcontainer)
+  - Template available: [dotfiles-template/](dotfiles-template/)
 
-See [DEVCONTAINER-SETUP.md](DEVCONTAINER-SETUP.md) for detailed setup instructions.
+## Development Environment
 
-## Quick Start
+This project includes a **fully configured devcontainer** with:
+- ✅ Node 24 with pinned npm 11.7.0
+- ✅ PM2 with watch mode (auto-restart on code changes)
+- ✅ Pre-installed tools: Ollama CLI, Kilo Code, backlog.md
+- ✅ Automatic dotfiles sync via chezmoi
+- ✅ SSH tunneling support with cloudflared
+- ✅ Ollama host auto-detection (OrbStack/Docker Desktop/Linux)
+
+**Quick Start with Devcontainer:**
+1. Open project in VS Code
+2. Command Palette → "Dev Containers: Reopen in Container"
+3. Wait for setup to complete (installs dependencies, applies dotfiles, starts PM2)
+
+**Detailed Setup:** See [.devcontainer/SETUP-GUIDE.md](.devcontainer/SETUP-GUIDE.md)
+
+## Quick Start (Standalone/Host Machine)
 
 ### Prerequisites
 
-- **macOS**: Homebrew, Podman, Node.js 20+, Ollama
-- **Linux**: apt/dnf, Podman, Node.js 20+, Ollama
+- **macOS**: Homebrew, Podman, Node.js 24+, Ollama
+- **Linux**: apt/dnf, Podman, Node.js 24+, Ollama
 
 ### Installation
 
@@ -298,32 +312,54 @@ See `.env.example` for all available options. Key variables:
 └── ecosystem.config.js     # PM2 configuration
 ```
 
+## Documentation
+
+- **[.devcontainer/SETUP-GUIDE.md](.devcontainer/SETUP-GUIDE.md)** — Devcontainer setup, configuration, troubleshooting
+- **[INSTALLATION.md](INSTALLATION.md)** — Host machine installation (macOS/Linux)
+- **[USAGE.md](USAGE.md)** — How to use the ticket processor
+- **[CONFIG.md](CONFIG.md)** — Configuration reference
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** — Common issues and solutions
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** — Production deployment guide
+- **[FUTURE_IMPROVEMENTS.md](FUTURE_IMPROVEMENTS.md)** — Planned features and roadmap
+
 ## Development
 
-### Requirements
+### Using Devcontainer (Recommended)
 
-- Node.js 20+
+Best for reproducible development environment with automatic setup:
+
+```bash
+# Open in VS Code
+# Command Palette → "Dev Containers: Reopen in Container"
+# PM2 starts automatically, watches for code changes
+```
+
+### Standalone Development
+
+Requirements:
+- Node.js 24+
 - Podman / Podman Compose
 - Ollama with models pulled
+- Kilo Code CLI (`npm install -g @kilocode/cli`)
 - Backlog.md CLI (`npm install -g backlog.md`)
-- Kilo Code CLI (`npm install -g kodu`)
 
-### Install Dependencies
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-### Run in Development Mode
+Run with PM2 (auto-restart on changes):
+
+```bash
+pm2 start ecosystem.config.js
+pm2 logs
+```
+
+Or run directly:
 
 ```bash
 node scripts/start.js
-```
-
-Or use PM2 with auto-restart:
-
-```bash
-pm2 start ecosystem.config.js --watch
 ```
 
 ## License
