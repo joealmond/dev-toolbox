@@ -20,7 +20,7 @@ git_global() {
 # Container gets SSH keys from ~/.ssh mount, no need for interactive auth
 git_global core.askPass /bin/false
 git_global credential.helper store
-git_global --add safe.directory '*'  # Needed for mounted repos
+git config --global --add safe.directory '*'  # Needed for mounted repos
 echo "✅ Git configured for non-interactive container use (XDG global config)"
 
 # Verify git user config (from mounted .gitconfig or set defaults)
