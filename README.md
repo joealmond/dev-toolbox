@@ -1,54 +1,145 @@
-# Ticket Processor
+# Ticket Processor - Spec-Driven Development
 
-Automated ticket processing system that uses **Kilo Code CLI (kodu)** with **Ollama** to process tasks from **Backlog.md** format, commits changes to **Gitea**, and manages workflow states through a file-based system.
+Automated ticket processing system with **spec-driven development** capabilities. Uses **Kilo Code CLI (kodu)** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
 
-## Features
+## Key Features
 
-- 🤖 **Automated Task Processing** - Drop markdown task files and let AI implement them
-- 📝 **Backlog.md Integration** - Full support for Backlog.md task format with front matter
-- 🔄 **Workflow Management** - Track tasks through todo → doing → review → completed states
-- 🐙 **Gitea Integration** - Auto-create repositories, commits, and pull requests
-- 🔗 **Bidirectional Webhooks** - Gitea PR merges trigger task completion
-- 🎯 **Multiple Model Support** - Choose different Ollama models per task
-- 📦 **Container-based** - Uses Podman for easy deployment
-- 🔧 **Process Management** - PM2 (macOS) and systemd (Linux) support
+### 🎯 Spec-Driven Development
+- **Requirements-based implementation** - Embed requirements directly in task files
+- **Architecture context** - Include components, integrations, and design decisions
+- **Automatic documentation** - Generate work logs, ADRs, and changelogs
+- **Configurable approvals** - Code review and/or documentation review gates
+- **Unified format** - Single markdown file for specs and tasks
+
+### 🤖 AI-Powered Automation
+- **Smart prompt injection** - Spec requirements and architecture context to kodu
+- **Multiple model support** - Choose Ollama models per task
+- **Semantic context** - Pull relevant code/docs for enhanced AI prompts
+- **Automatic completion** - Optional auto-complete for simple tasks
+
+### 🔄 Workflow Management
+- **File-based state machine** - todo → doing → review → completed/failed
+- **Flexible approval gates** - Optional code and docs approval per task
+- **PR automation** - Auto-create and merge PRs on approval
+- **Webhook integration** - Gitea PR merge triggers task completion
+
+### 🔗 Git & Gitea Integration
+- **Automatic commits** - Include all generated documentation
+- **PR creation** - Configurable PR title and body formats
+- **Webhook verification** - Secure signature validation
+- **Branch management** - Task-based branch naming
+
+### 🛠️ Developer Experience
+- **VS Code MCP tools** - 12 tools for AI assistant integration
+- **Interactive CLI** - Approval workflow and task management
+- **Comprehensive docs** - 2,200+ lines of guides and references
+- **Dev container** - Fully automated development environment
 
 ## Architecture
 
 ```
-┌─────────────┐
-│   Backlog   │
-│  todo/*.md  │
-└──────┬──────┘
+Spec-Driven Development Flow:
+
+┌──────────────┐
+│   Create     │ Unified markdown file with optional
+│   Spec/Task  │ spec.enabled: true
+└──────┬───────┘
        │
        ▼
-┌─────────────┐     ┌──────────────┐
-│   Watcher   │────▶│   Kilo Code  │
-│  (Node.js)  │     │  (kodu CLI)  │
-└──────┬──────┘     └──────┬───────┘
-       │                   │
-       │                   ▼
-       │            ┌─────────────┐
-       │            │   Ollama    │
-       │            │   Models    │
-       │            └─────────────┘
+┌──────────────────────┐
+│  Front Matter        │ - Requirements
+│  ├─ requirements     │ - Architecture context
+│  ├─ architecture     │ - Approval gates
+│  ├─ approval gates   │ - Documentation config
+│  └─ docs config      │
+└──────┬───────────────┘
+       │
        ▼
-┌─────────────┐     ┌──────────────┐
-│    Gitea    │◀───▶│   Webhooks   │
-│ (Git Repos) │     │   (Express)  │
-└─────────────┘     └──────────────┘
+┌──────────────┐      ┌──────────────┐
+│   Watcher    │─────▶│  kodu CLI +  │
+│  (Node.js)   │      │  Ollama      │
+└──────┬───────┘      └──────────────┘
+       │
+       ├─ Code Approval?
+       ├─ Generate Docs?
+       ├─ Docs Approval?
+       │
+       ▼
+┌──────────────┐
+│  Completed   │ - Code committed
+│  Task        │ - Docs generated
+│              │ - All approvals recorded
+└──────────────┘
 ```
 
-## Related Repositories
+## Quick Feature Overview
 
-This project uses several related repositories for development and deployment:
+### Standard Task (No Approvals)
+```bash
+npm run task:create
+# Task processes automatically and completes
+```
 
-- **Main Project**: Current repository (ticket processor application)
-- **Dotfiles**: [`dev01-dotfiles`](https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git)
-  - Chezmoi-based dotfiles for reproducible dev environment
-  - Contains SSH config, git config, and shell aliases
-  - Local path: `/Users/mandulaj/dev/dev01dot` (mounted in devcontainer)
-  - Template available: [dotfiles-template/](dotfiles-template/)
+### Spec-Driven Task (Full Workflow)
+```bash
+npm run spec:create
+# 1. Process with enhanced context (requirements + architecture)
+# 2. Code approval needed
+# 3. Auto-generate documentation
+# 4. Documentation approval needed
+# 5. Auto-complete and archive
+```
+
+### Use Cases
+- **Bug fixes** - Simple tasks, no approval
+- **Features** - Spec-driven, code review only
+- **Architecture** - Full workflow with ADRs
+- **Critical systems** - All approvals + documentation
+
+---
+
+## New in Phases 4-5: Approval Workflows & MCP Integration
+
+### Approval Workflow System
+- **Configurable per-task** approval gates
+- **Code approval** - Review implementation quality
+- **Docs approval** - Review generated documentation
+- **State machine** - Automatic transitions and validation
+- **Git integration** - Webhooks trigger auto-completion
+
+### VS Code MCP Integration
+- **12 tools** for AI assistant access
+- **Tool categories:**
+  - Task management (create, process, status)
+  - Approval workflow (approve, reject, list)
+  - Documentation (ADR, changelog, worklog)
+  - Search (semantic queries across codebase)
+  - Monitoring (staleness checks)
+
+### Documentation Generation
+- **Work logs** - Implementation process documentation
+- **ADRs** - Architecture Decision Records with decisions
+- **Changelogs** - Automatic CHANGELOG.md updates
+- **Handlebars templates** - Customizable output format
+
+---
+
+## Documentation
+
+**Essential Guides:**
+- 📖 [**INTEGRATION-GUIDE.md**](./INTEGRATION-GUIDE.md) - Setup, configuration, and deployment
+- 📋 [**SPEC-REFERENCE.md**](./SPEC-REFERENCE.md) - Complete specification format documentation
+- ✅ [**APPROVAL-WORKFLOW.md**](./APPROVAL-WORKFLOW.md) - Approval process and state machine
+- 🔧 [**MCP-TOOLS.md**](./MCP-TOOLS.md) - VS Code MCP tool reference
+- 📊 [**PHASE-5-COMPLETION.md**](./PHASE-5-COMPLETION.md) - Latest feature implementation summary
+
+**Other Documentation:**
+- 🐳 [**DEPLOYMENT.md**](./DEPLOYMENT.md) - Production deployment guide
+- 🔍 [**TROUBLESHOOTING.md**](./TROUBLESHOOTING.md) - Common issues and solutions
+- 📦 [**INSTALLATION.md**](./INSTALLATION.md) - Detailed installation steps
+- 🚀 [**USAGE.md**](./USAGE.md) - Task creation and workflow examples
+
+---
 
 ## Development Environment
 
@@ -59,13 +150,16 @@ This project includes a **fully configured devcontainer** with:
 - ✅ Automatic dotfiles sync via chezmoi
 - ✅ SSH tunneling support with cloudflared
 - ✅ Ollama host auto-detection (OrbStack/Docker Desktop/Linux)
+- ✅ MCP server for VS Code integration
+- ✅ Webhook server for Gitea automation
+- Template available: [dotfiles-template/](dotfiles-template/)
 
 **Quick Start with Devcontainer:**
 1. Open project in VS Code
 2. Command Palette → "Dev Containers: Reopen in Container"
 3. Wait for setup to complete (installs dependencies, applies dotfiles, starts PM2)
 
-**Detailed Setup:** See [.devcontainer/SETUP-GUIDE.md](.devcontainer/SETUP-GUIDE.md)
+**Detailed Setup:** See [INTEGRATION-GUIDE.md](./INTEGRATION-GUIDE.md)
 
 ## Quick Start (Standalone/Host Machine)
 

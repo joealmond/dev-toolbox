@@ -8,8 +8,12 @@ const PQueue = require('p-queue').default;
 const matter = require('gray-matter');
 const crypto = require('crypto');
 
-// Load configuration
+// Load configuration and utilities
 const config = require('../config.json');
+const specParser = require('./spec-parser');
+const docGenerator = require('./doc-generator');
+const approvalHandler = require('./approval-handler');
+const semanticIndexer = require('./semantic-indexer');
 require('dotenv').config();
 
 // Initialize processing queue
@@ -49,7 +53,7 @@ function extractTaskId(filename) {
   return match ? match[1] : null;
 }
 
-// Process ticket file
+// Process ticket file with spec support and approval workflow
 async function processTicket(filePath) {
   const filename = path.basename(filePath);
   
@@ -77,22 +81,92 @@ async function processTicket(filePath) {
     const { data: frontMatter, content: body } = matter(content);
     
     const taskId = extractTaskId(filename);
-    const processTicket = require('./process-ticket');
+    const processTicketModule = require('./process-ticket');
     
     // Process with kodu
-    const result = await processTicket(doingPath, frontMatter, body, taskId);
+    const result = await processTicketModule(doingPath, frontMatter, body, taskId);
     
     if (result.success) {
+      log('success', `✓ Kodu processing succeeded for ${filename}`);
+      
+      // Parse spec if enabled (for metadata and doc generation)
+      let spec = null;
+      let isSpec = false;
+      
+      try {
+        if (frontMatter.spec && frontMatter.spec.enabled === true) {
+          spec = {
+            id: frontMatter.id,
+            title: frontMatter.title,
+            description: frontMatter.description,
+            spec: frontMatter.spec,
+            approval: frontMatter.approval,
+            documentation: frontMatter.documentation,
+            acceptanceCriteria: frontMatter.acceptanceCriteria,
+            model: result.model
+          };
+          isSpec = true;
+          log('info', `Spec-driven task detected: ${taskId}`);
+        }
+      } catch (specError) {
+        log('warning', `Could not parse spec metadata: ${specError.message}`);
+      }
+      
+      // Check approval requirements
+      const codeApprovalRequired = isSpec && frontMatter.approval?.code?.required;
+      const docsApprovalRequired = isSpec && frontMatter.approval?.docs?.required;
+      
+      let docsGenerated = false;
+      let docs = {};
+      
+      // Generate documentation if spec mode and auto-approval configured
+      if (isSpec && frontMatter.approval?.docs?.generate) {
+        try {
+          log('info', `Generating documentation for ${taskId}`);
+          
+          docs = await docGenerator.generateAll(spec, result);
+          docsGenerated = true;
+          
+          // Update front matter with doc paths
+          frontMatter.documentation = frontMatter.documentation || {};
+          frontMatter.documentation.generated = true;
+          frontMatter.documentation.worklogPath = docs.worklogPath || null;
+          frontMatter.documentation.adrPath = docs.adrPath || null;
+          frontMatter.documentation.changelogPath = docs.changelogPath || null;
+          
+          log('success', `✓ Documentation generated for ${taskId}`);
+        } catch (docError) {
+          log('error', `Failed to generate docs for ${taskId}: ${docError.message}`);
+          // Continue even if docs fail - code is valid
+        }
+      }
+      
       // Move to review folder
       const reviewPath = path.join(config.folders.review, filename);
+      const updatedContent = matter.stringify(body, frontMatter);
+      await fs.writeFile(doingPath, updatedContent); // Update with doc paths
       await fs.rename(doingPath, reviewPath);
-      log('success', `✓ Successfully processed ${filename}, moved to review`);
+      
+      // Log approval status
+      if (codeApprovalRequired) {
+        log('warning', `Task ${taskId} requires CODE approval before proceeding`);
+      } else if (docsApprovalRequired && docsGenerated) {
+        log('warning', `Task ${taskId} requires DOCS approval before completion`);
+      } else {
+        log('success', `✓ Task ${taskId} ready for completion (no approvals required)`);
+      }
       
       // Trigger git operations if configured
       if (config.git.createPR) {
-        const gitManager = require('./git-manager');
-        await gitManager.processTaskRepo(taskId, frontMatter, result);
+        try {
+          const gitManager = require('./git-manager');
+          await gitManager.processTaskRepo(taskId, frontMatter, result);
+          log('success', `✓ Git operations completed for ${taskId}`);
+        } catch (gitError) {
+          log('error', `Git operations failed for ${taskId}: ${gitError.message}`);
+        }
       }
+      
     } else {
       // Move to failed folder with error log
       const failedPath = path.join(config.folders.failed, filename);
@@ -104,7 +178,8 @@ async function processTicket(filePath) {
         timestamp: new Date().toISOString(),
         filename,
         error: result.error,
-        stderr: result.stderr
+        stderr: result.stderr,
+        exitCode: result.exitCode
       }, null, 2));
       
       log('error', `✗ Failed to process ${filename}`, { error: result.error });
@@ -165,16 +240,31 @@ app.post(config.webhook.path, async (req, res) => {
       const taskId = taskIdMatch ? taskIdMatch[1] : null;
       
       if (merged && taskId && config.webhook.autoMergePR) {
-        // Move from review to completed
-        const reviewFiles = await fs.readdir(config.folders.review);
-        const taskFile = reviewFiles.find(f => f.includes(`task-${taskId}`));
-        
-        if (taskFile) {
-          const reviewPath = path.join(config.folders.review, taskFile);
-          const completedPath = path.join(config.folders.completed, taskFile);
+        // Auto-complete task when PR is merged
+        try {
+          const reviewFiles = await fs.readdir(config.folders.review);
+          const taskFile = reviewFiles.find(f => f.includes(`task-${taskId}`) || f.includes(`spec-${taskId}`));
           
-          await fs.rename(reviewPath, completedPath);
-          log('success', `✓ Moved task-${taskId} to completed (PR merged)`);
+          if (taskFile) {
+            const reviewPath = path.join(config.folders.review, taskFile);
+            const completedPath = path.join(config.folders.completed, taskFile);
+            
+            // Update task status
+            const content = await fs.readFile(reviewPath, 'utf-8');
+            const { data: frontMatter, content: body } = matter(content);
+            
+            frontMatter.status = 'Completed';
+            frontMatter.completedAt = new Date().toISOString();
+            
+            const updatedContent = matter.stringify(body, frontMatter);
+            await fs.writeFile(reviewPath, updatedContent);
+            
+            // Move to completed
+            await fs.rename(reviewPath, completedPath);
+            log('success', `✓ Moved task-${taskId} to completed (PR #${prNumber} merged)`);
+          }
+        } catch (error) {
+          log('error', `Failed to auto-complete task-${taskId}: ${error.message}`);
         }
       }
     }
@@ -211,6 +301,23 @@ log('info', 'Starting ticket processor watcher...');
 log('info', `Watching folder: ${config.folders.todo}`);
 log('info', `Processing concurrency: ${config.processing.concurrency}`);
 log('info', `Default model: ${config.ollama.defaultModel}`);
+
+// Warm the semantic index on startup when enabled
+if (config.search && config.search.enabled !== false) {
+  (async () => {
+    try {
+      if (config.search.rebuildOnStart) {
+        const { count, indexFile } = await semanticIndexer.buildIndex();
+        log('success', `Rebuilt semantic index (${count} files) at ${indexFile}`);
+      } else {
+        await semanticIndexer.ensureIndex();
+        log('info', 'Semantic index ready');
+      }
+    } catch (error) {
+      log('warning', `Semantic index unavailable: ${error.message}`);
+    }
+  })();
+}
 
 const watcher = chokidar.watch(`${config.folders.todo}/*.md`, {
   ignored: /(^|[\/\\])\../, // ignore dotfiles

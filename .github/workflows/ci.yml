@@ -1,0 +1,112 @@
+name: Task Processing CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  lint-and-test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run semantic search tests
+        run: npm run test:search
+        
+      - name: Lint check (if eslint configured)
+        run: npm run lint || echo "No lint script configured"
+        continue-on-error: true
+
+  architecture-review:
+    name: Architecture Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Check for architecture files
+        id: arch-check
+        run: |
+          echo "Checking for spec or architecture changes..."
+          git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '(spec-|scripts/|config\.json)' && echo "found=true" >> $GITHUB_OUTPUT || echo "found=false" >> $GITHUB_OUTPUT
+          
+      - name: Architecture review reminder
+        if: steps.arch-check.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🏗️ **Architecture Review Required**\n\nThis PR contains changes to specs, scripts, or configuration. Please ensure:\n- [ ] Architectural decisions are documented\n- [ ] Changes align with existing patterns\n- [ ] Integration points are validated\n\nRefer to [architect.agent.md](/.github/agents/architect.agent.md) for review guidelines.'
+            })
+
+  docs-review:
+    name: Documentation Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Check for documentation changes
+        id: docs-check
+        run: |
+          echo "Checking for documentation changes..."
+          git diff --name-only origin/${{ github.base_ref }}...HEAD | grep -E '\.(md|markdown)$' && echo "found=true" >> $GITHUB_OUTPUT || echo "found=false" >> $GITHUB_OUTPUT
+          
+      - name: Documentation review reminder
+        if: steps.docs-check.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '📝 **Documentation Review Required**\n\nThis PR contains documentation changes. Please ensure:\n- [ ] Markdown formatting is correct\n- [ ] Technical accuracy verified\n- [ ] Consistent terminology used\n- [ ] All links are functional\n\nRefer to [docs.agent.md](/.github/agents/docs.agent.md) for review guidelines.'
+            })
+            
+      - name: Validate markdown links
+        run: |
+          npm install -g markdown-link-check
+          find . -name "*.md" -not -path "./node_modules/*" -not -path "./.git/*" -exec markdown-link-check {} \; || echo "Some links may be broken"
+        continue-on-error: true
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate || echo "Vulnerabilities found, review recommended"
+        continue-on-error: true
+        
+      - name: Check for secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD

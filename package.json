@@ -8,7 +8,22 @@
     "watcher": "node scripts/watcher.js",
     "create-task": "node scripts/create-task.js",
     "install-service": "bash scripts/install-service.sh",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "mcp": "node scripts/mcp-server.js",
+    "mcp:dev": "nodemon scripts/mcp-server.js",
+    "build:index": "node scripts/semantic-indexer.js build",
+    "search": "node scripts/semantic-indexer.js search",
+    "approval:list": "node scripts/approval-handler.js list",
+    "approval:approve": "node scripts/approval-handler.js approve",
+    "approval:reject": "node scripts/approval-handler.js reject",
+    "spec:create": "node scripts/create-spec.js",
+    "spec:validate": "node scripts/spec-parser.js validate",
+    "docs:generate": "node scripts/doc-generator.js",
+    "changelog:add": "node scripts/changelog-manager.js add",
+    "adr:create": "node scripts/adr-generator.js create",
+    "git:commit": "node scripts/git-auto-commit.js",
+    "git:commit-push": "node scripts/git-auto-commit.js . --push",
+    "test": "npm run test:search",
+    "test:search": "node scripts/semantic-indexer.test.js"
   },
   "keywords": [
     "automation",
@@ -27,7 +42,15 @@
     "p-queue": "^7.4.1",
     "simple-git": "^3.22.0",
     "dotenv": "^16.3.1",
-    "axios": "^1.6.5"
+    "axios": "^1.6.5",
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "minisearch": "^6.3.0",
+    "js-yaml": "^4.1.0",
+    "handlebars": "^4.7.8",
+    "chalk": "^5.3.0",
+    "inquirer": "^9.2.12",
+    "ora": "^7.0.1",
+    "table": "^6.8.1"
   },
   "engines": {
     "node": ">=24.0.0",

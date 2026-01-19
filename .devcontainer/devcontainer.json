@@ -15,11 +15,12 @@
     // Uncomment when host ~/.cloudflared exists (for SSH tunneling via cloudflared)
     // "source=${localEnv:HOME}/.cloudflared,target=/home/node/.cloudflared,type=bind,readonly"
   ],
-  "forwardPorts": [3000, 3001],
-  "postCreateCommand": "bash .devcontainer/setup-tools.sh",
-  "postStartCommand": "bash .devcontainer/scripts/pm2-run.sh",
+  "forwardPorts": [3000, 3001, 3002],
+  "postCreateCommand": "bash .devcontainer/setup-tools.sh && npm install",
+  "postStartCommand": "bash .devcontainer/init-scripts/build-index.sh && bash .devcontainer/scripts/pm2-run.sh",
   "remoteEnv": {
-    "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
+    "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git",
+    "OLLAMA_HOST": "http://host.docker.internal:11434"
   },
   "containerEnv": {
     "OLLAMA_HOST": "http://host.docker.internal:11434"
@@ -34,8 +35,20 @@
         "ms-azuretools.vscode-docker",
         "github.vscode-pull-request-github",
         "dbaeumer.vscode-eslint",
-        "kilocode.kilo-code"
+        "kilocode.kilo-code",
+        "github.copilot",
+        "github.copilot-chat"
       ]
+    }
+  },
+  "portsAttributes": {
+    "3001": {
+      "label": "Webhook Server",
+      "onAutoForward": "notify"
+    },
+    "3002": {
+      "label": "MCP Server",
+      "onAutoForward": "notify"
     }
   }
 }

@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "ticket-processor": {
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/scripts/mcp-server.js"
+      ],
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  }
+}

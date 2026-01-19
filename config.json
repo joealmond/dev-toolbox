@@ -22,7 +22,72 @@
     "failed": "backlog/failed",
     "review": "backlog/review",
     "completed": "backlog/completed",
-    "repos": "repos"
+    "repos": "repos",
+    "adr": "docs/adr",
+    "worklogs": "docs/worklogs",
+    "specArchive": "docs/specs",
+    "changelog": "docs/CHANGELOG.md"
+  },
+
+  "spec": {
+    "enabled": true,
+    "requirementsPromptTemplate": "Based on the following requirements, implement the solution:\n\n{requirements}",
+    "architectureContextEnabled": true
+  },
+
+  "documentation": {
+    "enabled": true,
+    "generator": {
+      "model": "ollama/deepseek-coder",
+      "timeout": 60000
+    },
+    "templates": {
+      "worklog": "templates/worklog.md",
+      "adr": "templates/adr.md",
+      "changelog": "templates/changelog-entry.md"
+    },
+    "defaults": {
+      "generateWorklog": true,
+      "generateAdr": false,
+      "generateChangelog": true,
+      "autoApprove": false
+    }
+  },
+
+  "approval": {
+    "defaultCodeApproval": true,
+    "defaultDocsApproval": true,
+    "notifyOnPending": true,
+    "timeoutHours": 72,
+    "autoRejectOnTimeout": false
+  },
+
+  "mcp": {
+    "enabled": true,
+    "port": 3002,
+    "tools": [
+      "create_task",
+      "create_spec",
+      "process_task",
+      "approve_code",
+      "approve_docs",
+      "reject_task",
+      "check_status",
+      "list_pending",
+      "query_search",
+      "generate_adr",
+      "append_changelog",
+      "check_staleness"
+    ]
+  },
+
+  "search": {
+    "enabled": true,
+    "indexPath": ".index/",
+    "includePatterns": ["**/*.js", "**/*.ts", "**/*.md"],
+    "excludePatterns": ["node_modules/**", ".git/**", ".index/**"],
+    "maxFileSize": 100000,
+    "rebuildOnStart": false
   },
   "webhook": {
     "enabled": true,

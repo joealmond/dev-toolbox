@@ -265,8 +265,86 @@ async function createPullRequest(repoName, branch, taskId, frontMatter, result) 
   }
 }
 
+/**
+ * Auto-commit all changes in the current working directory
+ * @param {string} workingDir - Working directory to commit changes from
+ * @param {string} message - Commit message (optional, auto-generated if not provided)
+ */
+async function autoCommitChanges(workingDir, message) {
+  try {
+    const git = simpleGit(workingDir);
+    
+    // Check if it's a git repo
+    const isRepo = await git.checkIsRepo();
+    if (!isRepo) {
+      console.warn(`[WARN] ${workingDir} is not a git repository, skipping auto-commit`);
+      return false;
+    }
+    
+    // Check for changes
+    const status = await git.status();
+    const hasChanges = status.files.length > 0;
+    
+    if (!hasChanges) {
+      console.log(`[INFO] No changes to commit in ${workingDir}`);
+      return false;
+    }
+    
+    // Stage all changes
+    await git.add('.');
+    
+    // Create commit message
+    const commitMessage = message || `chore: auto-commit changes at ${new Date().toISOString()}`;
+    await git.commit(commitMessage);
+    
+    console.log(`[SUCCESS] Auto-committed changes: ${commitMessage}`);
+    console.log(`[INFO] Files changed: ${status.files.length}`);
+    
+    return true;
+  } catch (error) {
+    console.error(`[ERROR] Auto-commit failed for ${workingDir}:`, error.message);
+    return false;
+  }
+}
+
+/**
+ * Auto-commit and push changes to remote
+ * @param {string} workingDir - Working directory
+ * @param {string} message - Commit message
+ * @param {string} branch - Branch to push to (default: current branch)
+ */
+async function autoCommitAndPush(workingDir, message, branch = null) {
+  try {
+    const committed = await autoCommitChanges(workingDir, message);
+    if (!committed) {
+      return false;
+    }
+    
+    const git = simpleGit(workingDir);
+    
+    // Determine branch
+    const currentBranch = branch || (await git.branch()).current;
+    
+    // Check if remote exists
+    const remotes = await git.getRemotes();
+    if (remotes.length === 0) {
+      console.warn('[WARN] No remote configured, skipping push');
+      return true; // Commit succeeded even if push didn't happen
+    }
+    
+    // Push with retry
+    await pushWithRetry(git, currentBranch);
+    return true;
+  } catch (error) {
+    console.error(`[ERROR] Auto-commit and push failed:`, error.message);
+    return false;
+  }
+}
+
 module.exports = {
   processTaskRepo,
   createGiteaRepo,
-  createPullRequest
+  createPullRequest,
+  autoCommitChanges,
+  autoCommitAndPush
 };

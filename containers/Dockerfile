@@ -25,11 +25,12 @@ RUN mkdir -p /workspace/backlog/todo \
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install dependencies (includes @modelcontextprotocol/sdk, minisearch, etc.)
 RUN npm ci --only=production
 
 # Copy application code
 COPY scripts ./scripts
+COPY config.json ./
 
 # Set git config defaults (will be overridden by environment)
 RUN git config --global user.name "Ticket Processor" && \
