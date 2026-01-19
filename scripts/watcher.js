@@ -7,6 +7,7 @@ const path = require('path');
 const PQueue = require('p-queue').default;
 const matter = require('gray-matter');
 const crypto = require('crypto');
+const logger = require('./utils/logger');
 
 // Load configuration and utilities
 const config = require('../config.json');
@@ -26,27 +27,6 @@ app.use(express.json());
 // Store for tracking processed files to avoid duplicates
 const processingFiles = new Set();
 
-// Logging utility
-function log(level, message, data = {}) {
-  const timestamp = config.logging.includeTimestamp 
-    ? new Date().toISOString() 
-    : '';
-  
-  const colors = {
-    info: '\x1b[36m',    // Cyan
-    success: '\x1b[32m', // Green
-    warning: '\x1b[33m', // Yellow
-    error: '\x1b[31m',   // Red
-    reset: '\x1b[0m'
-  };
-  
-  const color = config.logging.colorize ? colors[level] || colors.reset : '';
-  const reset = config.logging.colorize ? colors.reset : '';
-  
-  const logMessage = `${color}[${timestamp}] [${level.toUpperCase()}] ${message}${reset}`;
-  console.log(logMessage, data && Object.keys(data).length > 0 ? data : '');
-}
-
 // Extract task ID from filename
 function extractTaskId(filename) {
   const match = filename.match(new RegExp(config.taskIdFormat.extractRegex));
@@ -59,14 +39,14 @@ async function processTicket(filePath) {
   
   // Prevent duplicate processing
   if (processingFiles.has(filename)) {
-    log('warning', `File ${filename} is already being processed, skipping`);
+    logger.warn(`File ${filename} is already being processed, skipping`);
     return;
   }
   
   processingFiles.add(filename);
   
   try {
-    log('info', `Processing ticket: ${filename}`);
+    logger.info(`Processing ticket: ${filename}`);
     
     // Wait for file to be fully written
     await new Promise(resolve => setTimeout(resolve, config.processing.moveDelay));
@@ -74,7 +54,7 @@ async function processTicket(filePath) {
     // Move to 'doing' folder
     const doingPath = path.join(config.folders.doing, filename);
     await fs.rename(filePath, doingPath);
-    log('info', `Moved ${filename} to 'doing' folder`);
+    logger.info(`Moved ${filename} to 'doing' folder`);
     
     // Read and parse the task
     const content = await fs.readFile(doingPath, 'utf-8');
@@ -106,10 +86,10 @@ async function processTicket(filePath) {
             model: result.model
           };
           isSpec = true;
-          log('info', `Spec-driven task detected: ${taskId}`);
+          logger.info(`Spec-driven task detected: ${taskId}`);
         }
       } catch (specError) {
-        log('warning', `Could not parse spec metadata: ${specError.message}`);
+        logger.warn(`Could not parse spec metadata: ${specError.message}`);
       }
       
       // Check approval requirements
@@ -122,7 +102,7 @@ async function processTicket(filePath) {
       // Generate documentation if spec mode and auto-approval configured
       if (isSpec && frontMatter.approval?.docs?.generate) {
         try {
-          log('info', `Generating documentation for ${taskId}`);
+          logger.info(`Generating documentation for ${taskId}`);
           
           docs = await docGenerator.generateAll(spec, result);
           docsGenerated = true;
@@ -134,9 +114,9 @@ async function processTicket(filePath) {
           frontMatter.documentation.adrPath = docs.adrPath || null;
           frontMatter.documentation.changelogPath = docs.changelogPath || null;
           
-          log('success', `✓ Documentation generated for ${taskId}`);
+          logger.success(`✓ Documentation generated for ${taskId}`);
         } catch (docError) {
-          log('error', `Failed to generate docs for ${taskId}: ${docError.message}`);
+          logger.error(`Failed to generate docs for ${taskId}: ${docError.message}`);
           // Continue even if docs fail - code is valid
         }
       }
@@ -149,11 +129,11 @@ async function processTicket(filePath) {
       
       // Log approval status
       if (codeApprovalRequired) {
-        log('warning', `Task ${taskId} requires CODE approval before proceeding`);
+        logger.warn(`Task ${taskId} requires CODE approval before proceeding`);
       } else if (docsApprovalRequired && docsGenerated) {
-        log('warning', `Task ${taskId} requires DOCS approval before completion`);
+        logger.warn(`Task ${taskId} requires DOCS approval before completion`);
       } else {
-        log('success', `✓ Task ${taskId} ready for completion (no approvals required)`);
+        logger.success(`✓ Task ${taskId} ready for completion (no approvals required)`);
       }
       
       // Trigger git operations if configured
@@ -161,9 +141,9 @@ async function processTicket(filePath) {
         try {
           const gitManager = require('./git-manager');
           await gitManager.processTaskRepo(taskId, frontMatter, result);
-          log('success', `✓ Git operations completed for ${taskId}`);
+          logger.success(`✓ Git operations completed for ${taskId}`);
         } catch (gitError) {
-          log('error', `Git operations failed for ${taskId}: ${gitError.message}`);
+          logger.error(`Git operations failed for ${taskId}: ${gitError.message}`);
         }
       }
       
@@ -182,11 +162,11 @@ async function processTicket(filePath) {
         exitCode: result.exitCode
       }, null, 2));
       
-      log('error', `✗ Failed to process ${filename}`, { error: result.error });
+      logger.error(`✗ Failed to process ${filename}`, { error: result.error });
     }
     
   } catch (error) {
-    log('error', `Error processing ${filename}:`, { error: error.message });
+    logger.error(`Error processing ${filename}:`, { error: error.message });
     
     // Try to move to failed folder
     try {
@@ -197,7 +177,7 @@ async function processTicket(filePath) {
         await fs.rename(doingPath, failedPath);
       }
     } catch (moveError) {
-      log('error', `Failed to move ${filename} to failed folder:`, { error: moveError.message });
+      logger.error(`Failed to move ${filename} to failed folder:`, { error: moveError.message });
     }
   } finally {
     processingFiles.delete(filename);
@@ -216,7 +196,7 @@ app.post(config.webhook.path, async (req, res) => {
       const calculatedSignature = hmac.update(JSON.stringify(req.body)).digest('hex');
       
       if (signature !== calculatedSignature) {
-        log('warning', 'Invalid webhook signature');
+        logger.warn('Invalid webhook signature');
         return res.status(401).json({ error: 'Invalid signature' });
       }
     }
@@ -224,7 +204,7 @@ app.post(config.webhook.path, async (req, res) => {
     const event = req.headers['x-gitea-event'];
     const payload = req.body;
     
-    log('info', `Received webhook event: ${event}`);
+    logger.info(`Received webhook event: ${event}`);
     
     // Handle pull request events
     if (event === 'pull_request') {
@@ -233,7 +213,7 @@ app.post(config.webhook.path, async (req, res) => {
       const prTitle = payload.pull_request?.title || '';
       const merged = payload.pull_request?.merged || false;
       
-      log('info', `PR #${prNumber}: ${action}`, { title: prTitle, merged });
+      logger.info(`PR #${prNumber}: ${action}`, { title: prTitle, merged });
       
       // Extract task ID from PR title
       const taskIdMatch = prTitle.match(/\[Task (\d+)\]/i);
@@ -261,17 +241,17 @@ app.post(config.webhook.path, async (req, res) => {
             
             // Move to completed
             await fs.rename(reviewPath, completedPath);
-            log('success', `✓ Moved task-${taskId} to completed (PR #${prNumber} merged)`);
+            logger.success(`✓ Moved task-${taskId} to completed (PR #${prNumber} merged)`);
           }
         } catch (error) {
-          log('error', `Failed to auto-complete task-${taskId}: ${error.message}`);
+          logger.error(`Failed to auto-complete task-${taskId}: ${error.message}`);
         }
       }
     }
     
     res.json({ status: 'ok' });
   } catch (error) {
-    log('error', 'Webhook handler error:', { error: error.message });
+    logger.error('Webhook handler error:', { error: error.message });
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -290,17 +270,17 @@ app.get('/health', (req, res) => {
 let server;
 if (config.webhook.enabled) {
   server = app.listen(config.webhook.port, () => {
-    log('info', `Webhook server listening on port ${config.webhook.port}`);
-    log('info', `Webhook endpoint: http://localhost:${config.webhook.port}${config.webhook.path}`);
-    log('info', `Health check: http://localhost:${config.webhook.port}/health`);
+    logger.info(`Webhook server listening on port ${config.webhook.port}`);
+    logger.info(`Webhook endpoint: http://localhost:${config.webhook.port}${config.webhook.path}`);
+    logger.info(`Health check: http://localhost:${config.webhook.port}/health`);
   });
 }
 
 // Initialize file watcher
-log('info', 'Starting ticket processor watcher...');
-log('info', `Watching folder: ${config.folders.todo}`);
-log('info', `Processing concurrency: ${config.processing.concurrency}`);
-log('info', `Default model: ${config.ollama.defaultModel}`);
+logger.info('Starting ticket processor watcher...');
+logger.info(`Watching folder: ${config.folders.todo}`);
+logger.info(`Processing concurrency: ${config.processing.concurrency}`);
+logger.info(`Default model: ${config.ollama.defaultModel}`);
 
 // Warm the semantic index on startup when enabled
 if (config.search && config.search.enabled !== false) {
@@ -308,13 +288,13 @@ if (config.search && config.search.enabled !== false) {
     try {
       if (config.search.rebuildOnStart) {
         const { count, indexFile } = await semanticIndexer.buildIndex();
-        log('success', `Rebuilt semantic index (${count} files) at ${indexFile}`);
+        logger.success(`Rebuilt semantic index (${count} files) at ${indexFile}`);
       } else {
         await semanticIndexer.ensureIndex();
-        log('info', 'Semantic index ready');
+        logger.info('Semantic index ready');
       }
     } catch (error) {
-      log('warning', `Semantic index unavailable: ${error.message}`);
+      logger.warn(`Semantic index unavailable: ${error.message}`);
     }
   })();
 }
@@ -331,35 +311,35 @@ const watcher = chokidar.watch(`${config.folders.todo}/*.md`, {
 
 watcher
   .on('add', filePath => {
-    log('info', `New ticket detected: ${path.basename(filePath)}`);
+    logger.info(`New ticket detected: ${path.basename(filePath)}`);
     queue.add(() => processTicket(filePath));
   })
   .on('error', error => {
-    log('error', 'Watcher error:', { error: error.message });
+    logger.error('Watcher error:', { error: error.message });
   });
 
-log('success', '✓ Watcher is ready and monitoring for new tickets');
+logger.success('✓ Watcher is ready and monitoring for new tickets');
 
 // Graceful shutdown
 function gracefulShutdown(signal) {
-  log('info', `Received ${signal}, shutting down gracefully...`);
+  logger.info(`Received ${signal}, shutting down gracefully...`);
   
   watcher.close();
   
   if (server) {
     server.close(() => {
-      log('info', 'Webhook server closed');
+      logger.info('Webhook server closed');
     });
   }
   
   queue.onIdle().then(() => {
-    log('info', 'All pending tasks completed');
+    logger.info('All pending tasks completed');
     process.exit(0);
   });
   
   // Force exit after 30 seconds
   setTimeout(() => {
-    log('warning', 'Forced shutdown after timeout');
+    logger.warn('Forced shutdown after timeout');
     process.exit(1);
   }, 30000);
 }
@@ -369,10 +349,10 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 
 // Handle uncaught errors
 process.on('uncaughtException', (error) => {
-  log('error', 'Uncaught exception:', { error: error.message, stack: error.stack });
+  logger.error('Uncaught exception:', { error: error.message, stack: error.stack });
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  log('error', 'Unhandled rejection:', { reason, promise });
+  logger.error('Unhandled rejection:', { reason, promise });
 });

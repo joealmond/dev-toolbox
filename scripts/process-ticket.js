@@ -4,6 +4,8 @@ const { spawn } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 const specParser = require('./spec-parser');
+const { buildPrompt } = require('./utils/prompt-builder');
+const logger = require('./utils/logger');
 
 // Load configuration
 const config = require('../config.json');
@@ -30,18 +32,18 @@ async function processTicket(filePath, frontMatter, body, taskId) {
           try {
             searchResults = await semanticIndexer.searchForTask(frontMatter, body, { limit: 5 });
             if (searchResults.length) {
-              console.log(`[INFO] Semantic context found: ${searchResults.length} items`);
+              logger.info(`Semantic context found: ${searchResults.length} items`);
             }
           } catch (error) {
-            console.warn(`[WARN] Semantic search skipped: ${error.message}`);
+            logger.warn(`Semantic search skipped: ${error.message}`);
           }
         }
 
         // Construct the prompt for kodu
         const prompt = buildPrompt(frontMatter, body, searchResults);
         
-        console.log(`[INFO] Processing task-${taskId} with model: ${model}`);
-        console.log(`[INFO] Prompt length: ${prompt.length} characters`);
+        logger.info(`Processing task-${taskId} with model: ${model}`);
+        logger.info(`Prompt length: ${prompt.length} characters`);
         
         // Spawn kodu process
         const koduArgs = [
@@ -51,7 +53,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
           '--model', model
         ];
         
-        console.log(`[INFO] Executing: npx ${koduArgs.join(' ')}`);
+        logger.info(`Executing: npx ${koduArgs.join(' ')}`);
         
         const koduProcess = spawn('npx', koduArgs, {
           cwd: path.dirname(filePath),
@@ -79,7 +81,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
         
         koduProcess.on('close', (code) => {
           if (code === 0) {
-            console.log(`[SUCCESS] Task-${taskId} processed successfully`);
+            logger.success(`Task-${taskId} processed successfully`);
             resolve({
               success: true,
               exitCode: code,
@@ -89,7 +91,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
               taskId
             });
           } else {
-            console.error(`[ERROR] Task-${taskId} failed with exit code ${code}`);
+            logger.error(`Task-${taskId} failed with exit code ${code}`);
             resolve({
               success: false,
               exitCode: code,
@@ -103,7 +105,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
         });
         
         koduProcess.on('error', (error) => {
-          console.error(`[ERROR] Failed to spawn kodu process:`, error.message);
+          logger.error(`Failed to spawn kodu process: ${error.message}`);
           resolve({
             success: false,
             error: error.message,
@@ -115,7 +117,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
         
         // Set timeout for long-running processes
         const timeout = setTimeout(() => {
-          console.error(`[ERROR] Task-${taskId} timed out after ${config.ollama.timeout}ms`);
+          logger.error(`Task-${taskId} timed out after ${config.ollama.timeout}ms`);
           koduProcess.kill('SIGTERM');
           
           resolve({
@@ -132,7 +134,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
         });
         
       } catch (error) {
-        console.error(`[ERROR] Exception in processTicket:`, error.message);
+        logger.error(`Exception in processTicket: ${error.message}`);
         resolve({
           success: false,
           error: error.message,
@@ -142,130 +144,6 @@ async function processTicket(filePath, frontMatter, body, taskId) {
       }
     })();
   });
-}
-
-/**
- * Build a comprehensive prompt for kodu from the task details
- * @param {object} frontMatter - Task metadata
- * @param {string} body - Task body content
- * @returns {string} - Formatted prompt
- */
-function buildPrompt(frontMatter, body, searchResults = []) {
-  // Check if spec mode is enabled
-  const isSpec = frontMatter.spec && frontMatter.spec.enabled === true;
-  let prompt = '';
-
-  if (isSpec) {
-    // SPEC-DRIVEN MODE: Enhanced prompt with requirements and architecture
-    prompt = `# Spec: ${frontMatter.title || 'Task'}\n\n`;
-
-    if (frontMatter.spec.requirements && Array.isArray(frontMatter.spec.requirements)) {
-      prompt += `## Requirements\n`;
-      frontMatter.spec.requirements.forEach((req, index) => {
-        prompt += `${index + 1}. ${req}\n`;
-      });
-      prompt += '\n';
-    }
-
-    if (frontMatter.spec.architecture) {
-      const arch = frontMatter.spec.architecture;
-      if (arch.components || arch.integrations || arch.decisions) {
-        prompt += `## Architecture Context\n`;
-
-        if (arch.components && Array.isArray(arch.components) && arch.components.length > 0) {
-          prompt += `### Components\n`;
-          arch.components.forEach((comp) => {
-            prompt += `- ${comp}\n`;
-          });
-          prompt += '\n';
-        }
-
-        if (arch.integrations && Array.isArray(arch.integrations) && arch.integrations.length > 0) {
-          prompt += `### Integrations\n`;
-          arch.integrations.forEach((int) => {
-            prompt += `- ${int}\n`;
-          });
-          prompt += '\n';
-        }
-
-        if (arch.decisions) {
-          prompt += `### Key Decisions\n${arch.decisions}\n\n`;
-        }
-      }
-    }
-
-    if (frontMatter.acceptanceCriteria && Array.isArray(frontMatter.acceptanceCriteria)) {
-      prompt += `## Acceptance Criteria\n`;
-      frontMatter.acceptanceCriteria.forEach((criterion, index) => {
-        prompt += `${index + 1}. ${criterion}\n`;
-      });
-      prompt += '\n';
-    }
-  } else {
-    // STANDARD MODE: Original prompt format
-    prompt = `# ${frontMatter.title || 'Task'}\n\n`;
-
-    if (frontMatter.description) {
-      prompt += `## Description\n${frontMatter.description}\n\n`;
-    }
-
-    if (frontMatter.acceptanceCriteria && Array.isArray(frontMatter.acceptanceCriteria)) {
-      prompt += `## Acceptance Criteria\n`;
-      frontMatter.acceptanceCriteria.forEach((criterion, index) => {
-        prompt += `${index + 1}. ${criterion}\n`;
-      });
-      prompt += '\n';
-    }
-
-    if (frontMatter.dependencies && Array.isArray(frontMatter.dependencies) && frontMatter.dependencies.length > 0) {
-      prompt += `## Dependencies\n`;
-      prompt += `This task depends on: ${frontMatter.dependencies.join(', ')}\n\n`;
-    }
-
-    if (frontMatter.labels && Array.isArray(frontMatter.labels)) {
-      prompt += `## Labels\n${frontMatter.labels.join(', ')}\n\n`;
-    }
-
-    if (frontMatter.priority) {
-      prompt += `## Priority\n${frontMatter.priority}\n\n`;
-    }
-
-    if (frontMatter.estimatedHours) {
-      prompt += `## Estimated Time\n${frontMatter.estimatedHours} hours\n\n`;
-    }
-  }
-
-  // Add semantic search context if available
-  if (searchResults && searchResults.length > 0) {
-    prompt += `## Related Context (from repository search)\n`;
-    searchResults.slice(0, 5).forEach((result, index) => {
-      const score = typeof result.score === 'number' ? result.score.toFixed(2) : 'n/a';
-      prompt += `${index + 1}. ${result.path} (score: ${score})\n`;
-      if (result.snippet) {
-        prompt += `   Snippet: ${result.snippet}\n`;
-      }
-      prompt += '\n';
-    });
-  }
-
-  // Add body content if present (valid for both modes)
-  if (body && body.trim()) {
-    prompt += isSpec ? `## Implementation Notes\n${body}\n\n` : `## Additional Details\n${body}\n\n`;
-  }
-
-  // Add instructions
-  prompt += `## Instructions\n`;
-  if (isSpec) {
-    prompt += `Implement this specification according to the requirements and architecture above. `;
-    prompt += `Ensure all acceptance criteria are met. `;
-    prompt += `Follow the architecture decisions and use the specified components/integrations. `;
-  } else {
-    prompt += `Please implement this task according to the description and acceptance criteria above. `;
-    prompt += `Make sure all acceptance criteria are met. `;
-  }
-  prompt += `Write clean, well-documented, and tested code. Follow best practices and coding standards.\n`;
-
-  return prompt;
 }
 
 module.exports = processTicket;

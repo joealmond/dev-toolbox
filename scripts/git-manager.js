@@ -163,7 +163,10 @@ async function createGiteaRepo(repoName, description) {
  * @param {string} branch - Branch name
  */
 async function pushWithRetry(git, branch) {
-  const maxRetries = config.git.pushRetries || 3;
+  const maxRetries = Number.isFinite(config.git.pushRetries) ? config.git.pushRetries : 3;
+  const baseDelay = Number.isFinite(config.git.pushRetryDelay) && config.git.pushRetryDelay > 0
+    ? config.git.pushRetryDelay
+    : 1000;
   let attempt = 0;
   
   while (attempt < maxRetries) {
@@ -177,7 +180,7 @@ async function pushWithRetry(git, branch) {
         throw new Error(`Failed to push after ${maxRetries} attempts: ${error.message}`);
       }
       
-      const delay = config.git.pushRetryDelay * Math.pow(2, attempt - 1);
+      const delay = baseDelay * Math.pow(2, attempt - 1);
       console.warn(`[WARN] Push failed (attempt ${attempt}/${maxRetries}), retrying in ${delay}ms...`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }

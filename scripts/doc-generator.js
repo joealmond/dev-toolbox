@@ -4,6 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const Handlebars = require('handlebars');
 const chalk = require('chalk');
+const { appendEntry } = require('./changelog-manager');
 
 // Load configuration
 const config = require('../config.json');
@@ -125,46 +126,10 @@ async function getNextAdrNumber() {
  * @returns {Promise<string>} - Updated changelog path
  */
 async function appendChangelog(task, type = 'feat', description = null) {
-  try {
-    const changelogPath = config.folders.changelog;
-    let content = '';
-
-    try {
-      content = await fs.readFile(changelogPath, 'utf-8');
-    } catch {
-      // File doesn't exist, read template
-      content = await fs.readFile(config.documentation.templates.changelog, 'utf-8');
-    }
-
-    const entryDescription = description || task.description;
-    const changelogEntry = `
-### ${type}: ${task.title}
-
-${entryDescription}
-
-**Task:** [${task.id}](backlog/${task.id})  
-**Processed by:** ${task.model}  
-`;
-
-    // Insert after "## [Unreleased]" section
-    const unreleaseMarker = '## [Unreleased]\n\n';
-    const subMarker = '### Added\n';
-
-    if (content.includes(unreleaseMarker)) {
-      const insertPos = content.indexOf(unreleaseMarker) + unreleaseMarker.length;
-      content = content.slice(0, insertPos) + `#### ${new Date().toISOString().split('T')[0]}\n` + changelogEntry + '\n' + content.slice(insertPos);
-    } else {
-      content = unreleaseMarker + `#### ${new Date().toISOString().split('T')[0]}\n` + changelogEntry + '\n' + content;
-    }
-
-    await fs.mkdir(path.dirname(changelogPath), { recursive: true });
-    await fs.writeFile(changelogPath, content);
-
-    console.log(chalk.green(`✓ Changelog updated: ${changelogPath}`));
-    return changelogPath;
-  } catch (error) {
-    throw new Error(`Failed to update changelog: ${error.message}`);
-  }
+  const entryDescription = description || task.description || 'No description provided';
+  const taskId = task.id || 'unknown';
+  await appendEntry(type, taskId.toString(), task.title || 'Untitled task', entryDescription, { processedBy: task.model });
+  return config.folders.changelog;
 }
 
 /**

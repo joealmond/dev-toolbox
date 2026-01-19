@@ -2,6 +2,10 @@
 
 Automated ticket processing system with **spec-driven development** capabilities. Uses **Kilo Code CLI (kodu)** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
 
+## Documentation
+- Full documentation index: [docs/INDEX.md](docs/INDEX.md)
+- All guides and references live under the [docs/](docs/INDEX.md) folder (install, usage, config, deployment, troubleshooting, security).
+
 ## Key Features
 
 ### 🎯 Spec-Driven Development

@@ -4,6 +4,8 @@ const fs = require('fs').promises;
 const path = require('path');
 const matter = require('gray-matter');
 const chalk = require('chalk');
+const { buildPrompt } = require('./utils/prompt-builder');
+const logger = require('./utils/logger');
 
 /**
  * Parse a spec/task file and extract structured spec object
@@ -66,15 +68,6 @@ function validateSpec(spec) {
     errors.push('Missing acceptanceCriteria');
   }
 
-  // Approval configuration
-  if (spec.approval.code && spec.approval.code.autoApprove === undefined) {
-    // Set default
-    spec.approval.code.autoApprove = false;
-  }
-  if (spec.approval.docs && spec.approval.docs.autoApprove === undefined) {
-    spec.approval.docs.autoApprove = false;
-  }
-
   return {
     valid: errors.length === 0,
     errors
@@ -111,41 +104,7 @@ function isSpecEnabled(frontMatter) {
  * @returns {string} - Enhanced prompt for kodu
  */
 function buildPrompt(spec) {
-  let prompt = spec.body;
-
-  // If spec mode, inject requirements
-  if (spec.isSpec && spec.spec.requirements) {
-    const requirementsText = extractRequirements(spec);
-    prompt = `## Requirements\n${requirementsText}\n\n## Task\n${prompt}`;
-  }
-
-  // If architecture context, inject it
-  if (spec.spec.architecture && Object.keys(spec.spec.architecture).length > 0) {
-    const archContext = [];
-    if (spec.spec.architecture.components && spec.spec.architecture.components.length > 0) {
-      archContext.push(`Components:\n${spec.spec.architecture.components.map(c => `- ${c}`).join('\n')}`);
-    }
-    if (spec.spec.architecture.integrations && spec.spec.architecture.integrations.length > 0) {
-      archContext.push(`Integrations:\n${spec.spec.architecture.integrations.map(i => `- ${i}`).join('\n')}`);
-    }
-    if (spec.spec.architecture.decisions) {
-      archContext.push(`Key Decisions:\n${spec.spec.architecture.decisions}`);
-    }
-
-    if (archContext.length > 0) {
-      prompt += `\n\n## Architecture Context\n${archContext.join('\n\n')}`;
-    }
-  }
-
-  // Add acceptance criteria
-  if (spec.acceptanceCriteria && spec.acceptanceCriteria.length > 0) {
-    const criteria = spec.acceptanceCriteria
-      .map((c, i) => `${i + 1}. ${c}`)
-      .join('\n');
-    prompt += `\n\n## Acceptance Criteria\n${criteria}`;
-  }
-
-  return prompt;
+  return buildPrompt(spec.frontMatter || spec, spec.body || '', []);
 }
 
 /**
@@ -222,7 +181,7 @@ Commands:
         process.exit(1);
     }
   } catch (error) {
-    console.error(chalk.red(`Error: ${error.message}`));
+    logger.error(`Error: ${error.message}`);
     process.exit(1);
   }
 }

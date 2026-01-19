@@ -1,0 +1,413 @@
+{
+  "audit_date": "2026-01-20",
+  "project": "Ticket Processor",
+  "scope": "Project structure, documentation, scripts, and code organization",
+  "overall_health": "MODERATE - Well-structured core with documentation redundancy and some code organization issues",
+  
+  "files_to_delete": [
+    {
+      "file": "PHASES-STATUS.md",
+      "reason": "DUPLICATE - Content largely overlaps with IMPLEMENTATION-SUMMARY.md and PHASE-5-COMPLETION.md. Both describe same implementation phases and milestones.",
+      "priority": "HIGH",
+      "action": "Delete - consolidate phase tracking into IMPLEMENTATION-PROGRESS.md"
+    },
+    {
+      "file": "NEXT-STEPS.md",
+      "reason": "OUTDATED - Describes Phase 6-8 planning that hasn't started. Better to keep phase planning in IMPLEMENTATION-PROGRESS.md. Information about quick validation and getting started is better placed in QUICKSTART-SPEC-DRIVEN.md or INTEGRATION-GUIDE.md",
+      "priority": "HIGH",
+      "action": "Delete - phase planning should be in active development documents, not archived guides"
+    },
+    {
+      "file": "REVIEW-AND-NEXT-STEPS.md",
+      "reason": "DUPLICATE/OUTDATED - Repeats content from IMPLEMENTATION-SUMMARY.md (dated Jan 19, 2026). Contains 'What You Can Do Now' which is better in QUICKSTART. 'Remaining Work' section conflicts with IMPLEMENTATION-PROGRESS.md",
+      "priority": "HIGH",
+      "action": "Delete - consolidate into main progress tracking document"
+    },
+    {
+      "file": "DOCUMENTATION-INDEX.md",
+      "reason": "NEVER CONTAINS CONTENT - Listed in directory but appears to be empty stub. Not found in actual directory listing.",
+      "priority": "MEDIUM",
+      "action": "Delete if empty, or create proper index document"
+    },
+    {
+      "file": "scripts/semantic-indexer.test.js",
+      "reason": "DEAD CODE - Test file with no corresponding test framework configuration in package.json. Tests not integrated into npm test workflow. Appears to be standalone prototype.",
+      "priority": "MEDIUM",
+      "action": "Delete or migrate to proper test suite (jest/mocha) integrated with package.json"
+    },
+    {
+      "file": "scripts/create-from-template.sh",
+      "reason": "REDUNDANT - Overlaps functionality of scripts/create-task.js (interactive) and scripts/create-spec.js. Shell script creates task from template but npm scripts already handle this more elegantly.",
+      "priority": "MEDIUM",
+      "action": "Delete - use Node.js-based create-task.js instead for consistency"
+    },
+    {
+      "file": "scripts/query-search.js",
+      "reason": "DUPLICATE CLI - Provides CLI wrapper around semantic-indexer.search() but npm run search already does this via semantic-indexer.js build/search commands. Redundant entry point.",
+      "priority": "LOW",
+      "action": "Delete - consolidate search CLI into semantic-indexer.js main CLI"
+    }
+  ],
+
+  "files_to_consolidate": [
+    {
+      "files": [
+        "IMPLEMENTATION-SUMMARY.md",
+        "IMPLEMENTATION-PROGRESS.md",
+        "PHASE-5-COMPLETION.md"
+      ],
+      "issue": "THREE separate files tracking implementation phases and completion status. Unclear which is authoritative.",
+      "recommendation": "Create single CHANGELOG.md-style document: IMPLEMENTATION-LOG.md with dated entries for each phase. Move current summaries to docs/archive/. Keep only one active progress tracker.",
+      "action": "CONSOLIDATE into docs/IMPLEMENTATION-LOG.md with sections: Phase 1-5 (completed), Phase 6-8 (in-progress/planned)"
+    },
+    {
+      "files": [
+        "QUICKSTART-SPEC-DRIVEN.md",
+        "INSTALLATION.md",
+        "INTEGRATION-GUIDE.md"
+      ],
+      "issue": "THREE overlapping getting-started documents. INSTALLATION covers macOS/Linux setup, INTEGRATION-GUIDE covers setup+deployment, QUICKSTART covers feature-specific workflow.",
+      "recommendation": "Keep INTEGRATION-GUIDE.md as main guide. Move macOS-specific to docs/SETUP-MACOS.md, Linux-specific to docs/SETUP-LINUX.md. Use QUICKSTART-SPEC-DRIVEN.md only for spec workflow examples.",
+      "action": "Reorganize: root INSTALLATION.md → docs/SETUP-GUIDES/ folder with OS-specific files"
+    },
+    {
+      "files": [
+        "CONFIG.md",
+        "DEPLOYMENT.md",
+        "config.json"
+      ],
+      "issue": "Configuration documentation scattered across multiple files. CONFIG.md documents config.json, DEPLOYMENT.md has its own config section. Hard to find specific settings.",
+      "recommendation": "Keep single source: docs/CONFIGURATION.md that references config.json as authoritative. Use CONFIG.md for detailed explanations of why/what each config does.",
+      "action": "Consolidate into docs/CONFIGURATION.md with links to config.json"
+    },
+    {
+      "files": [
+        "MCP-TOOLS.md (root)",
+        "docs/MCP-TOOLS.md (in docs/)"
+      ],
+      "issue": "DUPLICATE file in two locations (if docs/ version exists). Creates maintenance burden.",
+      "recommendation": "Keep single copy in docs/ folder. Update root README.md to link to docs/MCP-TOOLS.md",
+      "action": "Verify if duplicate exists, delete root copy, keep docs/ version"
+    }
+  ],
+
+  "dead_code": [
+    {
+      "file": "scripts/semantic-indexer.test.js",
+      "description": "Standalone test file not integrated with test framework",
+      "evidence": "Referenced in package.json: 'npm test' → 'npm run test:search' → 'node scripts/semantic-indexer.test.js', but no test assertion library or proper test framework configured.",
+      "impact": "MEDIUM - Tests exist but aren't discoverable, maintainable, or part of CI/CD",
+      "recommendation": "Migrate to Jest with proper test suite or delete if redundant"
+    },
+    {
+      "file": "scripts/create-from-template.sh",
+      "description": "Shell script for task creation that duplicates Node.js functionality",
+      "evidence": "Creates tasks via Backlog.md CLI template, but scripts/create-task.js does same with interactive Node.js interface",
+      "impact": "LOW - Works but inconsistent with project's Node.js-based tooling",
+      "recommendation": "Delete - use create-task.js which integrates better with npm scripts"
+    },
+    {
+      "file": "scripts/bulk-create.js",
+      "description": "Bulk task import tool that requires external JSON file preparation",
+      "evidence": "Takes tasks.json input via CLI but not exposed in npm scripts. No documentation about usage. Appears experimental.",
+      "impact": "LOW - Limited visibility, unclear if actively used",
+      "recommendation": "Either document and integrate into npm scripts, or delete if unused"
+    },
+    {
+      "file": "scripts/query-search.js",
+      "description": "Redundant CLI wrapper for semantic-indexer search",
+      "evidence": "Wraps semantic-indexer.search() but npm scripts already provide 'npm run search' command. Separate entry point adds confusion.",
+      "impact": "LOW - Two ways to do same thing",
+      "recommendation": "Delete - consolidate into semantic-indexer.js main CLI"
+    },
+    {
+      "file": "scripts/git-auto-commit.js",
+      "description": "Auto-commit utility with unclear integration",
+      "evidence": "Not documented in main guides. Exposed via npm scripts (git:commit, git:commit-push) but relationship to git-manager.js unclear.",
+      "impact": "MEDIUM - Two git utilities may cause confusion",
+      "recommendation": "Clarify division: git-manager.js for Gitea/PR operations, git-auto-commit.js for simple commits. Add documentation."
+    },
+    {
+      "file": "systemd/ticket-processor.service",
+      "description": "Systemd service file with no documentation or setup integration",
+      "evidence": "Located in systemd/ folder but not referenced in INSTALLATION.md or npm scripts. Unclear if production-ready.",
+      "impact": "LOW - Orphaned deployment artifact",
+      "recommendation": "Document in DEPLOYMENT.md or delete if using PM2 instead"
+    },
+    {
+      "file": "ecosystem.config.js",
+      "description": "PM2 configuration file with no active integration or documentation",
+      "evidence": "Exists but not referenced in package.json scripts or documentation. npm scripts use direct node commands instead.",
+      "impact": "LOW - Dead configuration",
+      "recommendation": "Document PM2 usage in DEPLOYMENT.md or standardize on direct node commands"
+    }
+  ],
+
+  "refactoring_needed": [
+    {
+      "area": "Script Organization",
+      "issue": "24 scripts in scripts/ folder with unclear categorization",
+      "current_structure": [
+        "Core processing: watcher.js, process-ticket.js, start.js",
+        "Task creation: create-task.js, create-spec.js, bulk-create.js, create-from-template.sh",
+        "Documentation: doc-generator.js, changelog-manager.js, approval-handler.js",
+        "Git/Integration: git-manager.js, git-auto-commit.js",
+        "Search/Index: semantic-indexer.js, query-search.js",
+        "Service management: service-*.sh, install-service.sh",
+        "Deployment: push-*.sh",
+        "Utilities: spec-parser.js, mcp-server.js, start.js"
+      ],
+      "recommendation": "Reorganize into subdirectories: scripts/{core, task-creation, documentation, git, search, deployment, utils}",
+      "priority": "MEDIUM",
+      "effort": "2-3 hours"
+    },
+    {
+      "area": "Shell Script Consolidation",
+      "issue": "12 shell scripts scattered in scripts/, many doing similar tasks (service start/stop/restart/status)",
+      "current_issues": [
+        "service-start.sh, service-stop.sh, service-restart.sh, service-status.sh could be one script",
+        "push-local.sh and push-to-registry.sh both handle container registry operations",
+        "create-from-template.sh overlaps with create-task.js"
+      ],
+      "recommendation": "Consolidate to 3-4 master scripts: service-manager.sh, registry-manager.sh, setup.sh",
+      "priority": "MEDIUM",
+      "effort": "2-3 hours"
+    },
+    {
+      "area": "Import/Require Organization",
+      "issue": "Scripts individually import and configure config.json, logging, environment. No centralized configuration module.",
+      "example": "Each script requires('../config.json'), sets up logging independently, requires('dotenv')",
+      "recommendation": "Create scripts/lib/config.js that exports loaded config, logger, and utility functions. Reduces duplication.",
+      "priority": "MEDIUM",
+      "effort": "2-3 hours"
+    },
+    {
+      "area": "Test Coverage",
+      "issue": "Only semantic-indexer.test.js exists, not integrated with test framework",
+      "recommendation": "Set up Jest, migrate existing test to Jest format, create test directories for core modules (spec-parser, doc-generator, approval-handler)",
+      "priority": "MEDIUM",
+      "effort": "4-6 hours"
+    },
+    {
+      "area": "Error Handling",
+      "issue": "Inconsistent error handling across scripts (some use try-catch, some use callbacks, some silent failures)",
+      "recommendation": "Standardize on async-await with comprehensive error handling. Create error utility module.",
+      "priority": "MEDIUM",
+      "effort": "3-4 hours"
+    }
+  ],
+
+  "documentation_reorganization": {
+    "current_issues": [
+      "26 markdown files at root level - too many, hard to navigate",
+      "Duplicate content across IMPLEMENTATION-SUMMARY.md, PHASES-STATUS.md, REVIEW-AND-NEXT-STEPS.md",
+      "Setup guides scattered (INSTALLATION.md, INTEGRATION-GUIDE.md, QUICKSTART-SPEC-DRIVEN.md)",
+      "Configuration docs fragmented (CONFIG.md in root, DEPLOYMENT.md, config.json comments)",
+      "No clear hierarchy or navigation"
+    ],
+    
+    "proposed_structure": {
+      "root_level": [
+        "README.md - Main overview and quick links (KEEP, simplify)",
+        "CONTRIBUTING.md - Contribution guidelines (KEEP)",
+        ".env.example - Example environment (ADD)",
+        "config.example.json - Example config (ADD)"
+      ],
+      
+      "docs/": {
+        "SETUP.md": "Consolidated setup guide (from INSTALLATION.md + INTEGRATION-GUIDE.md)",
+        "QUICK-START.md": "Quick feature walkthrough (from QUICKSTART-SPEC-DRIVEN.md, simplified)",
+        "USAGE.md": "Task types and workflows (MOVE from root, expand)",
+        "SPECIFICATION.md": "Spec format reference (from SPEC-REFERENCE.md)",
+        "APPROVAL-WORKFLOW.md": "Approval system (MOVE from root)",
+        "MCP-TOOLS.md": "MCP API reference (MOVE from root)",
+        "CONFIGURATION.md": "Configuration guide (from CONFIG.md + DEPLOYMENT.md)",
+        "TROUBLESHOOTING.md": "Common issues (MOVE from root)",
+        "DEPLOYMENT.md": "Production deployment (MOVE from root)",
+        "SECURITY.md": "Security considerations (MOVE from root)",
+        
+        "guides/": {
+          "SETUP-MACOS.md": "macOS-specific setup",
+          "SETUP-LINUX.md": "Linux-specific setup",
+          "SETUP-DEVCONTAINER.md": "Dev container setup"
+        },
+        
+        "api/": {
+          "SCRIPTS.md": "Script reference documentation",
+          "CONFIG-REFERENCE.md": "Detailed config.json schema"
+        },
+        
+        "archive/": {
+          "IMPLEMENTATION-LOG.md": "Historical phase completion records",
+          "FUTURE-IMPROVEMENTS.md": "Planned enhancements (MOVE from root)"
+        }
+      }
+    },
+    
+    "migration_plan": {
+      "phase_1_delete": [
+        "PHASES-STATUS.md",
+        "NEXT-STEPS.md", 
+        "REVIEW-AND-NEXT-STEPS.md",
+        "DOCUMENTATION-INDEX.md"
+      ],
+      
+      "phase_2_move": [
+        "INSTALLATION.md → docs/SETUP.md (merge with INTEGRATION-GUIDE.md)",
+        "INTEGRATION-GUIDE.md → docs/guides/ (split by OS or keep as master setup)",
+        "QUICKSTART-SPEC-DRIVEN.md → docs/QUICK-START.md",
+        "SPEC-REFERENCE.md → docs/SPECIFICATION.md",
+        "APPROVAL-WORKFLOW.md → docs/APPROVAL-WORKFLOW.md",
+        "MCP-TOOLS.md → docs/MCP-TOOLS.md",
+        "CONFIG.md → docs/CONFIGURATION.md (merge with DEPLOYMENT sections)",
+        "TROUBLESHOOTING.md → docs/TROUBLESHOOTING.md",
+        "DEPLOYMENT.md → docs/DEPLOYMENT.md",
+        "SECURITY.md → docs/SECURITY.md",
+        "USAGE.md → docs/USAGE.md"
+      ],
+      
+      "phase_3_consolidate": [
+        "Create docs/archive/IMPLEMENTATION-LOG.md with dated phase summaries",
+        "Consolidate IMPLEMENTATION-SUMMARY.md, IMPLEMENTATION-PROGRESS.md, PHASE-5-COMPLETION.md into one file"
+      ],
+      
+      "phase_4_simplify_root": [
+        "README.md - Keep brief, link to docs/SETUP.md and docs/QUICK-START.md",
+        "Add .env.example",
+        "Add config.example.json"
+      ]
+    },
+
+    "new_documentation_needed": [
+      {
+        "file": "docs/SCRIPTS.md",
+        "purpose": "Reference for all scripts in scripts/ folder with purpose, usage, integration",
+        "content": "Categorized list of all 24 scripts with CLIs, integrations, and when to use"
+      },
+      {
+        "file": "docs/ARCHITECTURE.md",
+        "purpose": "System design overview, component interactions",
+        "content": "How watcher.js, process-ticket.js, approval-handler.js, doc-generator.js work together"
+      },
+      {
+        "file": "docs/guides/CONTRIBUTING-CODE.md",
+        "purpose": "Developer workflow for contributing code",
+        "content": "How to add new scripts, integrate with watcher, add npm scripts, testing standards"
+      }
+    ]
+  },
+
+  "code_cleanup": [
+    {
+      "category": "Shell Script Consolidation",
+      "items": [
+        {
+          "action": "Consolidate service scripts",
+          "from": ["scripts/service-start.sh", "scripts/service-stop.sh", "scripts/service-restart.sh", "scripts/service-status.sh"],
+          "to": "scripts/service-manager.sh",
+          "usage": "node scripts/service-manager.sh start|stop|restart|status",
+          "effort": "1 hour"
+        },
+        {
+          "action": "Consolidate registry scripts",
+          "from": ["scripts/push-local.sh", "scripts/push-to-registry.sh"],
+          "to": "scripts/registry-push.sh",
+          "usage": "bash scripts/registry-push.sh [local|registry] [args...]",
+          "effort": "1 hour"
+        }
+      ]
+    },
+    {
+      "category": "JavaScript Consolidation",
+      "items": [
+        {
+          "action": "Consolidate task creation",
+          "from": ["scripts/create-task.js", "scripts/create-spec.js", "scripts/create-from-template.sh"],
+          "to": "scripts/create-task.js (enhanced)",
+          "method": "Add --spec flag to create-task.js, remove separate create-spec.js",
+          "usage": "npm run create-task -- --spec",
+          "effort": "2 hours"
+        },
+        {
+          "action": "Consolidate search CLI",
+          "from": ["scripts/query-search.js", "scripts/semantic-indexer.js search command"],
+          "to": "scripts/semantic-indexer.js (single CLI)",
+          "method": "Keep only semantic-indexer.js, delete query-search.js",
+          "usage": "npm run search <query>",
+          "effort": "30 minutes"
+        },
+        {
+          "action": "Consolidate git operations",
+          "from": ["scripts/git-manager.js", "scripts/git-auto-commit.js"],
+          "review": "Determine clear separation: PR operations vs simple commits",
+          "recommendation": "Keep separate but document division clearly",
+          "effort": "1 hour (review + docs)"
+        }
+      ]
+    },
+    {
+      "category": "Code Organization",
+      "items": [
+        {
+          "action": "Create centralized config module",
+          "file": "scripts/lib/config.js",
+          "exports": ["config", "logger", "getEnv()", "validateConfig()"],
+          "benefit": "Reduces duplicate require/setup in each script",
+          "effort": "1 hour"
+        },
+        {
+          "action": "Create utilities module",
+          "file": "scripts/lib/utils.js",
+          "exports": ["findTaskFile()", "extractTaskId()", "parseFrontMatter()", "formatOutput()"],
+          "benefit": "Shared utility functions instead of duplication",
+          "effort": "2 hours"
+        },
+        {
+          "action": "Create error handling module",
+          "file": "scripts/lib/errors.js",
+          "exports": ["TaskNotFoundError", "ValidationError", "ProcessingError", "handleError()"],
+          "benefit": "Consistent error handling across scripts",
+          "effort": "1 hour"
+        }
+      ]
+    },
+    {
+      "category": "Testing",
+      "items": [
+        {
+          "action": "Set up Jest test framework",
+          "config": "Create jest.config.js, update package.json",
+          "migrate": "Move semantic-indexer.test.js to Jest format",
+          "add": "Test suites for spec-parser.js, doc-generator.js, approval-handler.js",
+          "effort": "4-6 hours"
+        }
+      ]
+    }
+  ],
+
+  "summary": {
+    "total_files_at_root": 26,
+    "files_to_remove": 7,
+    "files_to_consolidate": 4,
+    "documentation_files": 18,
+    "script_files": 24,
+    "shell_scripts": 12,
+    "configuration_complexity": "MODERATE - 3 config files (config.json, ecosystem.config.js, .env) with overlapping documentation",
+    "documentation_redundancy_ratio": "35%",
+    "estimated_cleanup_time": "12-16 hours",
+    "priority_recommendations": [
+      "1. Delete 7 duplicate/outdated files (2-3 hours)",
+      "2. Consolidate 3-4 documentation groups into organized structure (3-4 hours)",
+      "3. Create scripts/lib/ utilities (3-4 hours)",
+      "4. Reorganize scripts/ into subdirectories (2-3 hours)",
+      "5. Set up testing framework (4-6 hours)"
+    ],
+    "risk_assessment": "LOW - Changes are organizational, no core functionality impact if done carefully",
+    "quick_wins": [
+      "Delete PHASES-STATUS.md, NEXT-STEPS.md, REVIEW-AND-NEXT-STEPS.md (immediate value)",
+      "Delete query-search.js and create-from-template.sh (clean up dead code)",
+      "Create .env.example and config.example.json (improve onboarding)",
+      "Add docs/ARCHITECTURE.md (critical documentation gap)"
+    ]
+  }
+}
