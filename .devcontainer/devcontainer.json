@@ -3,6 +3,10 @@
   "dockerFile": "./Dockerfile",
   "context": "..",
   "remoteUser": "node",
+  "dotfiles": {
+    "repository": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git",
+    "installCommand": "chezmoi init --apply"
+  },
   "runArgs": [
     "--add-host", "host.docker.internal:host-gateway",
     "-v", "/var/run/docker.sock:/var/run/docker.sock"
@@ -32,6 +36,7 @@
         "files.eol": "\n"
       },
       "extensions": [
+
         "ms-azuretools.vscode-docker",
         "github.vscode-pull-request-github",
         "dbaeumer.vscode-eslint",

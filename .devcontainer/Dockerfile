@@ -7,6 +7,7 @@ RUN apt-get update \
     ca-certificates \
     bash \
     openssh-client \
+    zstd \
   && rm -rf /var/lib/apt/lists/* \
   && curl -fsSL https://ollama.com/install.sh | sh \
   && curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
