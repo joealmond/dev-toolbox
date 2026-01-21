@@ -33,7 +33,9 @@
     "vscode": {
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
-        "files.eol": "\n"
+        "files.eol": "\n",
+        "code-runner.runInTerminal": true,
+        "code-runner.saveFileBeforeRun": true
       },
       "extensions": [
 
@@ -41,6 +43,7 @@
         "github.vscode-pull-request-github",
         "dbaeumer.vscode-eslint",
         "kilocode.kilo-code",
+        "formulahendry.code-runner",
         "github.copilot",
         "github.copilot-chat"
       ]

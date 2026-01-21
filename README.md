@@ -38,6 +38,8 @@ Automated ticket processing system with **spec-driven development** capabilities
 - **Interactive CLI** - Approval workflow and task management
 - **Comprehensive docs** - 2,200+ lines of guides and references
 - **Dev container** - Fully automated development environment
+ - **VS Code tasks** - Approve code/docs directly from editor
+ - **Run code inline** - Right-click → Run Code (Code Runner)
 
 ## Architecture
 
@@ -93,6 +95,12 @@ npm run spec:create
 # 4. Documentation approval needed
 # 5. Auto-complete and archive
 ```
+
+### VS Code Quick Actions
+- **Run generated code**: Open file → right-click → Run Code.
+- **Approve from editor**: Terminal → Run Task → “Approve Code for Current Spec” or “Approve Docs for Current Spec”.
+  - Tasks live at [.vscode/tasks.json](.vscode/tasks.json).
+  - Devcontainer settings enable terminal output and auto-save. See [.devcontainer/devcontainer.json](.devcontainer/devcontainer.json#L19-L27).
 
 ### Use Cases
 - **Bug fixes** - Simple tasks, no approval
