@@ -6,6 +6,11 @@ Automated ticket processing system with **spec-driven development** capabilities
 - Full documentation index: [docs/INDEX.md](docs/INDEX.md)
 - All guides and references live under the [docs/](docs/INDEX.md) folder (install, usage, config, deployment, troubleshooting, security).
 
+### 🖥️ Host Machine Setup (Linux + RTX 3090)
+- **[HOST-MACHINE-REFERENCE.md](docs/operations/HOST-MACHINE-REFERENCE.md)** - System specs, storage, installed software
+- **[HOST-SETUP-PLAN.md](docs/operations/HOST-SETUP-PLAN.md)** - Step-by-step setup checklist
+- **[IMPROVEMENT-ROADMAP1.md](docs/guides/IMPROVEMENT-ROADMAP1.md)** - GPU optimization, Obsidian integration, modularity
+
 ## Key Features
 
 ### 🎯 Spec-Driven Development

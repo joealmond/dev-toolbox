@@ -114,11 +114,39 @@ for tool in pm2 backlog kilocode; do
 done
 
 # Verify Ollama connection with timeout
+# Try both Podman and Docker hostnames
 echo "🔍 Checking Ollama connection..."
-if timeout 3 curl -s "${OLLAMA_HOST:-http://host.docker.internal:11434}/api/tags" >/dev/null 2>&1; then
-    echo "✅ Ollama reachable at ${OLLAMA_HOST:-http://host.docker.internal:11434}"
-else
-    echo "⚠️  Cannot reach Ollama (will retry at runtime)"
+
+OLLAMA_URLS=(
+    "${OLLAMA_HOST:-http://host.containers.internal:11434}"
+    "http://host.containers.internal:11434"
+    "http://host.docker.internal:11434"
+    "http://172.17.0.1:11434"
+)
+
+OLLAMA_CONNECTED=false
+for url in "${OLLAMA_URLS[@]}"; do
+    if timeout 3 curl -s "${url}/api/tags" >/dev/null 2>&1; then
+        echo "✅ Ollama reachable at ${url}"
+        OLLAMA_CONNECTED=true
+        
+        # Show available models
+        echo "   📋 Available models:"
+        curl -s "${url}/api/tags" | jq -r '.models[].name' 2>/dev/null | head -5 | while read model; do
+            echo "      - $model"
+        done || echo "      (use 'ollama list' on host to see models)"
+        
+        # Export for later use
+        export OLLAMA_HOST="${url}"
+        export OLLAMA_API_BASE="${url}"
+        break
+    fi
+done
+
+if [ "$OLLAMA_CONNECTED" = false ]; then
+    echo "⚠️  Cannot reach Ollama at any known address"
+    echo "   Tried: ${OLLAMA_URLS[*]}"
+    echo "   Make sure Ollama is running on host with: OLLAMA_HOST=0.0.0.0:11434"
 fi
 
 # Install project dependencies

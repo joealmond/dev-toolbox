@@ -7,38 +7,62 @@
     "repository": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git",
     "installCommand": "chezmoi init --apply"
   },
+  
+  // Podman + Docker compatibility
+  // Works with both container runtimes
   "runArgs": [
-    "--add-host", "host.docker.internal:host-gateway",
+    // Podman: preserve user ID mapping
+    "--userns=keep-id",
+    // Podman: disable SELinux labeling (fixes permission issues)
+    "--security-opt=label=disable",
+    // Both: add host gateway for Ollama access
+    "--add-host=host.containers.internal:host-gateway",
+    "--add-host=host.docker.internal:host-gateway",
+    // Docker only: mount docker socket (ignored by Podman)
     "-v", "/var/run/docker.sock:/var/run/docker.sock"
   ],
+  
   "mounts": [
-    // Mount SSH keys from host for authentication (read-write so container can append SSH config)
+    // Mount SSH keys from host for authentication
     "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind",
     // Mount local dotfiles directory for chezmoi
     "source=${localEnv:HOME}/dev/dev01dot,target=/workspaces/dev01dot,type=bind,readonly"
     // Uncomment when host ~/.cloudflared exists (for SSH tunneling via cloudflared)
     // "source=${localEnv:HOME}/.cloudflared,target=/home/node/.cloudflared,type=bind,readonly"
   ],
+  
+  // Persist npm cache across rebuilds
+  // "mounts": [
+  //   "type=volume,source=ticket-processor-npm-cache,target=/home/node/.npm"
+  // ],
+  
   "forwardPorts": [3000, 3001, 3002],
   "postCreateCommand": "bash .devcontainer/setup-tools.sh && npm install",
   "postStartCommand": "bash .devcontainer/init-scripts/build-index.sh && bash .devcontainer/scripts/pm2-run.sh",
+  
   "remoteEnv": {
     "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git",
-    "OLLAMA_HOST": "http://host.docker.internal:11434"
+    // Ollama: try Podman host first, fallback to Docker host
+    "OLLAMA_HOST": "http://host.containers.internal:11434",
+    "OLLAMA_API_BASE": "http://host.containers.internal:11434"
   },
+  
   "containerEnv": {
-    "OLLAMA_HOST": "http://host.docker.internal:11434"
+    "OLLAMA_HOST": "http://host.containers.internal:11434",
+    "OLLAMA_API_BASE": "http://host.containers.internal:11434"
   },
+  
   "customizations": {
     "vscode": {
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "files.eol": "\n",
         "code-runner.runInTerminal": true,
-        "code-runner.saveFileBeforeRun": true
+        "code-runner.saveFileBeforeRun": true,
+        // Tell VS Code to use Podman on Linux
+        "dev.containers.dockerPath": "podman"
       },
       "extensions": [
-
         "ms-azuretools.vscode-docker",
         "github.vscode-pull-request-github",
         "dbaeumer.vscode-eslint",

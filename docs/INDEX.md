@@ -25,11 +25,16 @@ Complete guide to Ticket Processor documentation and resources.
 - [operations/DEPLOYMENT.md](operations/DEPLOYMENT.md) - Deployment guide
 - [operations/TROUBLESHOOTING.md](operations/TROUBLESHOOTING.md) - Common issues and solutions
 - [operations/SECURITY.md](operations/SECURITY.md) - Security review and hardening
+- [operations/HOST-MACHINE-REFERENCE.md](operations/HOST-MACHINE-REFERENCE.md) - Linux host system specs
+- [operations/HOST-SETUP-PLAN.md](operations/HOST-SETUP-PLAN.md) - Host setup checklist
 - [operations/DOCKER-REGISTRY-PUSH.md](operations/DOCKER-REGISTRY-PUSH.md) - Docker registry push guide
 - [operations/LOCAL-REGISTRY-PUSH.md](operations/LOCAL-REGISTRY-PUSH.md) - Local registry push guide
 - [operations/GITEA-CONTAINER-REGISTRY-SETUP.md](operations/GITEA-CONTAINER-REGISTRY-SETUP.md) - Gitea container registry setup
 - [operations/GITEA-REGISTRY-SETUP.md](operations/GITEA-REGISTRY-SETUP.md) - Gitea registry setup
 - [operations/FUTURE_IMPROVEMENTS.md](operations/FUTURE_IMPROVEMENTS.md) - Planned improvements
+
+### Improvement Planning
+- [guides/IMPROVEMENT-ROADMAP1.md](guides/IMPROVEMENT-ROADMAP1.md) - GPU optimization, Obsidian, modularity
 
 ### Contributing
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - How to contribute
