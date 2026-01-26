@@ -11,6 +11,7 @@ Complete guide to Ticket Processor documentation and resources.
 
 ### Development & Integration
 - [guides/INTEGRATION-GUIDE.md](guides/INTEGRATION-GUIDE.md) - Spec-driven development setup
+- [guides/EXTERNAL-PROJECT-SETUP.md](guides/EXTERNAL-PROJECT-SETUP.md) - Use tooling with external projects
 - [guides/SPEC-REFERENCE.md](guides/SPEC-REFERENCE.md) - Spec file format reference
 - [guides/APPROVAL-WORKFLOW.md](guides/APPROVAL-WORKFLOW.md) - Approval process details
 

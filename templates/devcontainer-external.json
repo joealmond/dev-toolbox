@@ -1,0 +1,87 @@
+{
+  "name": "{{PROJECT_NAME}}",
+  
+  // Use the ticket-processor Dockerfile for tooling
+  // Replace {{TOOLING_ROOT}} with the absolute path to ticket-processor
+  "dockerFile": "{{TOOLING_ROOT}}/.devcontainer/Dockerfile",
+  "context": "{{TOOLING_ROOT}}",
+  
+  // Your app is the main workspace - clean, no tooling files visible
+  "workspaceFolder": "/workspaces/{{PROJECT_NAME}}",
+  
+  "remoteUser": "node",
+  
+  // Podman + Docker compatibility
+  "runArgs": [
+    "--userns=keep-id",
+    "--security-opt=label=disable",
+    "--add-host=host.containers.internal:host-gateway",
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+  
+  "mounts": [
+    // Your app code - this is the main workspace
+    "source=${localWorkspaceFolder},target=/workspaces/{{PROJECT_NAME}},type=bind",
+    
+    // Mount tooling scripts (read-only, hidden from your app)
+    "source={{TOOLING_ROOT}}/scripts,target=/opt/tooling/scripts,type=bind,readonly",
+    "source={{TOOLING_ROOT}}/config.json,target=/opt/tooling/config.json,type=bind,readonly",
+    "source={{TOOLING_ROOT}}/templates,target=/opt/tooling/templates,type=bind,readonly",
+    "source={{TOOLING_ROOT}}/package.json,target=/opt/tooling/package.json,type=bind,readonly",
+    
+    // Backlog folder for task processing (shared across projects)
+    "source={{TOOLING_ROOT}}/backlog,target=/opt/tooling/backlog,type=bind",
+    
+    // SSH keys for git operations
+    "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,readonly"
+  ],
+  
+  "remoteEnv": {
+    "OLLAMA_HOST": "http://host.containers.internal:11434",
+    "OLLAMA_API_BASE": "http://host.containers.internal:11434",
+    "TOOLING_HOME": "/opt/tooling",
+    "PATH": "/opt/tooling/scripts:${containerEnv:PATH}"
+  },
+  
+  "containerEnv": {
+    "OLLAMA_HOST": "http://host.containers.internal:11434",
+    "OLLAMA_API_BASE": "http://host.containers.internal:11434",
+    "TOOLING_HOME": "/opt/tooling"
+  },
+  
+  "postCreateCommand": "cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
+  
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "files.eol": "\n",
+        "code-runner.runInTerminal": true,
+        "code-runner.saveFileBeforeRun": true,
+        "dev.containers.dockerPath": "podman"
+      },
+      "extensions": [
+        "kilocode.kilo-code",
+        "github.copilot",
+        "github.copilot-chat",
+        "dbaeumer.vscode-eslint",
+        "formulahendry.code-runner"
+      ]
+    }
+  },
+  
+  "portsAttributes": {
+    "3000": {
+      "label": "App Server",
+      "onAutoForward": "notify"
+    },
+    "3001": {
+      "label": "Webhook Server",
+      "onAutoForward": "silent"
+    },
+    "3002": {
+      "label": "MCP Server", 
+      "onAutoForward": "silent"
+    }
+  }
+}

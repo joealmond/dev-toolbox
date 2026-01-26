@@ -178,6 +178,50 @@ This project includes a **fully configured devcontainer** with:
 
 **Detailed Setup:** See [INTEGRATION-GUIDE.md](./INTEGRATION-GUIDE.md)
 
+---
+
+## 🔧 Use Tooling with External Projects
+
+Use ticket-processor as a **hidden tooling layer** for any project. Your app stays clean - no tooling files visible!
+
+### Quick Setup
+
+```bash
+# Create a new project with tooling
+./scripts/new-project.sh my-new-api
+
+# With project type
+./scripts/new-project.sh my-python-app --type python
+
+# At specific location
+./scripts/new-project.sh my-app ~/work/my-app
+```
+
+### What You Get
+
+```
+Your Project (Clean!)              Container (Hidden Tooling)
+──────────────────────             ─────────────────────────
+📁 my-app/                         /workspaces/my-app/
+  📁 src/                            📁 src/
+  📄 package.json                    📄 package.json
+  📁 .devcontainer/                
+                                   /opt/tooling/  ← In $PATH
+                                     📁 scripts/
+                                     📁 templates/
+```
+
+### Available Commands (inside container)
+
+| Command | Description |
+|---------|-------------|
+| `create-task.js` | Create a new task |
+| `create-spec.js` | Create a spec-driven task |
+| `watcher.js` | Start the task processor |
+| `approval-handler.js` | Manage approvals |
+
+**Full Guide:** [docs/guides/EXTERNAL-PROJECT-SETUP.md](docs/guides/EXTERNAL-PROJECT-SETUP.md)
+
 ## Quick Start (Standalone/Host Machine)
 
 ### Prerequisites

@@ -7,6 +7,7 @@
     "start": "node scripts/start.js",
     "watcher": "node scripts/watcher.js",
     "create-task": "node scripts/create-task.js",
+    "new-project": "bash scripts/new-project.sh",
     "install-service": "bash scripts/install-service.sh",
     "mcp": "node scripts/mcp-server.js",
     "mcp:dev": "nodemon scripts/mcp-server.js",
