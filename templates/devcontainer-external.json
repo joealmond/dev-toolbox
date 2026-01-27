@@ -30,6 +30,9 @@
     "source={{TOOLING_ROOT}}/templates,target=/opt/tooling/templates,type=bind,readonly",
     "source={{TOOLING_ROOT}}/package.json,target=/opt/tooling/package.json,type=bind,readonly",
     
+    // Shared agents - mounted to .github/agents so VS Code Copilot finds them
+    "source={{TOOLING_ROOT}}/agents,target=/workspaces/{{PROJECT_NAME}}/.github/agents,type=bind,readonly",
+    
     // Backlog folder for task processing (shared across projects)
     "source={{TOOLING_ROOT}}/backlog,target=/opt/tooling/backlog,type=bind",
     
