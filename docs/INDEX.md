@@ -1,6 +1,10 @@
 # Documentation Map
 
-Complete guide to Ticket Processor documentation and resources.
+Complete guide to Dev-Toolbox (formerly Ticket Processor) documentation and resources.
+
+## 🎯 Project Vision
+
+- **[PROJECT-VISION.md](PROJECT-VISION.md)** - **START HERE** — Project vision, roadmap, and priorities
 
 ## 📁 Quick Navigation
 
