@@ -1,8 +1,8 @@
 ---
 description: Create new application projects with dev-toolbox as an invisible tooling layer
 name: Dev-Toolbox New App
-tools: ['search', 'editFiles', 'runTerminal', 'readFile']
-model: Claude Sonnet 4
+tools: ['vscode', 'execute', 'read', 'edit', 'search', 'web', 'agent', 'todo', 'file_create', 'file_delete', 'directory_create', 'multi_edit']
+model: Claude Sonnet 4.5
 handoffs:
   - label: Back to Dev-Toolbox
     agent: dev-toolbox
