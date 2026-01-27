@@ -1,27 +1,17 @@
 # Dev-Toolbox DevContainer
 # Compatible with both Docker and Podman
-FROM node:24-bookworm
+# Using Alpine to avoid Podman + Debian GPG signature issues
+FROM node:24-alpine
 
-# The node:24-bookworm image already includes:
-# - git, curl, ca-certificates, bash
-# 
-# We add only what's missing to minimize build issues
-# on Podman + NTFS overlay filesystems
-
-# Fix for Podman GPG signature verification issues with Debian repos
-# Reinstall keyring from snapshot.debian.org (known-good GPG keys)
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    mkdir -p /var/lib/apt/lists/partial && \
-    curl -fsSL https://ftp.debian.org/debian/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.4_all.deb -o /tmp/keyring.deb && \
-    dpkg -i /tmp/keyring.deb && \
-    rm /tmp/keyring.deb && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-      openssh-client \
-      jq \
-      vim && \
-    rm -rf /var/lib/apt/lists/*
+# Alpine-based image needs these packages
+# (Alpine uses apk, not apt - no GPG issues with Podman)
+RUN apk add --no-cache \
+    bash \
+    git \
+    curl \
+    openssh-client \
+    jq \
+    vim
 
 # Install cloudflared for remote tunnel access
 RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
