@@ -9,10 +9,13 @@ FROM node:24-bookworm
 # on Podman + NTFS overlay filesystems
 
 # Fix for Podman GPG signature verification issues with Debian repos
-# Clean apt state before update to prevent corrupted GPG key errors
+# Reinstall keyring from snapshot.debian.org (known-good GPG keys)
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/lib/apt/lists/partial && \
+    curl -fsSL https://ftp.debian.org/debian/pool/main/d/debian-archive-keyring/debian-archive-keyring_2023.4_all.deb -o /tmp/keyring.deb && \
+    dpkg -i /tmp/keyring.deb && \
+    rm /tmp/keyring.deb && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
       openssh-client \
