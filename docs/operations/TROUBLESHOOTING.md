@@ -5,6 +5,8 @@ Common issues and solutions for the Dev-Toolbox system.
 ## Table of Contents
 
 - [Installation Issues](#installation-issues)
+- [VS Code Extension Issues](#vs-code-extension-issues)
+- [Kilo Code CLI Issues](#kilo-code-cli-issues)
 - [Service Issues](#service-issues)
 - [Processing Issues](#processing-issues)
 - [Gitea Issues](#gitea-issues)
@@ -97,6 +99,173 @@ wget https://ollama.com/install.sh -O - | sh
 curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama
 chmod +x /usr/local/bin/ollama
 ```
+
+---
+
+## VS Code Extension Issues
+
+### Copilot Chat Extension Incompatible
+
+**Problem:**
+```
+Chat failed to load because the installed version of the Copilot Chat extension is not
+compatible with this version of Visual Studio Code.
+```
+
+**Cause:** Extensions are cached in the devcontainer. When VS Code updates but the container has old cached extensions, they become incompatible.
+
+**Solution:**
+
+1. **Rebuild container without cache:**
+   - Press `Ctrl+Shift+P` (or `Cmd+Shift+P` on macOS)
+   - Run: `Dev Containers: Rebuild Container Without Cache`
+
+2. **Enable auto-updates in devcontainer.json:**
+   ```json
+   "customizations": {
+     "vscode": {
+       "settings": {
+         "extensions.autoUpdate": true,
+         "extensions.autoCheckUpdates": true
+       }
+     }
+   }
+   ```
+
+3. **Manual extension update:** Click "Show Extension" in the error dialog and update from the Extensions view.
+
+**Prevention:** The dev-toolbox devcontainer template includes auto-update settings by default.
+
+### Kilo Code Extension Not Working
+
+**Problem:** Kilo Code extension installed but not connecting to Ollama.
+
+**Solution:**
+
+1. **Verify Ollama is running on host:**
+   ```bash
+   curl http://localhost:11434/api/tags
+   ```
+
+2. **Test from inside container:**
+   ```bash
+   curl http://host.containers.internal:11434/api/tags
+   ```
+
+3. **Check extension settings:**
+   - Open VS Code Settings (`Ctrl+,`)
+   - Search for "Kilo Code"
+   - Set API Base URL to: `http://host.containers.internal:11434`
+
+---
+
+## Kilo Code CLI Issues
+
+### CLI Prompts for URL and Provider
+
+**Problem:** Running `kilocode` prompts for URL and provider every time.
+
+**Cause:** Kilo Code CLI is not pre-configured with Ollama settings.
+
+**Solution - Pre-configure in Dockerfile:**
+
+The dev-toolbox Dockerfile now pre-configures Kilo Code CLI:
+
+```dockerfile
+# Pre-configure Kilo Code CLI to use Ollama
+RUN mkdir -p /home/node/.kilocode && \
+    echo '{"id":"default","provider":"ollama","ollamaBaseUrl":"http://host.containers.internal:11434","ollamaModelId":"deepseek-coder-v2:latest"}' > /home/node/.kilocode/config.json && \
+    chown -R node:node /home/node/.kilocode
+```
+
+**Solution - Manual configuration:**
+
+1. **Interactive configuration:**
+   ```bash
+   kilocode config
+   # Or use the /config command inside kilocode:
+   kilocode
+   > /config
+   ```
+
+2. **Manual config file:**
+   ```bash
+   mkdir -p ~/.kilocode
+   cat > ~/.kilocode/config.json << 'EOF'
+   {
+     "id": "default",
+     "provider": "ollama",
+     "ollamaBaseUrl": "http://host.containers.internal:11434",
+     "ollamaModelId": "deepseek-coder-v2:latest",
+     "ollamaApiKey": "",
+     "ollamaNumCtx": 8192
+   }
+   EOF
+   ```
+
+### CLI Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `kilocode` | Start interactive mode |
+| `kilocode "prompt"` | Run single prompt |
+| `kilocode config` | Configure provider settings |
+| `/config` | Configure in interactive mode |
+| `/model list` | List available models |
+| `/model select <name>` | Select a model |
+
+### Wrong kilocode Package Installed
+
+**Problem:** Installing `kilocode` from npm results in a placeholder package.
+
+**Cause:** The correct package is `@kilocode/cli`, not `kilocode`.
+
+**Solution:**
+```bash
+# Remove wrong package (if installed)
+npm uninstall -g kilocode
+
+# Install correct package
+npm install -g @kilocode/cli
+
+# Verify
+kilocode --version
+```
+
+### Ollama Connection Failed from CLI
+
+**Problem:**
+```
+Error: Failed to connect to Ollama
+```
+
+**Solutions:**
+
+1. **Check Ollama is running:**
+   ```bash
+   # On host machine
+   systemctl --user status ollama
+   # or
+   ollama list
+   ```
+
+2. **Check correct URL:**
+   - Inside container: `http://host.containers.internal:11434`
+   - On host: `http://localhost:11434`
+
+3. **Check firewall:**
+   ```bash
+   # Ollama should listen on all interfaces
+   curl http://0.0.0.0:11434/api/tags
+   ```
+
+4. **Set OLLAMA_HOST environment:**
+   ```bash
+   export OLLAMA_HOST=0.0.0.0:11434
+   ollama serve
+   ```
+
+---
 
 ### Permission Denied Errors
 

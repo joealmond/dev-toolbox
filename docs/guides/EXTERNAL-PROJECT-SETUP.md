@@ -182,6 +182,35 @@ To use a **project-specific backlog**:
 
 ## Troubleshooting
 
+### VS Code Copilot Extension Incompatible
+
+If you see "Chat failed to load because the installed version of the Copilot Chat extension is not compatible":
+
+1. Rebuild container without cache: `Ctrl+Shift+P` → `Dev Containers: Rebuild Container Without Cache`
+2. The devcontainer template includes auto-update settings to prevent this
+
+### Kilo Code CLI Asking for URL/Provider
+
+The CLI should be pre-configured with Ollama settings. If prompted:
+
+```bash
+# Check if config exists
+cat ~/.kilocode/config.json
+
+# If not, create it:
+mkdir -p ~/.kilocode
+cat > ~/.kilocode/config.json << 'EOF'
+{
+  "id": "default",
+  "provider": "ollama",
+  "ollamaBaseUrl": "http://host.containers.internal:11434",
+  "ollamaModelId": "deepseek-coder-v2:latest"
+}
+EOF
+```
+
+Or use interactive config: `kilocode config`
+
 ### Tools Not Found in PATH
 
 If commands like `create-task.js` aren't found:
@@ -227,6 +256,49 @@ Check that the tooling path exists:
 # On the host machine
 ls -la /home/user/dev/dev-toolbox/.devcontainer/Dockerfile
 ```
+
+## Pre-Configured Tools
+
+The dev-toolbox container includes these pre-configured tools:
+
+| Tool | Purpose | Configuration |
+|------|---------|---------------|
+| **Kilo Code CLI** | AI coding assistant | `~/.kilocode/config.json` - pre-configured for Ollama |
+| **pm2** | Process manager | Run watcher and services |
+| **Git** | Version control | Uses mounted SSH keys |
+| **Node.js 24** | Runtime | Alpine-based for Podman compatibility |
+
+### Kilo Code CLI Commands
+
+```bash
+# Interactive mode
+kilocode
+
+# Single prompt
+kilocode "explain this codebase"
+
+# Configure provider
+kilocode config
+
+# Inside interactive mode:
+/config          # Configure settings
+/model list      # List available models
+/model select    # Select a model
+```
+
+## Shared Agents
+
+The dev-toolbox provides 5 reusable VS Code Copilot agents, automatically mounted to `.github/agents/`:
+
+| Agent | Purpose |
+|-------|---------|
+| `@architect` | System design, architecture decisions |
+| `@planner` | Task breakdown, sprint planning |
+| `@coder` | Implementation, bug fixes, tests |
+| `@reviewer` | Code review, security checks |
+| `@debugger` | Troubleshooting, debugging |
+
+Use them in Copilot Chat: `@architect how should I structure the authentication?`
 
 ## Related Documentation
 

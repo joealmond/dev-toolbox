@@ -116,8 +116,43 @@ lsof -i :3000
 
 # Git blame
 git blame file.js
+
+# Test Ollama connection (inside container)
+curl http://host.containers.internal:11434/api/tags
+
+# Check Kilo Code CLI config
+cat ~/.kilocode/config.json
 ```
+
+## Dev-Toolbox Specific Issues
+
+### Ollama Connection
+```bash
+# From inside container
+curl http://host.containers.internal:11434/api/tags
+
+# Check if Ollama is running on host
+# (run on host machine, not container)
+systemctl --user status ollama
+```
+
+### Kilo Code CLI Issues
+```bash
+# Check config
+cat ~/.kilocode/config.json
+
+# Reconfigure
+kilocode config
+
+# Test with simple prompt
+kilocode "hello"
+```
+
+### Extension Compatibility
+- Use `Dev Containers: Rebuild Container Without Cache` if VS Code extensions fail
+- Check `extensions.autoUpdate` is enabled
 
 ## When to Handoff
 
 - **To Coder**: When fix is identified and needs implementation
+- **To Architect**: When issue reveals design flaw

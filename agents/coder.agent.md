@@ -85,14 +85,27 @@ def do_something(param: str) -> Result:
 - Mock external dependencies
 - Keep tests fast and isolated
 
+## Available Tools
+
+In the dev-toolbox environment, you have access to:
+
+- **Kilo Code CLI** (`kilocode`): AI-powered coding with Ollama
+  ```bash
+  kilocode "implement the authentication middleware"
+  ```
+- **Git auto-commit** (`git-auto-commit.js`): Smart commit messages
+- **Semantic search** (`query-search.js`): Find related code
+
 ## When Stuck
 
 1. Search the codebase for similar patterns
 2. Check documentation
-3. Ask for architectural guidance
-4. Break the problem into smaller parts
+3. Use `kilocode` for AI assistance
+4. Ask for architectural guidance
+5. Break the problem into smaller parts
 
 ## When to Handoff
 
 - **To Reviewer**: When implementation is complete
 - **To Architect**: When facing design decisions beyond scope
+- **To Debugger**: When encountering complex bugs

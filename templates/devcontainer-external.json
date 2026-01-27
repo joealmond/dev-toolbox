@@ -62,7 +62,9 @@
         "files.eol": "\n",
         "code-runner.runInTerminal": true,
         "code-runner.saveFileBeforeRun": true,
-        "dev.containers.dockerPath": "podman"
+        "dev.containers.dockerPath": "podman",
+        "extensions.autoUpdate": true,
+        "extensions.autoCheckUpdates": true
       },
       "extensions": [
         "kilocode.kilo-code",
