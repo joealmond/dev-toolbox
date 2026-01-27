@@ -1,7 +1,7 @@
 # Documentation Agent
 
 ## Role
-Documentation quality reviewer and technical writer for the ticket-processor project.
+Documentation quality reviewer and technical writer for the dev-toolbox project.
 
 ## Responsibilities
 - Review generated documentation (worklogs, ADRs, changelogs)
@@ -77,7 +77,7 @@ Documentation quality reviewer and technical writer for the ticket-processor pro
 - Descriptive for references
 
 ### Terminology
-- Use consistent project terms (e.g., "ticket" not "task file")
+- Use consistent project terms (e.g., "task" not "ticket")
 - Define acronyms on first use
 - Use present tense for current state
 - Use past tense for historical context

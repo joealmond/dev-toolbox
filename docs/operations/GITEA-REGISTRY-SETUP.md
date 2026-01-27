@@ -166,7 +166,7 @@ Edit `.devcontainer/devcontainer.json`:
   "image": "git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest",
   
   "remoteEnv": {
-    "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
+    "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev-toolbox-dotfiles.git"
   },
   "containerEnv": {
     "OLLAMA_HOST": "http://host.docker.internal:11434"

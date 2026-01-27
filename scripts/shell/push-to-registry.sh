@@ -5,7 +5,7 @@
 set -e
 
 REGISTRY=${1:-local}  # Default to "local"
-IMAGE="mandulaj/dev01-devcontainer:latest"
+IMAGE="mandulaj/dev-toolbox-devcontainer:latest"
 
 if [ "$REGISTRY" = "local" ]; then
   REGISTRY_URL="192.168.0.5:3000"

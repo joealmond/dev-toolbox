@@ -592,7 +592,7 @@ node scripts/create-task.js
 bash scripts/create-from-template.sh
 
 # Review in Gitea after processing
-open http://localhost:3000/ticket-processor
+open http://localhost:3000/dev-toolbox
 ```
 
 ### Batch Import from Planning

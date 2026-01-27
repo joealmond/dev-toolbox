@@ -309,7 +309,7 @@ Add to `.devcontainer/devcontainer.json`:
     "vscode": {
       "settings": {
         "mcp.servers": {
-          "ticket-processor": {
+          "dev-toolbox": {
             "command": "node",
             "args": ["scripts/mcp-server.js"]
           }

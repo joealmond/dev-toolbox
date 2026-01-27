@@ -61,8 +61,8 @@ SSH into your server and run:
 
 ```bash
 # Clone repository
-git clone <your-repo-url> ~/ticket-processor
-cd ~/ticket-processor
+git clone <your-repo-url> ~/dev-toolbox
+cd ~/dev-toolbox
 
 # Run installation
 bash install/install-linux.sh
@@ -145,7 +145,7 @@ podman run --rm --security-opt=label=disable \
 Copy and configure environment file:
 
 ```bash
-cd ~/ticket-processor
+cd ~/dev-toolbox
 cp .env.example .env
 nano .env
 ```
@@ -163,10 +163,10 @@ GITEA_SECRET_KEY=$(openssl rand -hex 32)
 GITEA_ADMIN_USER=admin
 GITEA_ADMIN_PASSWORD=$(openssl rand -base64 16)
 GITEA_ADMIN_EMAIL=admin@yourdomain.com
-GITEA_ORG=ticket-processor
+GITEA_ORG=dev-toolbox
 
 # Git
-GIT_USER_NAME=Ticket Processor Bot
+GIT_USER_NAME=Dev-Toolbox Bot
 GIT_USER_EMAIL=bot@yourdomain.com
 
 # Environment
@@ -232,7 +232,7 @@ ollama pull codellama  # Optional backup model
 ### Install as Systemd Service
 
 ```bash
-cd ~/ticket-processor
+cd ~/dev-toolbox
 bash scripts/install-service.sh
 ```
 
@@ -244,19 +244,19 @@ This will:
 ### Start the Service
 
 ```bash
-systemctl --user start ticket-processor
+systemctl --user start dev-toolbox
 ```
 
 ### Verify Service Status
 
 ```bash
-systemctl --user status ticket-processor
+systemctl --user status dev-toolbox
 ```
 
 Expected output:
 ```
-● ticket-processor.service - Ticket Processor
-     Loaded: loaded (/home/user/.config/systemd/user/ticket-processor.service; enabled)
+● dev-toolbox.service - Dev-Toolbox
+     Loaded: loaded (/home/user/.config/systemd/user/dev-toolbox.service; enabled)
      Active: active (running) since...
 ```
 
@@ -264,13 +264,13 @@ Expected output:
 
 ```bash
 # Follow logs in real-time
-journalctl --user -u ticket-processor -f
+journalctl --user -u dev-toolbox -f
 
 # View last 100 lines
-journalctl --user -u ticket-processor -n 100
+journalctl --user -u dev-toolbox -n 100
 
-# View logs since today
-journalctl --user -u ticket-processor --since today
+# View logs from today
+journalctl --user -u dev-toolbox --since today
 ```
 
 ---
@@ -349,11 +349,11 @@ yyy           postgres:15-alpine       Up
 Enable containers to start on boot:
 
 ```bash
-cd ~/ticket-processor/containers
+cd ~/dev-toolbox/containers
 
-# Generate systemd service files
-podman generate systemd --new --files --name ticket-processor-gitea
-podman generate systemd --new --files --name ticket-processor-postgres
+# Generate systemd unit files
+podman generate systemd --new --files --name dev-toolbox-gitea
+podman generate systemd --new --files --name dev-toolbox-postgres
 
 # Move to systemd directory
 mkdir -p ~/.config/systemd/user
@@ -445,7 +445,7 @@ After first start, access Gitea at `http://your-server:3000` and:
 Edit systemd service to add limits:
 
 ```bash
-nano ~/.config/systemd/user/ticket-processor.service
+nano ~/.config/systemd/user/dev-toolbox.service
 ```
 
 Add under `[Service]`:
@@ -536,12 +536,12 @@ podman image prune -a
 # Create backup directory
 mkdir -p ~/backups
 
-# Backup ticket data
-tar -czf ~/backups/tickets-$(date +%Y%m%d).tar.gz \
-  ~/ticket-processor/backlog \
-  ~/ticket-processor/repos \
-  ~/ticket-processor/config.json \
-  ~/ticket-processor/.env
+# Backup task data
+tar -czf ~/backups/dev-toolbox-$(date +%Y%m%d).tar.gz \
+  ~/dev-toolbox/backlog \
+  ~/dev-toolbox/repos \
+  ~/dev-toolbox/config.json \
+  ~/dev-toolbox/.env
 
 # Backup Gitea data (if using volumes)
 podman volume export gitea-data > ~/backups/gitea-data-$(date +%Y%m%d).tar
@@ -561,7 +561,7 @@ chmod +x ~/backup-tickets.sh
 
 # Add to crontab
 crontab -e
-# Add: 0 2 * * * ~/backup-tickets.sh
+# Add: 0 2 * * * ~/backup-dev-toolbox.sh
 ```
 
 ### Updates
@@ -727,11 +727,11 @@ ollama run deepseek-coder "test" --verbose
 
 ```bash
 # Stop services
-systemctl --user stop ticket-processor
+systemctl --user stop dev-toolbox
 podman-compose -f containers/podman-compose.yml down
 
 # Extract backup
-tar -xzf ~/backups/tickets-YYYYMMDD.tar.gz -C /
+tar -xzf ~/backups/dev-toolbox-YYYYMMDD.tar.gz -C /
 
 # Restore Gitea data
 podman volume import gitea-data < ~/backups/gitea-data-YYYYMMDD.tar

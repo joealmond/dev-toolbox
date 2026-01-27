@@ -52,7 +52,7 @@ The MCP server (`scripts/mcp-server.js`) exposes 12 tools:
 
 - Main config: `config.json`
 - Environment: via `remoteEnv` in devcontainer
-- Per-project overrides: `ticket-processor.json` in project root
+- Per-project overrides: `dev-toolbox.json` in project root
 
 ### File Organization
 

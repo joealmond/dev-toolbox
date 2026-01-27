@@ -7,7 +7,7 @@ echo "📦 Setting up dotfiles with chezmoi..."
 
 # Check if CHEZMOI_REPO is set (from environment or config)
 CHEZMOI_REPO_URL="${CHEZMOI_REPO:-}"
-LOCAL_DOTFILES_PATH="/workspaces/dev01dot"
+LOCAL_DOTFILES_PATH="/workspaces/dev-toolbox-dotfiles"
 CHEZMOI_CONFIG_DIR="$HOME/.config/chezmoi"
 
 # Prefer local dotfiles path if mounted, otherwise use remote
@@ -20,7 +20,7 @@ elif [ -n "$CHEZMOI_REPO_URL" ]; then
   DOTFILES_SOURCE="$CHEZMOI_REPO_URL"
   USE_LOCAL=false
 else
-  echo "⚠️  No dotfiles source configured (set CHEZMOI_REPO or mount /workspaces/dev01dot)"
+  echo "⚠️  No dotfiles source configured (set CHEZMOI_REPO or mount /workspaces/dev-toolbox-dotfiles)"
   echo "   Skipping dotfiles setup..."
   exit 0
 fi
@@ -131,7 +131,7 @@ if [ -f "$LOCAL_DOTFILES_PATH/.chezmoi.toml" ]; then
 fi
 
 # Initialize and apply dotfiles
-CHEZMOI_DIR="$HOME/.local/share/chezmoi-dev01"
+CHEZMOI_DIR="$HOME/.local/share/chezmoi-dev-toolbox"
 
 if [ "$USE_LOCAL" = true ]; then
   # Use local dotfiles
@@ -173,7 +173,7 @@ else
 fi
 
 # Append container-specific SSH config if exists
-CONTAINER_SSH_CONFIG="/workspaces/dev01/.devcontainer/ssh_config"
+CONTAINER_SSH_CONFIG="/workspaces/dev-toolbox/.devcontainer/ssh_config"
 if [ -f "$CONTAINER_SSH_CONFIG" ] && [ -s "$CONTAINER_SSH_CONFIG" ]; then
   echo "Appending container-specific SSH config..."
   mkdir -p ~/.ssh

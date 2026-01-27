@@ -170,7 +170,7 @@ WORKSPACE_ROOT=/workspaces/my-app watcher.js
 
 ## Project-Specific Configuration
 
-Create `ticket-processor.json` in your project root to override defaults:
+Create `dev-toolbox.json` in your project root to override defaults:
 
 ```json
 {

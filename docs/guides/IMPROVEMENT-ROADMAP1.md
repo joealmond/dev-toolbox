@@ -1511,7 +1511,7 @@ async function startWorker() {
 
 ```bash
 # Create symlink from Obsidian vault to your project
-ln -s /path/to/dev01/backlog /path/to/obsidian-vault/Backlog
+ln -s /path/to/dev-toolbox/backlog /path/to/obsidian-vault/Backlog
 ```
 
 #### Step 2: Install Required Plugins
@@ -1632,7 +1632,7 @@ LIMIT 10
 **Folder Structure:**
 ```
 Your Obsidian Vault/
-├── Backlog/           ← Symlink to dev01/backlog/
+├── Backlog/           ← Symlink to dev-toolbox/backlog/
 │   ├── todo/
 │   ├── doing/
 │   ├── review/

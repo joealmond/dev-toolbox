@@ -33,7 +33,7 @@ COPY scripts ./scripts
 COPY config.json ./
 
 # Set git config defaults (will be overridden by environment)
-RUN git config --global user.name "Ticket Processor" && \
+RUN git config --global user.name "Dev-Toolbox" && \
     git config --global user.email "processor@localhost"
 
 # Expose webhook port

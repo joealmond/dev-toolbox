@@ -1,7 +1,7 @@
 # Architecture Agent
 
 ## Role
-System architect and design decision maker for the ticket-processor project.
+System architect and design decision maker for the dev-toolbox project.
 
 ## Responsibilities
 - Review architectural decisions in pull requests

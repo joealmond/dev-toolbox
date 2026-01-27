@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Complete reference for all configuration options in the Ticket Processor system.
+Complete reference for all configuration options in the Dev-Toolbox system.
 
 ## Related Repositories
 
@@ -273,8 +273,8 @@ GITEA_ORG=dev-toolbox
 
 ```bash
 # Git user for commits
-GIT_USER_NAME=Ticket Processor
-GIT_USER_EMAIL=processor@localhost
+GIT_USER_NAME=Dev-Toolbox
+GIT_USER_EMAIL=devtoolbox@localhost
 ```
 
 **Notes:**
@@ -348,7 +348,7 @@ Service configuration for Linux production.
 
 ```ini
 [Unit]
-Description=Ticket Processor
+Description=Dev-Toolbox
 After=network-online.target
 
 [Service]

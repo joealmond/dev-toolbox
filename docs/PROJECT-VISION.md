@@ -1,6 +1,6 @@
 # Dev-Toolbox: Project Vision & Roadmap
 
-**Repository:** `dev-toolbox` (renamed from `dev01-container`)  
+**Repository:** `dev-toolbox` (renamed from `dev01-container` on 2026-01-27)
 **Created:** January 27, 2026  
 **Last Updated:** January 27, 2026  
 **Status:** Planning Phase → Implementation

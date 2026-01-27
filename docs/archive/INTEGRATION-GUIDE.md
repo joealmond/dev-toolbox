@@ -26,7 +26,7 @@ Complete setup and integration guide for the spec-driven ticket processor system
 ### 1. Install Dependencies
 
 ```bash
-cd /path/to/dev01
+cd /path/to/dev-toolbox
 npm install --legacy-peer-deps
 ```
 
@@ -332,7 +332,7 @@ sudo journalctl -u ticket-processor -f
 ### Build Container Image
 
 ```bash
-docker build -f containers/Dockerfile -t ticket-processor:latest .
+docker build -f containers/Dockerfile -t dev-toolbox:latest .
 ```
 
 ### Run Container
@@ -501,7 +501,7 @@ git log --oneline -10
 ```json
 {
   "mcpServers": {
-    "ticket-processor": {
+    "dev-toolbox": {
       "command": "node",
       "args": ["${workspaceFolder}/scripts/mcp-server.js"],
       "env": {"NODE_ENV": "production"}

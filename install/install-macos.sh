@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}================================${NC}"
-echo -e "${BLUE}Ticket Processor - macOS Setup${NC}"
+echo -e "${BLUE}Dev-Toolbox - macOS Setup${NC}"
 echo -e "${BLUE}================================${NC}\n"
 
 # Check if Homebrew is installed

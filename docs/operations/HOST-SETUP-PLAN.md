@@ -153,8 +153,8 @@ ollama pull deepseek-coder:6.7b  # Fast for simple tasks
   ```bash
   mkdir -p ~/dev
   cd ~/dev
-  git clone <your-repo-url> dev01
-  cd dev01
+  git clone <your-repo-url> dev-toolbox
+  cd dev-toolbox
   ```
 
 ### 2.2 Environment Configuration
@@ -187,7 +187,7 @@ ollama pull deepseek-coder:6.7b  # Fast for simple tasks
 
 - [ ] 🧑 **[Manual]** Open folder in VS Code
   ```bash
-  code ~/dev/dev01
+  code ~/dev/dev-toolbox
   ```
 
 - [ ] 🧑 **[Manual]** Reopen in Container
@@ -280,7 +280,7 @@ Internet → Cloudflare → Synology NAS (192.168.0.5) → Dev Server (192.168.0
 
 ## Phase 6: Start Services
 
-### 6.1 Start Ticket Processor
+### 6.1 Start Dev-Toolbox
 
 - [ ] 🤖 **[Script]** Start watcher with PM2
   ```bash

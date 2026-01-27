@@ -91,7 +91,7 @@ pkill -f "npm run webhook"
 
 ```bash
 # 1. Open in VS Code
-code /path/to/dev01
+code /path/to/dev-toolbox
 
 # 2. Reopen in Container
 # Command Palette → "Dev Containers: Reopen in Container"

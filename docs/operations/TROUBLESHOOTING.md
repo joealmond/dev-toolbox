@@ -1,6 +1,6 @@
 # Troubleshooting Guide
 
-Common issues and solutions for the Ticket Processor system.
+Common issues and solutions for the Dev-Toolbox system.
 
 ## Table of Contents
 
@@ -148,7 +148,7 @@ pm2 status shows "errored"
 pm2 logs ticket-processor --err
 
 # Delete and restart
-pm2 delete ticket-processor
+pm2 delete dev-toolbox
 pm2 start ecosystem.config.js
 
 # Or restart directly
@@ -238,9 +238,9 @@ pm2 status ticket-processor
 systemctl --user status ticket-processor
 
 # 2. Check logs for errors
-pm2 logs ticket-processor
+pm2 logs dev-toolbox
 # OR
-journalctl --user -u ticket-processor -f
+journalctl --user -u dev-toolbox -f
 
 # 3. Verify file format
 # Must be .md files
@@ -806,7 +806,7 @@ curl -H "Authorization: token $GITEA_TOKEN" \
 
 # List repos
 curl -H "Authorization: token $GITEA_TOKEN" \
-  http://localhost:3000/api/v1/orgs/ticket-processor/repos | jq .
+  http://localhost:3000/api/v1/orgs/dev-toolbox/repos | jq .
 ```
 
 ### Capture Full Output
@@ -841,9 +841,9 @@ If you're still stuck after trying these solutions:
 1. **Check logs thoroughly:**
    ```bash
    # Recent errors
-   pm2 logs ticket-processor --err --lines 100
+   pm2 logs dev-toolbox --err --lines 100
    # OR
-   journalctl --user -u ticket-processor -p err --since today
+   journalctl --user -u dev-toolbox -p err --since today
    ```
 
 2. **Verify all services are running:**

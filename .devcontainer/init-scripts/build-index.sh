@@ -5,7 +5,7 @@ set -e
 
 echo "[INIT] Building semantic search index..."
 
-cd /workspaces/dev01
+cd /workspaces/dev-toolbox
 
 # Build the index
 npm run build:index

@@ -1,10 +1,10 @@
 # External Project Setup Guide
 
-Use ticket-processor tooling with any project while keeping your project directory clean from tooling files.
+Use dev-toolbox tooling with any project while keeping your project directory clean from tooling files.
 
 ## Overview
 
-This guide shows how to use ticket-processor as a **hidden tooling layer** for your projects. Your application code stays clean - no ticket-processor files are visible in your project workspace.
+This guide shows how to use dev-toolbox as a **hidden tooling layer** for your projects. Your application code stays clean - no dev-toolbox files are visible in your project workspace.
 
 ```
 Your Project (What You See)          Container (What's Really There)
@@ -24,7 +24,7 @@ Your Project (What You See)          Container (What's Really There)
 
 ### Option 1: Automated Setup Script (Recommended)
 
-Run the setup script from the ticket-processor directory:
+Run the setup script from the dev-toolbox directory:
 
 ```bash
 # Create a new Node.js project
@@ -51,7 +51,7 @@ Then open in VS Code and "Reopen in Container".
 2. **Copy the devcontainer template:**
 
    ```bash
-   cp /path/to/ticket-processor/templates/devcontainer-external.json \
+   cp /path/to/dev-toolbox/templates/devcontainer-external.json \
       .devcontainer/devcontainer.json
    ```
 
@@ -131,7 +131,7 @@ WORKSPACE_ROOT=/workspaces/my-app node /opt/tooling/scripts/watcher.js
 
 ### Project-Specific Config
 
-Create a `ticket-processor.json` in your project root to override default settings:
+Create a `dev-toolbox.json` in your project root to override default settings:
 
 ```json
 {

@@ -46,7 +46,7 @@ VS Code MCP server configuration:
 ```json
 {
   "mcpServers": {
-    "ticket-processor": {
+    "dev-toolbox": {
       "command": "node",
       "args": ["${workspaceFolder}/scripts/mcp-server.js"],
       "env": {"NODE_ENV": "production"}

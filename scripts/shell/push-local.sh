@@ -6,7 +6,7 @@ set -e
 
 IMAGE_ID="${1:-}"
 REGISTRY="192.168.0.5:3000"
-REPO="mandulaj/dev01-devcontainer"
+REPO="mandulaj/dev-toolbox-devcontainer"
 TAG="latest"
 
 echo ""

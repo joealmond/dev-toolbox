@@ -1,6 +1,6 @@
 # Approval Workflow Guide
 
-Detailed guide for the approval process in spec-driven ticket processing.
+Detailed guide for the approval process in spec-driven task processing.
 
 ## Table of Contents
 

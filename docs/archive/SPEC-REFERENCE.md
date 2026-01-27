@@ -1,6 +1,6 @@
 # Specification File Format Reference
 
-This document describes the complete format for specification-driven tasks in the Ticket Processor system.
+This document describes the complete format for specification-driven tasks in the Dev-Toolbox system.
 
 ## Overview
 

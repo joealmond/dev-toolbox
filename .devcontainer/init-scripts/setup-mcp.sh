@@ -14,7 +14,7 @@ cat > ~/.config/Code/User/globalStorage/mcp/mcp.json << 'EOF'
   "mcpServers": {
     "ticket-processor": {
       "command": "node",
-      "args": ["/workspaces/dev01/scripts/mcp-server.js"],
+      "args": ["/workspaces/dev-toolbox/scripts/mcp-server.js"],
       "disabled": false,
       "env": {
         "NODE_ENV": "development",

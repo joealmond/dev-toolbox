@@ -182,7 +182,7 @@ This project includes a **fully configured devcontainer** with:
 
 ## 🔧 Use Tooling with External Projects
 
-Use ticket-processor as a **hidden tooling layer** for any project. Your app stays clean - no tooling files visible!
+Use dev-toolbox as a **hidden tooling layer** for any project. Your app stays clean - no tooling files visible!
 
 ### Quick Setup
 
@@ -373,11 +373,11 @@ pm2 monit                          # Monitor
 **Linux (systemd):**
 
 ```bash
-systemctl --user start ticket-processor      # Start
-systemctl --user stop ticket-processor       # Stop
-systemctl --user restart ticket-processor    # Restart
-systemctl --user status ticket-processor     # Status
-journalctl --user -u ticket-processor -f     # Follow logs
+systemctl --user start dev-toolbox      # Start
+systemctl --user stop dev-toolbox       # Stop
+systemctl --user restart dev-toolbox    # Restart
+systemctl --user status dev-toolbox     # Status
+journalctl --user -u dev-toolbox -f     # Follow logs
 ```
 
 **Cross-platform helper scripts:**
@@ -471,7 +471,7 @@ See `.env.example` for all available options. Key variables:
 
 - **[.devcontainer/SETUP-GUIDE.md](.devcontainer/SETUP-GUIDE.md)** — Devcontainer setup, configuration, troubleshooting
 - **[INSTALLATION.md](INSTALLATION.md)** — Host machine installation (macOS/Linux)
-- **[USAGE.md](USAGE.md)** — How to use the ticket processor
+- **[USAGE.md](USAGE.md)** — How to use the task processor
 - **[CONFIG.md](CONFIG.md)** — Configuration reference
 - **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** — Common issues and solutions
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** — Production deployment guide

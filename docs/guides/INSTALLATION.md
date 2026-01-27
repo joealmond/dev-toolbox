@@ -472,9 +472,9 @@ podman machine rm
 
 ```bash
 # Stop and disable service
-systemctl --user stop ticket-processor
-systemctl --user disable ticket-processor
-rm ~/.config/systemd/user/ticket-processor.service
+systemctl --user stop dev-toolbox
+systemctl --user disable dev-toolbox
+rm ~/.config/systemd/user/dev-toolbox.service
 systemctl --user daemon-reload
 
 # Stop Ollama

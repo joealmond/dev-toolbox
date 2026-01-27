@@ -1,6 +1,6 @@
-# Contributing to Ticket Processor
+# Contributing to Dev-Toolbox
 
-Thank you for your interest in contributing to the Ticket Processor project! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to the Dev-Toolbox project! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
@@ -36,7 +36,7 @@ Thank you for your interest in contributing to the Ticket Processor project! Thi
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd ticket-processor
+   cd dev-toolbox
    ```
 
 2. **Install dependencies**
@@ -351,4 +351,4 @@ All PRs must pass:
 
 ---
 
-Thank you for contributing to Ticket Processor! 🎉
+Thank you for contributing to Dev-Toolbox! 🎉

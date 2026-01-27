@@ -6,7 +6,7 @@ set -e
 echo "🔍 Detecting container runtime and setting OLLAMA_HOST..."
 
 # Check if config.json has an explicit ollama.baseUrl override
-CONFIG_FILE="${WORKSPACE_ROOT:-/workspaces/dev01}/config.json"
+CONFIG_FILE="${WORKSPACE_ROOT:-/workspaces/dev-toolbox}/config.json"
 if [ -f "$CONFIG_FILE" ]; then
   CONFIG_OLLAMA_URL=$(node -p "try { require('$CONFIG_FILE').ollama?.baseUrl || '' } catch(e) { '' }" 2>/dev/null || echo "")
   if [ -n "$CONFIG_OLLAMA_URL" ]; then

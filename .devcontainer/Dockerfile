@@ -1,4 +1,4 @@
-# Ticket Processor DevContainer
+# Dev-Toolbox DevContainer
 # Compatible with both Docker and Podman
 FROM node:24-bookworm
 
