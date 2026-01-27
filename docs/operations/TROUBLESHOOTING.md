@@ -523,6 +523,70 @@ pm2 logs ticket-processor | grep webhook
 
 ## Container Issues
 
+### VS Code Dev Containers Not Finding Podman
+
+**Problem:**
+VS Code Dev Containers extension looks for Docker instead of Podman:
+```
+Error: Cannot connect to the Docker daemon
+```
+
+**Solution:**
+Add these settings to your VS Code user settings (`~/.config/Code/User/settings.json` on Linux, or via Command Palette → "Preferences: Open User Settings (JSON)"):
+
+```json
+{
+  "dev.containers.dockerPath": "podman",
+  "dev.containers.dockerComposePath": "podman-compose"
+}
+```
+
+Alternatively, via command line:
+```bash
+# Linux
+cat ~/.config/Code/User/settings.json | python3 -c "
+import json,sys
+d=json.load(sys.stdin)
+d['dev.containers.dockerPath']='podman'
+d['dev.containers.dockerComposePath']='podman-compose'
+print(json.dumps(d, indent=2))
+" > /tmp/settings.json && mv /tmp/settings.json ~/.config/Code/User/settings.json
+```
+
+**Note:** Reload VS Code after changing settings.
+
+### GPG Signature Errors in Debian Containers
+
+**Problem:**
+Container build fails with GPG signature verification errors when using Podman:
+```
+W: GPG error: http://deb.debian.org/debian bookworm InRelease: At least one invalid signature was encountered.
+E: The repository 'http://deb.debian.org/debian bookworm InRelease' is not signed.
+```
+
+**Cause:**
+Podman's overlay filesystem handling can corrupt GPG keys in Debian image layers.
+
+**Solution:**
+Add GPG cleanup before apt operations in your Dockerfile:
+
+```dockerfile
+# Fix for Podman GPG signature verification issues with Debian repos
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /var/lib/apt/lists/partial && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+      your-packages-here && \
+    rm -rf /var/lib/apt/lists/*
+```
+
+If the issue persists, clear Podman cache:
+```bash
+podman system prune -a
+podman volume prune -a
+```
+
 ### Podman Compose Not Found
 
 **Problem:**

@@ -8,12 +8,17 @@ FROM node:24-bookworm
 # We add only what's missing to minimize build issues
 # on Podman + NTFS overlay filesystems
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-    openssh-client \
-    jq \
-    vim \
-  && rm -rf /var/lib/apt/lists/*
+# Fix for Podman GPG signature verification issues with Debian repos
+# Clean apt state before update to prevent corrupted GPG key errors
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /var/lib/apt/lists/partial && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+      openssh-client \
+      jq \
+      vim && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install cloudflared for remote tunnel access
 RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
