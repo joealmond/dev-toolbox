@@ -565,13 +565,37 @@ E: The repository 'http://deb.debian.org/debian bookworm InRelease' is not signe
 ```
 
 **Cause:**
-Podman's overlay filesystem handling can corrupt GPG keys in Debian image layers.
+Podman's overlay filesystem handling corrupts GPG keys in Debian image layers. This is a known compatibility issue between Podman and Debian-based container images that persists even after cache clearing.
 
-**Solution:**
-Add GPG cleanup before apt operations in your Dockerfile:
+**Solution 1: Use Alpine-based Images (Recommended)**
+
+Switch from Debian-based to Alpine-based Node images. Alpine uses `apk` package manager which doesn't have GPG issues with Podman:
 
 ```dockerfile
-# Fix for Podman GPG signature verification issues with Debian repos
+# Instead of: FROM node:24-bookworm
+FROM node:24-alpine
+
+# Alpine uses apk instead of apt-get
+RUN apk add --no-cache \
+    bash \
+    git \
+    curl \
+    openssh-client \
+    jq \
+    vim
+```
+
+**Benefits:**
+- ✅ No GPG signature issues with Podman
+- ✅ Smaller image size (~60MB vs ~500MB for Debian)
+- ✅ Faster builds and pulls
+- ✅ Works reliably with rootless Podman
+
+**Solution 2: GPG Cleanup (May Not Work)**
+
+If you must use Debian, try adding GPG cleanup before apt operations:
+
+```dockerfile
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p /var/lib/apt/lists/partial && \
@@ -581,10 +605,26 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 ```
 
-If the issue persists, clear Podman cache:
+**Note:** This fix often doesn't work because the corruption happens at the base image layer level.
+
+**Solution 3: Clear All Podman State**
+
+If switching images isn't possible:
 ```bash
-podman system prune -a
-podman volume prune -a
+# Remove corrupted images
+podman image rm -f node:24-bookworm
+
+# Full system reset
+podman system reset --force
+
+# Or aggressive prune
+podman system prune -a -f --volumes
+podman image prune -f
+```
+
+Then rebuild with `--no-cache`:
+```bash
+podman build --no-cache -f .devcontainer/Dockerfile -t myimage .
 ```
 
 ### Podman Compose Not Found
