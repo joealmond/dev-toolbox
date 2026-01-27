@@ -30,7 +30,7 @@ async function parseSpec(filePath) {
       approval: frontMatter.approval || {},
       documentation: frontMatter.documentation || {},
       acceptanceCriteria: frontMatter.acceptanceCriteria || [],
-      model: frontMatter.model || 'ollama/deepseek-coder'
+      model: frontMatter.model || 'glmcoder'
     };
   } catch (error) {
     throw new Error(`Failed to parse spec at ${filePath}: ${error.message}`);

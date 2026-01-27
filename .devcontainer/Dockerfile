@@ -31,7 +31,7 @@ RUN npm install -g npm@11.7.0 pm2 backlog.md @kilocode/cli
 # Pre-configure Kilo Code CLI to use Ollama (can be overridden by user)
 # Config location: ~/.kilocode/config.json
 RUN mkdir -p /home/node/.kilocode && \
-    echo '{"id":"default","provider":"ollama","ollamaBaseUrl":"http://host.containers.internal:11434","ollamaModelId":"deepseek-coder-v2:latest"}' > /home/node/.kilocode/config.json && \
+    echo '{"id":"default","provider":"ollama","ollamaBaseUrl":"http://host.containers.internal:11434","ollamaModelId":"glmcoder"}' > /home/node/.kilocode/config.json && \
     chown -R node:node /home/node/.kilocode
 
 WORKDIR /workspace

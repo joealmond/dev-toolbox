@@ -1,0 +1,41 @@
+FROM glm-4.7-flash
+
+# Model: GLM-4.7 Flash (30B MoE)
+# Size: ~19GB (q4_K_M)
+# VRAM Budget: 24GB Total
+# - Model: 19GB
+# - Overhead: ~1-2GB
+# - Remaining for Context: ~3-4GB
+#
+# Context Calculation:
+# A 30B model takes significant VRAM for KV cache.
+# 4GB context space with limited quantization might allow ~8k-16k context.
+# CAUTION: num_ctx 48128 might overflow VRAM and spill to RAM (sluggish).
+# WE START SAFE at 16k. Monitor with `ollama ps`.
+# If CPU usage > 0%, lower this value.
+
+PARAMETER num_ctx 16384
+
+# Aggressive stop sequences to prevent "yapping" and ensure strict turn-taking
+PARAMETER stop "<|endoftext|>"
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|observation|>"
+
+# System prompt for coding
+SYSTEM """You are an intelligent coding agent.
+Always review the file context before answering.
+Provide concise, correct, and production-ready code.
+Do not apologize. Do not include markdown code block types if not asked.
+Focus on the solution."""
+
+# Aggressive stop sequences to prevent "yapping" and ensure strict turn-taking
+PARAMETER stop "<|endoftext|>"
+PARAMETER stop "<|user|>"
+PARAMETER stop "<|observation|>"
+
+# System prompt for coding
+SYSTEM """You are an intelligent coding agent. You have a 64k context window.
+Always review the file context before answering.
+Provide concise, correct, and production-ready code.
+Do not apologize. Do not include markdown code block types if not asked.
+Focus on the solution."""

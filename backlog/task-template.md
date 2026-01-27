@@ -7,7 +7,7 @@ labels:
   - backend
   - security
   - authentication
-model: ollama/deepseek-coder
+model: glmcoder
 description: |
   Implement a comprehensive OAuth 2.0 authentication system that supports multiple providers including Google, GitHub, and Microsoft. The system should handle token refresh, session management, and provide a secure way to authenticate users.
 acceptanceCriteria:

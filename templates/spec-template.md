@@ -7,7 +7,7 @@ status: "To Do"
 priority: "medium"
 labels: []
 estimatedHours: 4
-model: "ollama/deepseek-coder"
+model: "glmcoder"
 
 # === SPEC FIELDS ===
 spec:

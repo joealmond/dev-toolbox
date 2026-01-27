@@ -1,7 +1,11 @@
 {
   "ollama": {
-    "defaultModel": "ollama/deepseek-coder",
+    "defaultModel": "glmcoder",
     "availableModels": [
+      "glmcoder",
+      "ollama/glm4:9b-chat-q8_0",
+      "ollama/glm4:latest",
+      "ollama/deepseek-coder-v2",
       "ollama/deepseek-coder",
       "ollama/codellama",
       "ollama/mistral",

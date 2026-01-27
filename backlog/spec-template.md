@@ -6,7 +6,7 @@ status: "To Do"
 priority: "high"
 labels: ["backend", "security", "auth"]
 estimatedHours: 16
-model: "ollama/deepseek-coder"
+model: "glmcoder"
 
 spec:
   enabled: true
