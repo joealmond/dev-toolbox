@@ -1,6 +1,6 @@
 # Improvement Roadmap: From 3-4 Stars to 5 Stars
 
-A comprehensive guide to improving the Ticket Processor system's weak points, adding missing features that Kilo Code can't provide, and integrating Obsidian as a knowledge base.
+A comprehensive guide to improving the Dev-Toolbox system's weak points, adding missing features that Kilo Code can't provide, and integrating Obsidian as a knowledge base.
 
 ---
 
@@ -24,7 +24,7 @@ A comprehensive guide to improving the Ticket Processor system's weak points, ad
 > 
 > Without proper GPU configuration, Ollama uses only 2-4k context window, wasting your RTX 3090's 24GB VRAM. This section unlocks **48k+ context** for better code generation.
 
-### Why This Matters for Ticket Processor
+### Why This Matters for Dev-Toolbox
 
 | Context Window | What Fits | Code Quality |
 |----------------|-----------|--------------|
@@ -71,7 +71,7 @@ ollama pull glm-4.7-flash:q3_k_m
 
 **2. Create `Modelfile` in your project root:**
 ```dockerfile
-# Modelfile - Optimized for RTX 3090 + Ticket Processor
+# Modelfile - Optimized for RTX 3090 + Dev-Toolbox
 FROM glm-4.7-flash:q3_k_m
 
 # 48k context (safe limit for 24GB VRAM)
@@ -86,7 +86,7 @@ PARAMETER stop "<|observation|>"
 PARAMETER temperature 0.3
 
 # System prompt optimized for spec-driven development
-SYSTEM """You are an expert coding agent for the Ticket Processor system.
+SYSTEM """You are an expert coding agent for the Dev-Toolbox system.
 
 CONTEXT:
 - You have a 48k token context window
@@ -117,7 +117,7 @@ ollama create glmcoder -f Modelfile
 ollama run glmcoder "Hello, what's your context window size?"
 ```
 
-### Step 2: Update Ticket Processor Config
+### Step 2: Update Dev-Toolbox Config
 
 Update your `config.json` to use the optimized model:
 
@@ -289,7 +289,7 @@ Create a guided first-run experience:
 const inquirer = require('inquirer');
 
 async function runOnboarding() {
-  console.log('🎯 Welcome to Ticket Processor!\n');
+  console.log('🎯 Welcome to Dev-Toolbox!\n');
   
   const answers = await inquirer.prompt([
     {
@@ -657,7 +657,7 @@ koduProcess.on('close', (code) => {
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Ticket Processor - Live Output</title>
+  <title>Dev-Toolbox - Live Output</title>
   <style>
     body { font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; }
     #output { white-space: pre-wrap; background: #252526; padding: 15px; border-radius: 4px; max-height: 80vh; overflow-y: auto; }
@@ -1178,7 +1178,7 @@ module.exports = { runTests, postGenerationTests };
 
 ## Complementary AI Tools
 
-These tools work with **Ollama** and complement your Ticket Processor workflow.
+These tools work with **Ollama** and complement your Dev-Toolbox workflow.
 
 ### CLI Tools
 
@@ -1244,7 +1244,7 @@ Install via VS Code Extensions marketplace.
 │                    Your Workflow                         │
 ├─────────────────────────────────────────────────────────┤
 │  Quick edits     │  Continue (inline completions)        │
-│  Complex tasks   │  Ticket Processor + Kilo Code         │
+│  Complex tasks   │  Dev-Toolbox + Kilo Code         │
 │  Multi-file      │  Aider (git-aware)                    │
 │  Spec creation   │  Obsidian + Templater                 │
 │  Async review    │  RabbitMQ Spec Reviewer               │
@@ -1989,7 +1989,7 @@ module.exports = { createAdapter };
 
 ## Summary
 
-Your Ticket Processor is already a solid 4-star system. To reach 5 stars:
+Your Dev-Toolbox is already a solid 4-star system. To reach 5 stars:
 
 | Category | Key Improvement |
 |----------|-----------------|

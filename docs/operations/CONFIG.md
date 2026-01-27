@@ -16,7 +16,7 @@ Complete reference for all configuration options in the Ticket Processor system.
 - **`config.json`** - Main application configuration
 - **`.env`** - Environment variables (secrets, URLs)
 - **`ecosystem.config.js`** - PM2 process manager configuration
-- **`systemd/ticket-processor.service`** - Linux systemd service configuration
+- **`systemd/dev-toolbox.service`** - Linux systemd service configuration
 
 ---
 
@@ -260,7 +260,7 @@ GITEA_ADMIN_PASSWORD=admin123
 GITEA_ADMIN_EMAIL=admin@localhost
 
 # Organization for repositories
-GITEA_ORG=ticket-processor
+GITEA_ORG=dev-toolbox
 ```
 
 **Security Best Practices:**
@@ -303,7 +303,7 @@ Process manager configuration for macOS development.
 ```javascript
 module.exports = {
   apps: [{
-    name: 'ticket-processor',
+    name: 'dev-toolbox',
     script: './scripts/watcher.js',
     instances: 1,
     exec_mode: 'fork',
@@ -332,9 +332,9 @@ module.exports = {
 **PM2 Commands:**
 ```bash
 pm2 start ecosystem.config.js
-pm2 stop ticket-processor
-pm2 restart ticket-processor
-pm2 logs ticket-processor
+pm2 stop dev-toolbox
+pm2 restart dev-toolbox
+pm2 logs dev-toolbox
 pm2 monit
 ```
 
@@ -344,7 +344,7 @@ pm2 monit
 
 Service configuration for Linux production.
 
-**File:** `systemd/ticket-processor.service`
+**File:** `systemd/dev-toolbox.service`
 
 ```ini
 [Unit]
@@ -354,9 +354,9 @@ After=network-online.target
 [Service]
 Type=simple
 User=%i
-WorkingDirectory=/home/%i/ticket-processor
-EnvironmentFile=/home/%i/ticket-processor/.env
-ExecStart=/usr/bin/node /home/%i/ticket-processor/scripts/watcher.js
+WorkingDirectory=/home/%i/dev-toolbox
+EnvironmentFile=/home/%i/dev-toolbox/.env
+ExecStart=/usr/bin/node /home/%i/dev-toolbox/scripts/watcher.js
 Restart=always
 RestartSec=10
 
@@ -377,11 +377,11 @@ bash scripts/install-service.sh
 
 **Management:**
 ```bash
-systemctl --user start ticket-processor
-systemctl --user stop ticket-processor
-systemctl --user restart ticket-processor
-systemctl --user status ticket-processor
-journalctl --user -u ticket-processor -f
+systemctl --user start dev-toolbox
+systemctl --user stop dev-toolbox
+systemctl --user restart dev-toolbox
+systemctl --user status dev-toolbox
+journalctl --user -u dev-toolbox -f
 ```
 
 ---
@@ -459,7 +459,7 @@ sudo journalctl --vacuum-size=100M
 
 **Manual logrotate** (alternative):
 ```bash
-/var/log/ticket-processor/*.log {
+/var/log/dev-toolbox/*.log {
     daily
     rotate 7
     compress

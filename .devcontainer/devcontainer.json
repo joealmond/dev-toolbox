@@ -1,5 +1,5 @@
 {
-  "name": "ticket-processor",
+  "name": "dev-toolbox",
   "dockerFile": "./Dockerfile",
   "context": "..",
   "remoteUser": "node",
@@ -33,7 +33,7 @@
   
   // Persist npm cache across rebuilds
   // "mounts": [
-  //   "type=volume,source=ticket-processor-npm-cache,target=/home/node/.npm"
+  //   "type=volume,source=dev-toolbox-npm-cache,target=/home/node/.npm"
   // ],
   
   "forwardPorts": [3000, 3001, 3002],

@@ -58,7 +58,7 @@ Then open in VS Code and "Reopen in Container".
 3. **Edit the template - replace placeholders:**
 
    - `{{PROJECT_NAME}}` → Your project name (e.g., `my-app`)
-   - `{{TOOLING_ROOT}}` → Absolute path to ticket-processor (e.g., `/home/user/dev/dev01-conatainer`)
+   - `{{TOOLING_ROOT}}` → Absolute path to ticket-processor (e.g., `/home/user/dev/dev-toolbox`)
 
 4. **Open in VS Code and reopen in container**
 
@@ -225,7 +225,7 @@ Check that the tooling path exists:
 
 ```bash
 # On the host machine
-ls -la /home/user/dev/dev01-conatainer/.devcontainer/Dockerfile
+ls -la /home/user/dev/dev-toolbox/.devcontainer/Dockerfile
 ```
 
 ## Related Documentation

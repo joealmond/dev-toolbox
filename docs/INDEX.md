@@ -1,6 +1,6 @@
 # Documentation Map
 
-Complete guide to Dev-Toolbox (formerly Ticket Processor) documentation and resources.
+Complete guide to Dev-Toolbox (formerly Dev-Toolbox) documentation and resources.
 
 ## 🎯 Project Vision
 
@@ -53,7 +53,7 @@ Complete guide to Dev-Toolbox (formerly Ticket Processor) documentation and reso
 ## 📚 Documentation Organization
 
 ```
-Ticket Processor/
+Dev-Toolbox/
 ├── README.md                 ← Start here
 ├── docs/guides/INSTALLATION.md  ← Setup instructions
 ├── docs/guides/USAGE.md         ← User guide

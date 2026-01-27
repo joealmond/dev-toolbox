@@ -1,8 +1,8 @@
 {
   "name": "{{PROJECT_NAME}}",
   
-  // Use the ticket-processor Dockerfile for tooling
-  // Replace {{TOOLING_ROOT}} with the absolute path to ticket-processor
+  // Use the dev-toolbox Dockerfile for tooling
+  // Replace {{TOOLING_ROOT}} with the absolute path to dev-toolbox
   "dockerFile": "{{TOOLING_ROOT}}/.devcontainer/Dockerfile",
   "context": "{{TOOLING_ROOT}}",
   

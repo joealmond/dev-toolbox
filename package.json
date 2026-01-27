@@ -1,7 +1,7 @@
 {
-  "name": "ticket-processor",
+  "name": "dev-toolbox",
   "version": "1.0.0",
-  "description": "Automated ticket processing system with Kilo Code CLI, Backlog.md, and Gitea",
+  "description": "AI-powered development environment container with Kilo Code CLI, Backlog.md, and Gitea",
   "main": "scripts/watcher.js",
   "scripts": {
     "start": "node scripts/start.js",

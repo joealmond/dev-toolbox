@@ -1,6 +1,6 @@
 {
   "audit_date": "2026-01-20",
-  "project": "Ticket Processor",
+  "project": "Dev-Toolbox",
   "scope": "Project structure, documentation, scripts, and code organization",
   "overall_health": "MODERATE - Well-structured core with documentation redundancy and some code organization issues",
   
@@ -128,7 +128,7 @@
       "recommendation": "Clarify division: git-manager.js for Gitea/PR operations, git-auto-commit.js for simple commits. Add documentation."
     },
     {
-      "file": "systemd/ticket-processor.service",
+      "file": "systemd/dev-toolbox.service",
       "description": "Systemd service file with no documentation or setup integration",
       "evidence": "Located in systemd/ folder but not referenced in INSTALLATION.md or npm scripts. Unclear if production-ready.",
       "impact": "LOW - Orphaned deployment artifact",

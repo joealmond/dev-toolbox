@@ -39,7 +39,7 @@ const config = require('../config.json');
 
 // Initialize server
 const server = new Server({
-  name: 'ticket-processor-mcp',
+  name: 'dev-toolbox-mcp',
   version: '1.0.0',
   capabilities: {
     tools: {},

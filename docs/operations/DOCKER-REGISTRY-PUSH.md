@@ -54,7 +54,7 @@ sudo systemctl restart docker
 ### Step 2: Tag the Image for Local Registry
 
 ```bash
-docker tag git.mandulaj.stream/mandulaj/dev01-devcontainer:latest 192.168.0.5:3000/mandulaj/dev01-devcontainer:latest
+docker tag git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest 192.168.0.5:3000/mandulaj/dev-toolbox-devcontainer:latest
 ```
 
 ### Step 3: Create Gitea Personal Access Token
@@ -78,7 +78,7 @@ When prompted:
 ### Step 5: Push the Image
 
 ```bash
-docker push 192.168.0.5:3000/mandulaj/dev01-devcontainer:latest
+docker push 192.168.0.5:3000/mandulaj/dev-toolbox-devcontainer:latest
 ```
 
 The large layers (3GB+) should now upload successfully over your local network without hitting Cloudflare limits.
@@ -94,8 +94,8 @@ The large layers (3GB+) should now upload successfully over your local network w
 
 After push completes, verify the image in Gitea:
 
-- Navigate to `http://192.168.0.5:3000/mandulaj/dev01-devcontainer` (local)
-- Or `https://git.mandulaj.stream/mandulaj/dev01-devcontainer` (public)
+- Navigate to `http://192.168.0.5:3000/mandulaj/dev-toolbox-devcontainer` (local)
+- Or `https://git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer` (public)
 
 Both endpoints show the same container registry data.
 

@@ -108,9 +108,9 @@ chat_ui: Open WebUI
 - [ ] Create module loader/plugin system
 
 ### Infrastructure & Repo
-- [ ] Rename repository: dev01-container → dev-toolbox
-- [ ] Update all internal references to new name
-- [ ] Update package.json name field
+- [x] Rename repository: dev01-container → dev-toolbox (2026-01-27)
+- [x] Update all internal references to new name (2026-01-27)
+- [x] Update package.json name field (2026-01-27)
 - [ ] Create `NETWORK-SETUP.md`
 - [ ] Create `OBSIDIAN-INTEGRATION.md`
 - [ ] Create `LLM-CONFIGURATION.md`

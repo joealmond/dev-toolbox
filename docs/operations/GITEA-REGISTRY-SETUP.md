@@ -1,6 +1,6 @@
 # Gitea Container Registry Setup (Synology NAS)
 
-This guide shows how to enable Gitea Container Registry on your Synology NAS and push the dev01-devcontainer image.
+This guide shows how to enable Gitea Container Registry on your Synology NAS and push the dev-toolbox-devcontainer image.
 
 ## Prerequisites
 
@@ -117,7 +117,7 @@ Gitea container registry requires this format:
 
 - **registry**: `git.mandulaj.stream` (your Gitea domain)
 - **owner**: `mandulaj` (your Gitea username)
-- **image**: `dev01-devcontainer` (image name)
+- **image**: `dev-toolbox-devcontainer` (image name)
 - **tag**: `latest` (or version like `v1.0.0`)
 
 **Reference**: [Gitea Container Registry Docs](https://docs.gitea.com/usage/packages/container#image-naming-convention)
@@ -126,27 +126,27 @@ Gitea container registry requires this format:
 
 ```bash
 # On your dev machine (or in devcontainer)
-docker build -f .devcontainer/Dockerfile -t git.mandulaj.stream/mandulaj/dev01-devcontainer:latest .
+docker build -f .devcontainer/Dockerfile -t git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest .
 ```
 
 ### Verify Image
 
 ```bash
-docker images | grep dev01-devcontainer
-# Output: git.mandulaj.stream/mandulaj/dev01-devcontainer   latest   <image-id>
+docker images | grep dev-toolbox-devcontainer
+# Output: git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer   latest   <image-id>
 ```
 
 ## Step 4: Push to Gitea Registry
 
 ```bash
-docker push git.mandulaj.stream/mandulaj/dev01-devcontainer:latest
+docker push git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest
 ```
 
 **Monitor push:**
 ```bash
 # Watch Gitea web UI
 # https://git.mandulaj.stream/admin/packages → Container
-# Should show dev01-devcontainer:latest
+# Should show dev-toolbox-devcontainer:latest
 ```
 
 ## Step 5: Update devcontainer.json to Use Registry Image
@@ -163,7 +163,7 @@ Edit `.devcontainer/devcontainer.json`:
   // "dockerFile": "./Dockerfile",
   
   // Use:
-  "image": "git.mandulaj.stream/mandulaj/dev01-devcontainer:latest",
+  "image": "git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest",
   
   "remoteEnv": {
     "CHEZMOI_REPO": "https://git.mandulaj.stream/mandulaj/dev01-dotfiles.git"
@@ -184,17 +184,17 @@ Keep `.devcontainer/devcontainer.json` as-is for local development, use registry
 
 1. Navigate to `https://git.mandulaj.stream/admin/packages`
 2. Go to "Container" tab
-3. Should see `dev01-devcontainer:latest`
+3. Should see `dev-toolbox-devcontainer:latest`
 4. Click package to see image details, pull commands, etc.
 
 ### Pull Image from Another Machine
 
 ```bash
 # After docker login git.mandulaj.stream
-docker pull git.mandulaj.stream/mandulaj/dev01-devcontainer:latest
+docker pull git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest
 
 # Use in devcontainer.json:
-# "image": "git.mandulaj.stream/mandulaj/dev01-devcontainer:latest"
+# "image": "git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest"
 ```
 
 ## Troubleshooting
@@ -215,10 +215,10 @@ If you add GitHub Actions or Gitea Runners, use:
 - name: Build and push to Gitea Registry
   run: |
     docker login git.mandulaj.stream -u mandulaj -p ${{ secrets.GITEA_TOKEN }}
-    docker build -f .devcontainer/Dockerfile -t git.mandulaj.stream/mandulaj/dev01-devcontainer:${{ github.sha }} .
-    docker push git.mandulaj.stream/mandulaj/dev01-devcontainer:${{ github.sha }}
-    docker tag git.mandulaj.stream/mandulaj/dev01-devcontainer:${{ github.sha }} git.mandulaj.stream/mandulaj/dev01-devcontainer:latest
-    docker push git.mandulaj.stream/mandulaj/dev01-devcontainer:latest
+    docker build -f .devcontainer/Dockerfile -t git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:${{ github.sha }} .
+    docker push git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:${{ github.sha }}
+    docker tag git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:${{ github.sha }} git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest
+    docker push git.mandulaj.stream/mandulaj/dev-toolbox-devcontainer:latest
 ```
 
 ## References

@@ -121,7 +121,7 @@ async function setupGitea() {
       try {
         // First, try to login and get a token
         const tokenResponse = await axios.post(`${giteaUrl}/api/v1/users/${adminUser}/tokens`, {
-          name: 'ticket-processor-' + Date.now()
+          name: 'dev-toolbox-' + Date.now()
         }, {
           auth: {
             username: adminUser,

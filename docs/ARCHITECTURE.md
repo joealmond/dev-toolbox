@@ -1,6 +1,6 @@
 # Architecture Guide
 
-Comprehensive system design and architectural patterns for Ticket Processor.
+Comprehensive system design and architectural patterns for Dev-Toolbox.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ Comprehensive system design and architectural patterns for Ticket Processor.
 
 ### Purpose
 
-Ticket Processor automates task processing with AI-powered code generation, documentation, and approval workflows.
+Dev-Toolbox automates task processing with AI-powered code generation, documentation, and approval workflows.
 
 ### Key Capabilities
 
@@ -571,4 +571,4 @@ const timeout = setTimeout(() => {
 
 **Version:** 1.0  
 **Last Updated:** January 20, 2026  
-**Author:** Ticket Processor Team
+**Author:** Dev-Toolbox Team

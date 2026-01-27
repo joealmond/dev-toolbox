@@ -1,6 +1,6 @@
 module.exports = {
   apps: [{
-    name: 'ticket-processor',
+    name: 'dev-toolbox',
     script: './scripts/watcher.js',
     instances: 1,
     exec_mode: 'fork',

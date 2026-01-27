@@ -1,6 +1,6 @@
-# Ticket Processor - Spec-Driven Development
+# Dev-Toolbox - AI-Powered Development Environment
 
-Automated ticket processing system with **spec-driven development** capabilities. Uses **Kilo Code CLI (kodu)** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
+AI-powered development environment container with **spec-driven development** capabilities. Uses **Kilo Code CLI (kodu)** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
 
 ## Documentation
 - Full documentation index: [docs/INDEX.md](docs/INDEX.md)

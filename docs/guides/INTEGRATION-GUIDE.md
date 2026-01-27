@@ -1,6 +1,6 @@
 # Integration Guide: Spec-Driven Development
 
-This guide covers the complete integration of spec-driven development features into Ticket Processor.
+This guide covers the complete integration of spec-driven development features into Dev-Toolbox.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ This guide covers the complete integration of spec-driven development features i
 
 ## Overview
 
-The Ticket Processor now supports **spec-driven development** - a workflow where:
+The Dev-Toolbox now supports **spec-driven development** - a workflow where:
 
 1. Tasks can include detailed specifications with requirements
 2. Kodu processes tasks and generates code
@@ -73,8 +73,8 @@ npm run approval:approve -- task-42 docs
 **Via MCP (VS Code):**
 ```
 # In VS Code, use the MCP command palette
-> Ticket Processor: Approve Code
-> Ticket Processor: Approve Docs
+> Dev-Toolbox: Approve Code
+> Dev-Toolbox: Approve Docs
 ```
 
 ### 4. Review Generated Docs

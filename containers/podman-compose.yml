@@ -3,7 +3,7 @@ version: '3.8'
 services:
   gitea:
     image: gitea/gitea:latest
-    container_name: ticket-processor-gitea
+    container_name: dev-toolbox-gitea
     environment:
       - USER_UID=1000
       - USER_GID=1000
@@ -21,7 +21,7 @@ services:
       - GITEA__service__DISABLE_REGISTRATION=false
     restart: unless-stopped
     networks:
-      - ticket-processor
+      - dev-toolbox
     volumes:
       - gitea-data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -41,14 +41,14 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: ticket-processor-postgres
+    container_name: dev-toolbox-postgres
     environment:
       - POSTGRES_USER=gitea
       - POSTGRES_PASSWORD=gitea
       - POSTGRES_DB=gitea
     restart: unless-stopped
     networks:
-      - ticket-processor
+      - dev-toolbox
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
@@ -61,7 +61,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: ticket-processor-app
+    container_name: dev-toolbox-app
     environment:
       - OLLAMA_HOST=${OLLAMA_HOST:-http://host.containers.internal:11434}
       - GITEA_URL=http://gitea:3000
@@ -72,7 +72,7 @@ services:
       - MCP_ENABLED=${MCP_ENABLED:-true}
     restart: unless-stopped
     networks:
-      - ticket-processor
+      - dev-toolbox
     volumes:
       - ../backlog:/workspace/backlog
       - ../repos:/workspace/repos
@@ -94,7 +94,7 @@ services:
       - "host.containers.internal:host-gateway"
 
 networks:
-  ticket-processor:
+  dev-toolbox:
     driver: bridge
 
 volumes:
