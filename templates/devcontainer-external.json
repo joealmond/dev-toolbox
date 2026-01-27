@@ -1,13 +1,16 @@
 {
   "name": "{{PROJECT_NAME}}",
   
-  // Use the dev-toolbox Dockerfile for tooling
+  // Use the dev-toolbox Dockerfile for tooling (Alpine-based for Podman compatibility)
   // Replace {{TOOLING_ROOT}} with the absolute path to dev-toolbox
   "dockerFile": "{{TOOLING_ROOT}}/.devcontainer/Dockerfile",
   "context": "{{TOOLING_ROOT}}",
   
   // Your app is the main workspace - clean, no tooling files visible
   "workspaceFolder": "/workspaces/{{PROJECT_NAME}}",
+  
+  // Use workspaceMount instead of mounts array for workspace to avoid duplicate mount
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/{{PROJECT_NAME}},type=bind",
   
   "remoteUser": "node",
   
@@ -20,10 +23,8 @@
   ],
   
   "mounts": [
-    // Your app code - this is the main workspace
-    "source=${localWorkspaceFolder},target=/workspaces/{{PROJECT_NAME}},type=bind",
-    
     // Mount tooling scripts (read-only, hidden from your app)
+    // NOTE: Don't mount workspace here - use workspaceMount above
     "source={{TOOLING_ROOT}}/scripts,target=/opt/tooling/scripts,type=bind,readonly",
     "source={{TOOLING_ROOT}}/config.json,target=/opt/tooling/config.json,type=bind,readonly",
     "source={{TOOLING_ROOT}}/templates,target=/opt/tooling/templates,type=bind,readonly",

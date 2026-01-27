@@ -67,18 +67,23 @@ Then open in VS Code → "Reopen in Container"
 
 ## The devcontainer.json Template
 
-This is the critical file that connects your app to dev-toolbox tooling:
+This is the critical file that connects your app to dev-toolbox tooling.
+
+**Important:** Uses Alpine-based Node image for Podman compatibility.
 
 ```jsonc
 {
   "name": "YOUR_PROJECT_NAME",
   
-  // Use dev-toolbox's Dockerfile
+  // Use dev-toolbox's Dockerfile (Alpine-based for Podman compatibility)
   "dockerFile": "/absolute/path/to/dev-toolbox/.devcontainer/Dockerfile",
   "context": "/absolute/path/to/dev-toolbox",
   
   // Your app is the main workspace
   "workspaceFolder": "/workspaces/YOUR_PROJECT_NAME",
+  
+  // IMPORTANT: Use workspaceMount for workspace, NOT in mounts array (avoids duplicate mount error)
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/YOUR_PROJECT_NAME,type=bind",
   
   "remoteUser": "node",
   
@@ -91,10 +96,7 @@ This is the critical file that connects your app to dev-toolbox tooling:
   ],
   
   "mounts": [
-    // Your app code
-    "source=${localWorkspaceFolder},target=/workspaces/YOUR_PROJECT_NAME,type=bind",
-    
-    // Hidden tooling (read-only)
+    // Hidden tooling (read-only) - DO NOT add workspace here
     "source=/path/to/dev-toolbox/scripts,target=/opt/tooling/scripts,type=bind,readonly",
     "source=/path/to/dev-toolbox/config.json,target=/opt/tooling/config.json,type=bind,readonly",
     "source=/path/to/dev-toolbox/templates,target=/opt/tooling/templates,type=bind,readonly",
@@ -208,6 +210,39 @@ Before creating a new app, ensure:
 - [ ] **Models are pulled** (`ollama pull deepseek-coder`)
 
 ## Troubleshooting
+
+### Duplicate mount destination error
+**Problem:** `Error: /workspaces/app: duplicate mount destination`
+
+**Solution:** Use `workspaceMount` instead of adding workspace to `mounts` array:
+```jsonc
+// CORRECT - use workspaceMount
+"workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/my-app,type=bind",
+"mounts": [
+  // DO NOT add workspace mount here
+]
+```
+
+### Slow first-time build
+First build takes ~7 minutes because it installs npm packages. Subsequent builds use cached layers.
+
+**To speed up:**
+1. Pre-build and cache the image locally:
+   ```bash
+   cd /path/to/dev-toolbox
+   podman build -t dev-toolbox-devcontainer .devcontainer/
+   ```
+
+2. Or use `image` instead of `dockerFile` in devcontainer.json:
+   ```jsonc
+   "image": "localhost/dev-toolbox-devcontainer:latest"
+   ```
+
+### GPG signature errors (Podman + Debian)
+Dev-toolbox uses Alpine-based images to avoid this. If you see GPG errors:
+```bash
+podman system reset --force
+```
 
 ### Tools not found in PATH
 ```bash
