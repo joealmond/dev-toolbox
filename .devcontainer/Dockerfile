@@ -11,7 +11,13 @@ RUN apk add --no-cache \
     curl \
     openssh-client \
     jq \
-    vim
+    vim \
+    shadow
+
+# Ensure node user home directory exists with proper permissions
+RUN mkdir -p /home/node/.ssh && \
+    chown -R node:node /home/node && \
+    chmod 700 /home/node/.ssh
 
 # Install cloudflared for remote tunnel access
 RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
