@@ -37,7 +37,7 @@
   // ],
   
   "forwardPorts": [3000, 3001, 3002],
-  "postCreateCommand": "bash .devcontainer/setup-tools.sh && npm install",
+  "postCreateCommand": "bash .devcontainer/setup-tools.sh && bash .devcontainer/scripts/setup-aider-config.sh && bash .devcontainer/scripts/setup-continue-config.sh && npm install",
   "postStartCommand": "bash .devcontainer/init-scripts/build-index.sh && bash .devcontainer/scripts/pm2-run.sh",
   
   "remoteEnv": {
