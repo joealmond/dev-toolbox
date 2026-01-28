@@ -7,8 +7,10 @@ RUN apk add --no-cache \
     curl \
     ca-certificates
 
-# Install kodu and backlog.md globally
-RUN npm install -g kodu backlog.md
+# Install global tools one at a time to avoid "too many open files" errors
+# @kilocode/cli v0.12.1 is pinned - v0.13.0+ has Ollama provider bug
+RUN npm install -g backlog.md --maxsockets=2
+RUN npm install -g @kilocode/cli@0.12.1 --maxsockets=2
 
 # Set working directory
 WORKDIR /workspace
