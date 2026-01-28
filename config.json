@@ -1,15 +1,13 @@
 {
   "ollama": {
-    "defaultModel": "glmcoder",
+    "defaultModel": "qwen2.5-coder:7b",
     "availableModels": [
-      "glmcoder",
-      "ollama/glm4:9b-chat-q8_0",
-      "ollama/glm4:latest",
-      "ollama/deepseek-coder-v2",
-      "ollama/deepseek-coder",
-      "ollama/codellama",
-      "ollama/mistral",
-      "ollama/llama2"
+      "qwen2.5-coder:7b",
+      "qwen2.5-coder:3b",
+      "qwen2.5-coder:14b",
+      "deepseek-coder-v2:16b",
+      "codellama:7b",
+      "codellama:13b"
     ],
     "timeout": 300000,
     "retryAttempts": 3,
@@ -42,7 +40,7 @@
   "documentation": {
     "enabled": true,
     "generator": {
-      "model": "ollama/deepseek-coder",
+      "model": "qwen2.5-coder:7b",
       "timeout": 60000
     },
     "templates": {

@@ -27,6 +27,7 @@ Complete guide to Dev-Toolbox (formerly Dev-Toolbox) documentation and resources
 
 ### Deployment & Operations
 - [operations/CONFIG.md](operations/CONFIG.md) - Configuration options
+- [operations/OLLAMA-MODELS.md](operations/OLLAMA-MODELS.md) - Ollama model selection guide
 - [operations/DEPLOYMENT.md](operations/DEPLOYMENT.md) - Deployment guide
 - [operations/TROUBLESHOOTING.md](operations/TROUBLESHOOTING.md) - Common issues and solutions
 - [operations/SECURITY.md](operations/SECURITY.md) - Security review and hardening

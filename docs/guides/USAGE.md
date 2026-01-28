@@ -39,7 +39,7 @@ Task title: Add user authentication
 Description: Implement OAuth 2.0 with Google and GitHub
 Priority (low/medium/high): high
 Labels (comma-separated): backend, security
-Model (default: ollama/deepseek-coder): 
+Model (default: qwen2.5-coder:7b): 
 Estimated hours: 8
 
 Acceptance Criteria (empty line to finish):
@@ -88,7 +88,7 @@ Create `tasks.json`:
     "description": "Implement OAuth 2.0",
     "priority": "high",
     "labels": ["backend", "security"],
-    "model": "ollama/deepseek-coder",
+    "model": "qwen2.5-coder:7b",
     "acceptanceCriteria": [
       "Users can log in with Google",
       "Users can log in with GitHub",
@@ -102,7 +102,7 @@ Create `tasks.json`:
     "description": "Build responsive dashboard UI",
     "priority": "medium",
     "labels": ["frontend", "react"],
-    "model": "ollama/codellama",
+    "model": "qwen2.5-coder:3b",
     "acceptanceCriteria": [
       "Dashboard shows user stats",
       "Responsive on mobile"
@@ -132,7 +132,7 @@ labels:
   - backend
   - security
   - authentication
-model: ollama/deepseek-coder
+model: qwen2.5-coder:7b
 description: |
   Implement OAuth 2.0 authentication with support for Google and GitHub providers.
   Include session management and token refresh.
@@ -183,7 +183,7 @@ acceptanceCriteria:               # Array of criteria
 ### Optional Fields
 
 ```yaml
-model: ollama/deepseek-coder     # Override default model
+model: qwen2.5-coder:7b           # Override default model
 labels:                          # Tags
   - backend
   - api
@@ -291,7 +291,7 @@ backlog/failed/
 **Recovery:**
 ```bash
 # Fix the issue (e.g., pull missing model)
-ollama pull deepseek-coder
+ollama pull qwen2.5-coder:7b
 
 # Move back to todo
 mv backlog/failed/task-5*.md backlog/todo/
@@ -313,12 +313,12 @@ Configure in `config.json`:
 ```json
 {
   "ollama": {
-    "defaultModel": "ollama/deepseek-coder",
+    "defaultModel": "qwen2.5-coder:7b",
     "availableModels": [
-      "ollama/deepseek-coder",
-      "ollama/codellama",
-      "ollama/mistral",
-      "ollama/llama2"
+      "qwen2.5-coder:7b",
+      "qwen2.5-coder:3b",
+      "qwen2.5-coder:14b",
+      "codellama:7b"
     ]
   }
 }
@@ -326,18 +326,18 @@ Configure in `config.json`:
 
 ### Model Characteristics
 
-| Model | Size | Strengths | Use Case |
-|-------|------|-----------|----------|
-| **deepseek-coder** | ~7GB | Best code quality, follows patterns | Complex features, refactoring |
-| **codellama** | ~4GB | Fast, good quality | Quick prototypes, simple features |
-| **mistral** | ~4GB | Versatile, good reasoning | Mixed tasks, documentation |
-| **llama2** | ~4GB | Reliable, general purpose | General tasks, less code-specific |
+| Model | Params | VRAM | Strengths | Use Case |
+|-------|--------|------|-----------|----------|
+| **qwen2.5-coder:7b** | 7B | ~5GB | Best balance, fast & capable | Default for all tasks |
+| **qwen2.5-coder:3b** | 3B | ~2.5GB | Very fast, good for simple code | Quick fixes, prototypes |
+| **qwen2.5-coder:14b** | 14B | ~10GB | Most capable, needs more VRAM | Complex refactoring |
+| **codellama:7b** | 7B | ~5GB | Reliable alternative | Fallback option |
 
 ### Per-Task Model Selection
 
 **Option 1: In front matter**
 ```yaml
-model: ollama/codellama
+model: qwen2.5-coder:3b   # Use faster model for simple task
 ```
 
 **Option 2: Interactive creation**
@@ -350,7 +350,7 @@ node scripts/create-task.js
 ```json
 {
   "title": "Quick fix",
-  "model": "ollama/mistral",
+  "model": "qwen2.5-coder:3b",
   ...
 }
 ```
@@ -629,10 +629,10 @@ watch -n 2 "ls -1 backlog/*/  | wc -l"
 
 ### Model Selection
 
-- **deepseek-coder**: Complex features, refactoring
-- **codellama**: Quick fixes, simple features
-- **mistral**: Documentation, mixed content
-- **llama2**: General purpose
+- **qwen2.5-coder:7b**: Default - best balance of speed and quality
+- **qwen2.5-coder:3b**: Fast prototypes, simple fixes
+- **qwen2.5-coder:14b**: Complex refactoring (needs 10GB+ VRAM)
+- **codellama:7b**: Alternative if Qwen unavailable
 
 ### Monitoring
 

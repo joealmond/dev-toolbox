@@ -24,7 +24,7 @@ CONFIG_FILE="$CONFIG_DIR/config.json"
 
 # Ollama settings (customize these)
 OLLAMA_URL="${OLLAMA_URL:-http://localhost:11434}"
-OLLAMA_MODEL="${OLLAMA_MODEL:-glmcoder:latest}"
+OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5-coder:7b}"  # Recommended: 7B param model - good balance of speed/quality
 OLLAMA_CTX="${OLLAMA_CTX:-16384}"
 
 # Version to install (v0.12.1 is last known working for Ollama)
@@ -38,18 +38,28 @@ echo "======================"
 # Check/install kilocode
 if ! command -v kilocode &> /dev/null; then
     echo "📦 Installing @kilocode/cli..."
+    
+    # Determine if we need sudo
+    NPM_PREFIX=$(npm config get prefix 2>/dev/null || echo "/usr/local")
+    if [[ -w "$NPM_PREFIX/lib/node_modules" ]] || [[ -w "$NPM_PREFIX" ]]; then
+        SUDO_CMD=""
+    else
+        SUDO_CMD="sudo"
+        echo "   ℹ️  Using sudo for global npm install"
+    fi
+    
     if [[ "$USE_LATEST" == "1" ]]; then
-        npm install -g @kilocode/cli
+        $SUDO_CMD npm install -g @kilocode/cli
         echo "   ⚠️  Installed latest version (Ollama provider may be buggy)"
     else
-        npm install -g @kilocode/cli@$KILOCODE_VERSION
+        $SUDO_CMD npm install -g @kilocode/cli@$KILOCODE_VERSION
         echo "   ✅ Installed v$KILOCODE_VERSION (last known working for Ollama)"
     fi
 else
     INSTALLED_VERSION=$(kilocode --version 2>/dev/null || echo "unknown")
     echo "📦 kilocode already installed: $INSTALLED_VERSION"
     if [[ "$USE_LATEST" != "1" ]] && [[ "$INSTALLED_VERSION" != "$KILOCODE_VERSION" ]]; then
-        echo "   ⚠️  Consider: npm install -g @kilocode/cli@$KILOCODE_VERSION"
+        echo "   ⚠️  Consider: sudo npm install -g @kilocode/cli@$KILOCODE_VERSION"
     fi
 fi
 

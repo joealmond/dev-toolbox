@@ -1,6 +1,6 @@
 # Dev-Toolbox - AI-Powered Development Environment
 
-AI-powered development environment container with **spec-driven development** capabilities. Uses **Kilo Code CLI (kodu)** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
+AI-powered development environment container with **spec-driven development** capabilities. Uses **Kilo Code CLI** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
 
 ## Documentation
 - Full documentation index: [docs/INDEX.md](docs/INDEX.md)
@@ -67,8 +67,8 @@ Spec-Driven Development Flow:
        │
        ▼
 ┌──────────────┐      ┌──────────────┐
-│   Watcher    │─────▶│  kodu CLI +  │
-│  (Node.js)   │      │  Ollama      │
+│   Watcher    │─────▶│  Kilo Code   │
+│  (Node.js)   │      │  + Ollama    │
 └──────┬───────┘      └──────────────┘
        │
        ├─ Code Approval?
@@ -319,7 +319,7 @@ Create a markdown file in `backlog/todo/` following the template format:
 title: Your Task Title
 status: To Do
 priority: high
-model: ollama/deepseek-coder
+model: qwen2.5-coder:7b
 description: |
   Task description here
 acceptanceCriteria:
@@ -335,7 +335,7 @@ Any additional context or notes...
 ### Workflow States
 
 1. **todo/** - New tasks waiting to be processed
-2. **doing/** - Currently being processed by kodu
+2. **doing/** - Currently being processed by Kilo Code CLI
 3. **review/** - Successfully processed, PR created in Gitea
 4. **failed/** - Processing failed (with error log)
 5. **completed/** - PR merged, task finished
@@ -345,18 +345,18 @@ Any additional context or notes...
 Specify model in task front matter:
 
 ```yaml
-model: ollama/deepseek-coder  # Default
+model: qwen2.5-coder:7b   # Default - best balance of speed/quality
 # or
-model: ollama/codellama
-# or
-model: ollama/mistral
+model: qwen2.5-coder:3b   # Faster for simple tasks
+# or  
+model: qwen2.5-coder:14b  # More capable (needs 10GB+ VRAM)
 ```
 
 Available models configured in `config.json`:
-- `ollama/deepseek-coder` (default, best for code)
-- `ollama/codellama` (alternative code model)
-- `ollama/mistral` (general purpose)
-- `ollama/llama2` (general purpose)
+- `qwen2.5-coder:7b` (default, recommended)
+- `qwen2.5-coder:3b` (faster, simpler tasks)
+- `qwen2.5-coder:14b` (more capable)
+- `codellama:7b` (alternative)
 
 ### Service Management
 

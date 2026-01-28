@@ -93,11 +93,15 @@ brew install ollama
 brew services start ollama
 
 # Install CLIs
-npm install -g backlog.md kodu
+npm install -g backlog.md @kilocode/cli@0.12.1
 
-# Pull models
-ollama pull deepseek-coder
-ollama pull codellama  # Optional
+# Pull recommended model (7B - good balance of speed/quality)
+ollama pull qwen2.5-coder:7b
+
+# Alternative models (optional)
+# ollama pull qwen2.5-coder:3b    # Faster, less capable
+# ollama pull qwen2.5-coder:14b   # More capable, slower
+# ollama pull codellama:7b        # Alternative coding model
 
 # Configure git
 git config --global user.name "Your Name"
@@ -204,11 +208,11 @@ systemctl --user daemon-reload
 systemctl --user enable --now ollama.service
 
 # Install CLIs
-sudo npm install -g backlog.md kodu
+sudo npm install -g backlog.md @kilocode/cli@0.12.1
 
-# Pull models
-ollama pull deepseek-coder
-ollama pull codellama  # Optional
+# Pull recommended model (7B - good balance of speed/quality)
+ollama pull qwen2.5-coder:7b
+# Alternative: ollama pull qwen2.5-coder:3b  # Faster, less capable
 
 # Increase inotify limits
 echo "fs.inotify.max_user_watches=524288" | sudo tee -a /etc/sysctl.conf
@@ -332,10 +336,14 @@ systemctl --user status ollama
 curl http://localhost:11434/api/tags
 ```
 
-### Test Kodu
+### Test Kilo Code CLI
 
 ```bash
-kodu --message "console.log('Hello World')" --model ollama/deepseek-coder
+# First configure for Ollama
+bash scripts/setup-kilocode.sh
+
+# Test with interactive mode
+kilocode chat "Say hello"
 ```
 
 ---
@@ -348,11 +356,11 @@ To use different models, pull them first:
 # List available models
 ollama list
 
-# Pull specific models
-ollama pull deepseek-coder     # Best for code (default)
-ollama pull codellama          # Alternative code model
-ollama pull mistral            # General purpose
-ollama pull llama2             # General purpose
+# Pull recommended coding models
+ollama pull qwen2.5-coder:7b   # Recommended: Best balance of speed/quality
+ollama pull qwen2.5-coder:3b   # Faster, good for simple tasks
+ollama pull qwen2.5-coder:14b  # More capable, needs more VRAM
+ollama pull codellama:7b       # Alternative coding model
 
 # Remove models you don't need
 ollama rm model-name
@@ -360,12 +368,12 @@ ollama rm model-name
 
 ### Model Recommendations by Use Case
 
-| Use Case | Recommended Model | Size | Notes |
-|----------|------------------|------|-------|
-| Code generation | deepseek-coder | ~7GB | Best code quality |
-| Fast prototyping | codellama | ~4GB | Faster, good quality |
-| General tasks | mistral | ~4GB | Versatile |
-| Mixed workload | llama2 | ~4GB | Reliable all-rounder |
+| Use Case | Recommended Model | Params | VRAM | Notes |
+|----------|------------------|--------|------|-------|
+| **Default** | qwen2.5-coder:7b | 7B | ~5GB | Best balance - fast & capable |
+| Fast prototyping | qwen2.5-coder:3b | 3B | ~2.5GB | Fastest, good for simple tasks |
+| Complex refactoring | qwen2.5-coder:14b | 14B | ~10GB | Most capable, requires RTX 3090+ |
+| Alternative | codellama:7b | 7B | ~5GB | Good fallback option |
 
 ---
 

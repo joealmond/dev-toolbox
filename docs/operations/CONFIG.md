@@ -29,12 +29,12 @@ Main configuration file for the application.
 ```json
 {
   "ollama": {
-    "defaultModel": "ollama/deepseek-coder",
+    "defaultModel": "qwen2.5-coder:7b",
     "availableModels": [
-      "ollama/deepseek-coder",
-      "ollama/codellama",
-      "ollama/mistral",
-      "ollama/llama2"
+      "qwen2.5-coder:7b",
+      "qwen2.5-coder:3b",
+      "qwen2.5-coder:14b",
+      "codellama:7b"
     ],
     "timeout": 300000,
     "retryAttempts": 3,
@@ -45,9 +45,9 @@ Main configuration file for the application.
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `defaultModel` | string | `ollama/deepseek-coder` | Default model when not specified in task |
+| `defaultModel` | string | `qwen2.5-coder:7b` | Default model when not specified in task |
 | `availableModels` | array | [...] | List of models available for selection |
-| `timeout` | number | 300000 | Maximum time (ms) for kodu processing |
+| `timeout` | number | 300000 | Maximum time (ms) for kilocode processing |
 | `retryAttempts` | number | 3 | Number of retries on connection failures |
 | `retryDelay` | number | 5000 | Delay (ms) between retry attempts |
 
