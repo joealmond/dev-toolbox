@@ -6,7 +6,7 @@ status: "To Do"
 priority: "high"
 labels: ["backend", "security", "auth"]
 estimatedHours: 16
-model: "glmcoder"
+model: "qwen2.5-coder:7b"
 
 spec:
   enabled: true

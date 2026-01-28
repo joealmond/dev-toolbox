@@ -7,7 +7,7 @@ status: "To Do"
 priority: "medium"
 labels: []
 estimatedHours: 4
-model: "glmcoder"
+model: "qwen2.5-coder:7b"
 
 # === SPEC FIELDS ===
 spec:

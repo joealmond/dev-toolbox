@@ -136,7 +136,7 @@ Create a `dev-toolbox.json` in your project root to override default settings:
 ```json
 {
   "models": {
-    "default": "deepseek-coder"
+    "default": "qwen2.5-coder:7b"
   },
   "backlog": {
     "rootDir": "./backlog"
@@ -189,27 +189,25 @@ If you see "Chat failed to load because the installed version of the Copilot Cha
 1. Rebuild container without cache: `Ctrl+Shift+P` → `Dev Containers: Rebuild Container Without Cache`
 2. The devcontainer template includes auto-update settings to prevent this
 
-### Kilo Code CLI Asking for URL/Provider
+### Aider Not Connecting to Ollama
 
-The CLI should be pre-configured with Ollama settings. If prompted:
+If Aider can't reach Ollama:
 
 ```bash
-# Check if config exists
-cat ~/.kilocode/config.json
+# Check if Ollama is running on host
+curl http://localhost:11434/api/tags
 
-# If not, create it:
-mkdir -p ~/.kilocode
-cat > ~/.kilocode/config.json << 'EOF'
-{
-  "id": "default",
-  "provider": "ollama",
-  "ollamaBaseUrl": "http://host.containers.internal:11434",
-  "ollamaModelId": "deepseek-coder-v2:latest"
-}
-EOF
+# If above fails, start Ollama on host
+sudo systemctl start ollama  # Linux
+brew services start ollama    # macOS
+
+# Test from container (if network=host)
+curl http://localhost:11434/api/tags
+
+# Verify Aider config
+cat ~/.aider/.aider.conf.yml
+# Should show: model: ollama/qwen2.5-coder:7b
 ```
-
-Or use interactive config: `kilocode config`
 
 ### Tools Not Found in PATH
 
@@ -263,28 +261,36 @@ The dev-toolbox container includes these pre-configured tools:
 
 | Tool | Purpose | Configuration |
 |------|---------|---------------|
-| **Kilo Code CLI** | AI coding assistant | `~/.kilocode/config.json` - pre-configured for Ollama |
+| **Aider** | AI coding assistant (terminal) | `~/.aider/.aider.conf.yml` - pre-configured for Ollama |
+| **Continue** | AI coding assistant (VS Code) | Auto-configured via extension |
 | **pm2** | Process manager | Run watcher and services |
 | **Git** | Version control | Uses mounted SSH keys |
 | **Node.js 24** | Runtime | Alpine-based for Podman compatibility |
 
-### Kilo Code CLI Commands
+### Aider CLI Commands
 
 ```bash
-# Interactive mode
-kilocode
+# Interactive mode with current directory
+aider
+
+# With specific files
+aider src/index.js src/utils.js
 
 # Single prompt
-kilocode "explain this codebase"
+aider --message "add error handling to the login function"
 
-# Configure provider
-kilocode config
+# List available models
+aider --models
 
-# Inside interactive mode:
-/config          # Configure settings
-/model list      # List available models
-/model select    # Select a model
+# Use different model
+aider --model ollama/qwen2.5-coder:14b
 ```
+
+### Continue Extension
+
+Continue is automatically configured when the container starts. Use it via:
+- `Ctrl+L` (or `Cmd+L` on macOS) - Open Continue chat
+- `Ctrl+I` (or `Cmd+I` on macOS) - Inline edit
 
 ## Shared Agents
 

@@ -317,8 +317,8 @@ podman --version
 # Check Ollama
 ollama list  # Should show pulled models
 
-# Check kodu
-kodu --version
+# Check Aider
+aider --version  # Should show 0.86.1
 
 # Check backlog
 backlog --version

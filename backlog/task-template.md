@@ -7,7 +7,7 @@ labels:
   - backend
   - security
   - authentication
-model: glmcoder
+model: qwen2.5-coder:7b
 description: |
   Implement a comprehensive OAuth 2.0 authentication system that supports multiple providers including Google, GitHub, and Microsoft. The system should handle token refresh, session management, and provide a secure way to authenticate users.
 acceptanceCriteria:

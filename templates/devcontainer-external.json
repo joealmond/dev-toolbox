@@ -67,7 +67,7 @@
         "extensions.autoCheckUpdates": true
       },
       "extensions": [
-        "kilocode.kilo-code",
+        "continue.continue",
         "github.copilot",
         "github.copilot-chat",
         "dbaeumer.vscode-eslint",
