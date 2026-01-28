@@ -1,4 +1,8 @@
 {
+  "ai": {
+    "adapter": "aider",
+    "autoApprove": true
+  },
   "ollama": {
     "defaultModel": "qwen2.5-coder:7b",
     "availableModels": [
@@ -102,7 +106,7 @@
     "branchNameFormat": "task-{id}",
     "createPR": true,
     "prTitle": "[Task {id}] {title}",
-    "prBody": "{description}\n\n## Acceptance Criteria\n{acceptanceCriteria}\n\n---\nProcessed by Kilo Code CLI with model: {model}",
+    "prBody": "{description}\n\n## Acceptance Criteria\n{acceptanceCriteria}\n\n---\nProcessed by dev-toolbox with model: {model}",
     "pushRetries": 3,
     "pushRetryDelay": 2000
   },

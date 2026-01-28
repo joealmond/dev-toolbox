@@ -105,7 +105,7 @@ fi
 
 # Verify global tools (don't install - should be in Docker image)
 echo "🔍 Verifying global tools..."
-for tool in pm2 backlog kilocode; do
+for tool in pm2 backlog aider; do
     if command_exists "$tool"; then
         echo "✅ $tool available"
     else

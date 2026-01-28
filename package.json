@@ -1,7 +1,7 @@
 {
   "name": "dev-toolbox",
   "version": "1.0.0",
-  "description": "AI-powered development environment container with Kilo Code CLI, Backlog.md, and Gitea",
+  "description": "AI-powered development environment container with Aider, Continue, and Ollama",
   "main": "scripts/watcher.js",
   "scripts": {
     "start": "node scripts/start.js",
@@ -28,11 +28,11 @@
   },
   "keywords": [
     "automation",
-    "kilo-code",
-    "backlog",
-    "gitea",
+    "aider",
+    "continue",
     "ollama",
-    "ai"
+    "ai",
+    "spec-driven"
   ],
   "author": "",
   "license": "MIT",

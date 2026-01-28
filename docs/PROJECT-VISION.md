@@ -2,8 +2,25 @@
 
 **Repository:** `dev-toolbox` (renamed from `dev01-container` on 2026-01-27)
 **Created:** January 27, 2026  
-**Last Updated:** January 27, 2026  
+**Last Updated:** January 28, 2026  
 **Status:** Planning Phase → Implementation
+
+---
+
+## 🚀 Future: Full Stack Overhaul
+
+> **See [plans/CONVEX-MIGRATION-PLAN.md](plans/CONVEX-MIGRATION-PLAN.md)** for complete migration plan.
+
+A future major version will migrate to:
+- **Convex** (self-hosted) - Real-time database with vector search
+- **TanStack Start** - Modern React SSR framework
+- **Better Auth** - Self-hosted authentication
+- **Full TypeScript** - End-to-end type safety
+- **Chat UI** - Built-in, replaces Open WebUI
+
+Template: [convex-tanstack-better-auth-cloudfare-terraform](https://github.com/joealmond/convex-tanstack-better-auth-cloudfare-terraform)
+
+**Prerequisites:** Current stack stable with Aider + Continue working.
 
 ---
 

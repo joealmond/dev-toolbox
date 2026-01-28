@@ -89,10 +89,11 @@ def do_something(param: str) -> Result:
 
 In the dev-toolbox environment, you have access to:
 
-- **Kilo Code CLI** (`kilocode`): AI-powered coding with Ollama
+- **Aider** (`aider`): AI-powered terminal coding with Ollama
   ```bash
-  kilocode "implement the authentication middleware"
+  aider --model ollama/qwen2.5-coder:7b "implement the authentication middleware"
   ```
+- **Continue** (VS Code): AI-assisted coding in the editor
 - **Git auto-commit** (`git-auto-commit.js`): Smart commit messages
 - **Semantic search** (`query-search.js`): Find related code
 
@@ -100,7 +101,7 @@ In the dev-toolbox environment, you have access to:
 
 1. Search the codebase for similar patterns
 2. Check documentation
-3. Use `kilocode` for AI assistance
+3. Use `aider` or Continue for AI assistance
 4. Ask for architectural guidance
 5. Break the problem into smaller parts
 

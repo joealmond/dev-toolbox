@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 
-const { spawn } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 const specParser = require('./spec-parser');
 const { buildPrompt } = require('./utils/prompt-builder');
 const logger = require('./utils/logger');
+const AdapterFactory = require('./adapters/adapter-factory');
 
 // Load configuration
 const config = require('../config.json');
 const semanticIndexer = require('./semantic-indexer');
 
 /**
- * Process a ticket using Kilo Code CLI
+ * Process a ticket using configured AI adapter (Aider, Continue, etc.)
  * @param {string} filePath - Path to the ticket markdown file
  * @param {object} frontMatter - Parsed front matter from the ticket
  * @param {string} body - Body content of the ticket
@@ -39,100 +39,33 @@ async function processTicket(filePath, frontMatter, body, taskId) {
           }
         }
 
-        // Construct the prompt for kodu
+        // Construct the prompt
         const prompt = buildPrompt(frontMatter, body, searchResults);
         
         logger.info(`Processing task-${taskId} with model: ${model}`);
         logger.info(`Prompt length: ${prompt.length} characters`);
         
-        // Spawn kodu process
-        const koduArgs = [
-          'kodu',
-          '--message', prompt,
-          '--auto-approve',
-          '--model', model
-        ];
-        
-        logger.info(`Executing: npx ${koduArgs.join(' ')}`);
-        
-        const koduProcess = spawn('npx', koduArgs, {
-          cwd: path.dirname(filePath),
-          env: {
-            ...process.env,
-            OLLAMA_API_BASE: process.env.OLLAMA_HOST || 'http://host.containers.internal:11434'
-          }
+        // Create AI adapter
+        const adapter = AdapterFactory.create({
+          adapter: config.ai?.adapter || 'aider',
+          model,
+          ollamaHost: process.env.OLLAMA_HOST || 'http://host.containers.internal:11434',
+          timeout: config.ollama.timeout,
+          autoApprove: config.ai?.autoApprove !== false
         });
-        
-        let stdout = '';
-        let stderr = '';
-        
-        koduProcess.stdout.on('data', (data) => {
-          const chunk = data.toString();
-          stdout += chunk;
-          // Stream output in real-time
-          process.stdout.write(chunk);
+
+        logger.info(`Using adapter: ${adapter.getName()}`);
+
+        // Process the task
+        const result = await adapter.process({
+          prompt,
+          workingDirectory: path.dirname(filePath),
+          taskId,
+          contextFiles: searchResults.map(r => r.path).filter(Boolean)
         });
-        
-        koduProcess.stderr.on('data', (data) => {
-          const chunk = data.toString();
-          stderr += chunk;
-          process.stderr.write(chunk);
-        });
-        
-        koduProcess.on('close', (code) => {
-          if (code === 0) {
-            logger.success(`Task-${taskId} processed successfully`);
-            resolve({
-              success: true,
-              exitCode: code,
-              stdout,
-              stderr,
-              model,
-              taskId
-            });
-          } else {
-            logger.error(`Task-${taskId} failed with exit code ${code}`);
-            resolve({
-              success: false,
-              exitCode: code,
-              stdout,
-              stderr,
-              error: `Kodu exited with code ${code}`,
-              model,
-              taskId
-            });
-          }
-        });
-        
-        koduProcess.on('error', (error) => {
-          logger.error(`Failed to spawn kodu process: ${error.message}`);
-          resolve({
-            success: false,
-            error: error.message,
-            stderr: error.stack,
-            model,
-            taskId
-          });
-        });
-        
-        // Set timeout for long-running processes
-        const timeout = setTimeout(() => {
-          logger.error(`Task-${taskId} timed out after ${config.ollama.timeout}ms`);
-          koduProcess.kill('SIGTERM');
-          
-          resolve({
-            success: false,
-            error: `Process timed out after ${config.ollama.timeout}ms`,
-            stderr: 'Process killed due to timeout',
-            model,
-            taskId
-          });
-        }, config.ollama.timeout);
-        
-        koduProcess.on('close', () => {
-          clearTimeout(timeout);
-        });
-        
+
+        resolve(result);
+
       } catch (error) {
         logger.error(`Exception in processTicket: ${error.message}`);
         resolve({

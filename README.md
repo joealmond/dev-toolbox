@@ -1,6 +1,6 @@
 # Dev-Toolbox - AI-Powered Development Environment
 
-AI-powered development environment container with **spec-driven development** capabilities. Uses **Kilo Code CLI** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
+AI-powered development environment container with **spec-driven development** capabilities. Uses **Continue (UI) + Aider (Terminal)** with **Ollama** to process tasks from **Backlog.md** format, with configurable approval workflows, automatic documentation generation, and **VS Code MCP integration**.
 
 ## Documentation
 - Full documentation index: [docs/INDEX.md](docs/INDEX.md)
@@ -21,7 +21,8 @@ AI-powered development environment container with **spec-driven development** ca
 - **Unified format** - Single markdown file for specs and tasks
 
 ### 🤖 AI-Powered Automation
-- **Smart prompt injection** - Spec requirements and architecture context to kodu
+- **Adapter architecture** - Switch between Aider (CLI) and Continue (UI) adapters
+- **Smart prompt injection** - Spec requirements and architecture context to AI
 - **Multiple model support** - Choose Ollama models per task
 - **Semantic context** - Pull relevant code/docs for enhanced AI prompts
 - **Automatic completion** - Optional auto-complete for simple tasks
@@ -66,10 +67,10 @@ Spec-Driven Development Flow:
 └──────┬───────────────┘
        │
        ▼
-┌──────────────┐      ┌──────────────┐
-│   Watcher    │─────▶│  Kilo Code   │
-│  (Node.js)   │      │  + Ollama    │
-└──────┬───────┘      └──────────────┘
+┌──────────────┐      ┌──────────────────┐
+│   Watcher    │─────▶│  Aider/Continue  │
+│  (Node.js)   │      │  + Ollama        │
+└──────┬───────┘      └──────────────────┘
        │
        ├─ Code Approval?
        ├─ Generate Docs?
@@ -163,7 +164,7 @@ npm run spec:create
 This project includes a **fully configured devcontainer** with:
 - ✅ Node 24 with pinned npm 11.7.0
 - ✅ PM2 with watch mode (auto-restart on code changes)
-- ✅ Pre-installed tools: Ollama CLI, Kilo Code, backlog.md
+- ✅ Pre-installed tools: Ollama CLI, Continue extension, Aider
 - ✅ Automatic dotfiles sync via chezmoi
 - ✅ SSH tunneling support with cloudflared
 - ✅ Ollama host auto-detection (OrbStack/Docker Desktop/Linux)

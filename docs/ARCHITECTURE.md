@@ -21,13 +21,14 @@ Dev-Toolbox automates task processing with AI-powered code generation, documenta
 
 ### Key Capabilities
 
-- **Automated task processing** via Ollama + Kilo Code CLI
+- **Automated task processing** via Ollama + AI adapters (Aider/Continue)
 - **Spec-driven development** with detailed requirements and architecture
 - **Documentation generation** (worklogs, ADRs, changelogs)
 - **Approval workflows** for code and documentation quality gates
 - **Semantic search** across codebase for context injection
 - **MCP integration** for VS Code automation
 - **Git automation** for commits and PR creation
+- **Adapter pattern** for swappable AI tool integration
 
 ### Target Users
 
@@ -62,25 +63,30 @@ Dev-Toolbox automates task processing with AI-powered code generation, documenta
 
 ### 2. Task Processor (`scripts/process-ticket.js`)
 
-**Purpose:** Execute task with Kodu and handle results
+**Purpose:** Execute task with AI adapter and handle results
 
 **Responsibilities:**
 - Parse task front matter and content
 - Build AI prompt with context
-- Execute Kodu CLI
+- Select appropriate AI adapter (Aider/Continue)
+- Execute adapter process method
 - Capture output and errors
 - Return processing result
 
 **Key Features:**
+- Adapter pattern for swappable AI tools
 - Semantic search integration for code context
 - Spec-driven prompt enhancement
 - Timeout handling
 - Error logging
 
 **Related Files:**
+- `scripts/adapters/adapter-factory.js` - Adapter selection
+- `scripts/adapters/aider-adapter.js` - Aider implementation
+- `scripts/adapters/continue-adapter.js` - Continue implementation
 - `scripts/semantic-indexer.js` - Code context
 - `scripts/spec-parser.js` - Spec extraction
-- `config.json` - Model selection
+- `config.json` - Model and adapter selection
 
 ### 3. Spec Parser (`scripts/spec-parser.js`)
 
@@ -216,7 +222,8 @@ Dev-Toolbox automates task processing with AI-powered code generation, documenta
     ├─ Read body content
     ├─ Semantic search for context
     ├─ Build prompt
-    ├─ Execute Kodu
+    ├─ Select AI adapter (Aider/Continue)
+    ├─ Execute adapter.process()
     └─ Capture output
 
 [4] Spec Processing (if enabled)
@@ -263,8 +270,8 @@ Requirements + Acceptance Criteria + Description
 Add Related Code Context
     ↓ (build)
 AI Prompt
-    ↓ (kodu)
-Generated Code
+    ↓ (adapter)
+Generated Code (via Aider or Continue)
     ↓ (parse)
 Processing Result
     ↓ (if success)
@@ -375,7 +382,8 @@ All async operations use modern async/await:
 async function processTicket(filePath) {
   try {
     const content = await fs.readFile(filePath);
-    const result = await kodu.execute(prompt);
+    const adapter = AdapterFactory.create(config);
+    const result = await adapter.process(task);
     return { success: true, result };
   } catch (error) {
     return { success: false, error: error.message };
@@ -508,9 +516,34 @@ Long-running operations timeout to prevent hanging:
 
 ```javascript
 const timeout = setTimeout(() => {
-  koduProcess.kill('SIGTERM');
+  adapterProcess.kill('SIGTERM');
 }, config.ollama.timeout); // 300s default
 ```
+
+### 5. Adapter Pattern for AI Tools
+
+Swappable AI tool implementations via adapter pattern:
+
+```javascript
+// Factory creates appropriate adapter
+const adapter = AdapterFactory.create({
+  adapter: config.ai.adapter, // 'aider' or 'continue'
+  model: config.ollama.defaultModel,
+  ollamaHost: process.env.OLLAMA_HOST
+});
+
+// All adapters implement same interface
+const result = await adapter.process(task);
+
+// Result format standardized across adapters
+// { success: bool, output: string, exitCode?: number }
+```
+
+**Benefits:**
+- Switch AI tools without rewriting core logic
+- Easy to add new AI tool integrations
+- Consistent error handling and logging
+- Per-task adapter override capability
 
 ---
 

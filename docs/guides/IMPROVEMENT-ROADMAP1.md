@@ -2,6 +2,8 @@
 
 A comprehensive guide to improving the Dev-Toolbox system's weak points, adding missing features that Kilo Code can't provide, and integrating Obsidian as a knowledge base.
 
+> **🚀 Future Overhaul:** For a complete stack rewrite using Convex + TypeScript + TanStack, see [plans/CONVEX-MIGRATION-PLAN.md](../plans/CONVEX-MIGRATION-PLAN.md)
+
 ---
 
 ## Table of Contents

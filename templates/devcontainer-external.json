@@ -53,7 +53,7 @@
     "TOOLING_HOME": "/opt/tooling"
   },
   
-  "postCreateCommand": "bash /opt/tooling/scripts/setup-kilocode.sh && cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
+  "postCreateCommand": "bash /opt/tooling/scripts/setup-aider.sh && cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
   
   "customizations": {
     "vscode": {

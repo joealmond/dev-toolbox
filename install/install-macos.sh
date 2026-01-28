@@ -88,22 +88,22 @@ else
     echo -e "${GREEN}✓ Ollama service running${NC}"
 fi
 
-# Install Backlog.md
-if ! command -v backlog &> /dev/null; then
-    echo -e "${YELLOW}Installing Backlog.md...${NC}"
-    npm install -g backlog.md
-    echo -e "${GREEN}✓ Backlog.md installed${NC}"
+# Install Python and Aider
+if ! command -v python3 &> /dev/null; then
+    echo -e "${YELLOW}Installing Python 3...${NC}"
+    brew install python3
+    echo -e "${GREEN}✓ Python 3 installed${NC}"
 else
-    echo -e "${GREEN}✓ Backlog.md already installed${NC}"
+    PYTHON_VERSION=$(python3 --version)
+    echo -e "${GREEN}✓ Python 3 already installed ($PYTHON_VERSION)${NC}"
 fi
 
-# Install Kilo Code CLI (kodu)
-if ! command -v kodu &> /dev/null; then
-    echo -e "${YELLOW}Installing Kilo Code CLI (kodu)...${NC}"
-    npm install -g kodu
-    echo -e "${GREEN}✓ Kodu installed${NC}"
+if ! command -v aider &> /dev/null; then
+    echo -e "${YELLOW}Installing Aider...${NC}"
+    pip3 install aider-chat==0.86.1
+    echo -e "${GREEN}✓ Aider installed${NC}"
 else
-    echo -e "${GREEN}✓ Kodu already installed${NC}"
+    echo -e "${GREEN}✓ Aider already installed${NC}"
 fi
 
 # Install chezmoi for dotfile management
@@ -119,23 +119,12 @@ fi
 echo -e "\n${BLUE}Ollama Models${NC}"
 echo -e "${YELLOW}Checking for recommended models...${NC}"
 
-if ! ollama list | grep -q "deepseek-coder"; then
-    echo -e "${YELLOW}Pulling deepseek-coder model (this may take a while)...${NC}"
-    ollama pull deepseek-coder
-    echo -e "${GREEN}✓ deepseek-coder model ready${NC}"
+if ! ollama list | grep -q "qwen2.5-coder:7b"; then
+    echo -e "${YELLOW}Pulling qwen2.5-coder:7b model (this may take a while)...${NC}"
+    ollama pull qwen2.5-coder:7b
+    echo -e "${GREEN}✓ qwen2.5-coder:7b model ready${NC}"
 else
-    echo -e "${GREEN}✓ deepseek-coder model already available${NC}"
-fi
-
-if ! ollama list | grep -q "codellama"; then
-    echo -e "${YELLOW}Do you want to pull codellama model as well? (y/N)${NC}"
-    read -r response
-    if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        ollama pull codellama
-        echo -e "${GREEN}✓ codellama model ready${NC}"
-    fi
-else
-    echo -e "${GREEN}✓ codellama model already available${NC}"
+    echo -e "${GREEN}✓ qwen2.5-coder:7b model already available${NC}"
 fi
 
 # Configure git if needed

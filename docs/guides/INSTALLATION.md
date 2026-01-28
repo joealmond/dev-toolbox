@@ -10,8 +10,9 @@ This guide covers installation on both **macOS** (development) and **Linux** (pr
 - **Node.js 20+** - JavaScript runtime
 - **Podman** - Container runtime (Docker alternative)
 - **Ollama** - Local LLM serving
-- **Kilo Code CLI (kodu)** - AI coding assistant
-- **Backlog.md CLI** - Task management
+- **Python 3** - For Aider terminal tool
+- **Aider** - AI coding assistant (terminal)
+- **Continue** - AI coding assistant (VS Code extension)
 
 ### Platform-Specific
 
@@ -61,8 +62,8 @@ This script will:
 5. ✅ Install PM2 process manager
 6. ✅ Install Ollama
 7. ✅ Start Ollama service
-8. ✅ Install Backlog.md CLI
-9. ✅ Install Kilo Code CLI (kodu)
+8. ✅ Install Python 3
+9. ✅ Install Aider (via pip)
 10. ✅ Pull recommended Ollama models
 11. ✅ Configure git (if needed)
 
@@ -92,8 +93,9 @@ npm install -g pm2
 brew install ollama
 brew services start ollama
 
-# Install CLIs
-npm install -g backlog.md @kilocode/cli@0.12.1
+# Install Python and Aider
+brew install python3
+pip3 install aider-chat==0.86.1
 
 # Pull recommended model (7B - good balance of speed/quality)
 ollama pull qwen2.5-coder:7b
@@ -151,8 +153,8 @@ This script will:
 6. ✅ Install inotify-tools for file watching
 7. ✅ Install Ollama
 8. ✅ Detect NVIDIA GPU and provide driver instructions
-9. ✅ Install Backlog.md CLI
-10. ✅ Install Kilo Code CLI (kodu)
+9. ✅ Install Python 3
+10. ✅ Install Aider (via pip)
 11. ✅ Pull recommended Ollama models
 12. ✅ Configure inotify limits
 13. ✅ Configure git (if needed)
@@ -207,8 +209,9 @@ EOF
 systemctl --user daemon-reload
 systemctl --user enable --now ollama.service
 
-# Install CLIs
-sudo npm install -g backlog.md @kilocode/cli@0.12.1
+# Install Python and Aider
+sudo apt-get install -y python3 python3-pip
+pip3 install aider-chat==0.86.1
 
 # Pull recommended model (7B - good balance of speed/quality)
 ollama pull qwen2.5-coder:7b

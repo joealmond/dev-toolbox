@@ -1,5 +1,5 @@
 [Unit]
-Description=Dev-Toolbox - Automated Task Processing with Kilo Code CLI
+Description=Dev-Toolbox - Automated Task Processing with Aider + Ollama
 After=network-online.target
 Wants=network-online.target
 
