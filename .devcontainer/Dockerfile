@@ -23,8 +23,9 @@ RUN mkdir -p /home/node/.ssh && \
 RUN curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64 -o /usr/local/bin/cloudflared \
   && chmod +x /usr/local/bin/cloudflared
 
-# Install Python and pip for Aider
-RUN apk add --no-cache python3 py3-pip
+# Install Python and pip for Aider with build dependencies
+# Build deps needed for tree-sitter-language-pack, psutil
+RUN apk add --no-cache python3 py3-pip python3-dev gcc musl-dev linux-headers
 
 # Pin npm version first (separate step to avoid EMFILE errors)
 RUN npm install -g npm@11.7.0

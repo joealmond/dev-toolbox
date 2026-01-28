@@ -1,13 +1,17 @@
 FROM node:24-alpine
 
-# Install git and other essentials
+# Install git and other essentials plus Python build dependencies for Aider
 RUN apk add --no-cache \
     git \
     bash \
     curl \
     ca-certificates \
     python3 \
-    py3-pip
+    py3-pip \
+    python3-dev \
+    gcc \
+    musl-dev \
+    linux-headers
 
 # Install global tools one at a time to avoid "too many open files" errors
 RUN npm install -g backlog.md --maxsockets=2
