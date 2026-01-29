@@ -47,7 +47,7 @@ Main configuration file for the application.
 |--------|------|---------|-------------|
 | `defaultModel` | string | `qwen2.5-coder:7b` | Default model when not specified in task |
 | `availableModels` | array | [...] | List of models available for selection |
-| `timeout` | number | 300000 | Maximum time (ms) for kilocode processing |
+| `timeout` | number | 300000 | Maximum time (ms) for AI processing |
 | `retryAttempts` | number | 3 | Number of retries on connection failures |
 | `retryDelay` | number | 5000 | Delay (ms) between retry attempts |
 
@@ -148,7 +148,7 @@ Main configuration file for the application.
     "branchNameFormat": "task-{id}",
     "createPR": true,
     "prTitle": "[Task {id}] {title}",
-    "prBody": "{description}\n\n## Acceptance Criteria\n{acceptanceCriteria}\n\n---\nProcessed by Kilo Code CLI with model: {model}",
+    "prBody": "{description}\n\n## Acceptance Criteria\n{acceptanceCriteria}\n\n---\nProcessed by AI with model: {model}",
     "pushRetries": 3,
     "pushRetryDelay": 2000
   }

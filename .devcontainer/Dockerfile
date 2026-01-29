@@ -38,10 +38,13 @@ RUN npm install -g backlog.md --maxsockets=2
 # v0.86.1 is latest stable with excellent Ollama support
 RUN pip3 install --break-system-packages aider-chat==0.86.1
 
-# Configure Aider for Ollama
-RUN mkdir -p /home/node/.aider && \
-    echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider/.aider.conf.yml && \
-    chown -R node:node /home/node/.aider
+# Configure Aider for Ollama (config at ~/.aider.conf.yml)
+# See: https://aider.chat/docs/config/aider_conf.html
+RUN echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider.conf.yml && \
+    echo 'auto-commits: false' >> /home/node/.aider.conf.yml && \
+    echo 'git: false' >> /home/node/.aider.conf.yml && \
+    echo 'gitignore: false' >> /home/node/.aider.conf.yml && \
+    chown node:node /home/node/.aider.conf.yml
 
 WORKDIR /workspace
 

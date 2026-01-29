@@ -6,7 +6,7 @@ This repository is **dev-toolbox**, an AI-powered development environment contai
 
 Dev-toolbox is NOT a library or framework that goes inside projects. It's an **environment container** that wraps around projects, providing:
 
-- Spec-driven development with AI (Ollama + Kilo Code CLI)
+- Spec-driven development with AI (Ollama + Aider/Continue)
 - Task processing via file-based workflow (todo → doing → review → completed)
 - MCP server with 12 tools for VS Code integration
 - Devcontainer support for external projects

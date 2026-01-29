@@ -26,17 +26,20 @@ sudo apt-get install -y python3 python3-pip
 pip3 install aider-chat==0.86.1
 ```
 
-**Configuration:**
-```json
-{
-  "ai": {
-    "adapter": "aider",
-    "autoApprove": true
-  },
-  "ollama": {
-    "defaultModel": "qwen2.5-coder:7b"
-  }
-}
+**Configuration (~/.aider.conf.yml):**
+```yaml
+# Aider config - place in home directory
+# https://aider.chat/docs/config/aider_conf.html
+model: ollama/qwen2.5-coder:7b
+auto-commits: false
+git: false
+gitignore: false
+stream: true
+```
+
+**Environment variable:**
+```bash
+export OLLAMA_API_BASE=http://localhost:11434
 ```
 
 **Usage:**
@@ -70,14 +73,13 @@ code --install-extension continue.continue
 ```
 
 **Configuration:**
+
+Dev-toolbox adapter config (config.json):
 ```json
 {
   "ai": {
     "adapter": "continue",
     "autoApprove": false
-  },
-  "ollama": {
-    "defaultModel": "qwen2.5-coder:7b"
   }
 }
 ```
@@ -88,20 +90,37 @@ code --install-extension continue.continue
 - Dev-toolbox creates `.continue-task-{id}.json` files for manual processing
 - Process tasks interactively through the UI
 
-**Configure Continue for Ollama:**
-1. Open Continue settings (gear icon in Continue panel)
-2. Add Ollama provider:
-```json
-{
-  "models": [
-    {
-      "title": "Qwen Coder",
-      "provider": "ollama",
-      "model": "qwen2.5-coder:7b",
-      "apiBase": "http://localhost:11434"
-    }
-  ]
-}
+**Configure Continue for Ollama (~/.continue/configs/config.yaml):**
+```yaml
+# Continue config - YAML format (config.json is deprecated)
+# https://docs.continue.dev/guides/ollama-guide
+name: Local Ollama Config
+version: 0.0.1
+schema: v1
+
+models:
+  - name: Qwen 2.5 Coder 7B
+    provider: ollama
+    model: qwen2.5-coder:7b
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+      - apply
+    defaultCompletionOptions:
+      temperature: 0.7
+      maxTokens: 2048
+
+  - name: Autodetect Ollama
+    provider: ollama
+    model: AUTODETECT
+    apiBase: http://localhost:11434
+
+context:
+  - provider: file
+  - provider: code
+  - provider: diff
+  - provider: terminal
 ```
 
 ---

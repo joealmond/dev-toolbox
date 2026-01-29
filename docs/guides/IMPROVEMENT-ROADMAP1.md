@@ -1,6 +1,6 @@
 # Improvement Roadmap: From 3-4 Stars to 5 Stars
 
-A comprehensive guide to improving the Dev-Toolbox system's weak points, adding missing features that Kilo Code can't provide, and integrating Obsidian as a knowledge base.
+A comprehensive guide to improving the Dev-Toolbox system's weak points, adding missing features that AI CLI tools can't provide, and integrating Obsidian as a knowledge base.
 
 > **🚀 Future Overhaul:** For a complete stack rewrite using Convex + TypeScript + TanStack, see [plans/CONVEX-MIGRATION-PLAN.md](../plans/CONVEX-MIGRATION-PLAN.md)
 
@@ -11,7 +11,7 @@ A comprehensive guide to improving the Dev-Toolbox system's weak points, adding 
 0. [RTX 3090 GPU Optimization (Do First!)](#rtx-3090-gpu-optimization)
 1. [Improving 3-4 Star Features](#improving-3-4-star-features)
 2. [Effectiveness Improvements (3+ Stars)](#effectiveness-improvements)
-3. [Missing Features Kilo Code Can't Provide](#missing-features-kilo-code-cant-provide)
+3. [Missing Features AI CLI Tools Can't Provide](#missing-features-ai-cli-tools-cant-provide)
 4. [Complementary AI Tools](#complementary-ai-tools)
 5. [Message Queue Spec Reviewer](#message-queue-spec-reviewer)
 6. [Obsidian Integration Guide](#obsidian-integration-guide)
@@ -34,7 +34,7 @@ A comprehensive guide to improving the Dev-Toolbox system's weak points, adding 
 | 8k | ~200 lines | ⚠️ Small files only |
 | 48k | ~1,200 lines | ✅ Full modules + specs + docs |
 
-With 48k context, Kilo Code can see:
+With 48k context, Aider can see:
 - Your entire spec file
 - Multiple source files
 - Semantic search results

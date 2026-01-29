@@ -21,6 +21,13 @@ RUN npm install -g pm2 --maxsockets=2
 # v0.86.1 is latest stable with excellent Ollama support
 RUN pip3 install --break-system-packages aider-chat==0.86.1
 
+# Configure Aider for Ollama (config at ~/.aider.conf.yml)
+# See: https://aider.chat/docs/config/aider_conf.html
+RUN echo 'model: ollama/qwen2.5-coder:7b' > /root/.aider.conf.yml && \
+    echo 'auto-commits: false' >> /root/.aider.conf.yml && \
+    echo 'git: false' >> /root/.aider.conf.yml && \
+    echo 'gitignore: false' >> /root/.aider.conf.yml
+
 # Set working directory
 WORKDIR /workspace
 

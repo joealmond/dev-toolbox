@@ -6,7 +6,7 @@ Common issues and solutions for the Dev-Toolbox system.
 
 - [Installation Issues](#installation-issues)
 - [VS Code Extension Issues](#vs-code-extension-issues)
-- [Kilo Code CLI Issues](#kilo-code-cli-issues)
+- [Aider CLI Issues](#aider-cli-issues)
 - [Service Issues](#service-issues)
 - [Processing Issues](#processing-issues)
 - [Gitea Issues](#gitea-issues)
@@ -136,9 +136,9 @@ compatible with this version of Visual Studio Code.
 
 **Prevention:** The dev-toolbox devcontainer template includes auto-update settings by default.
 
-### Kilo Code Extension Not Working
+### Continue Extension Not Working
 
-**Problem:** Kilo Code extension installed but not connecting to Ollama.
+**Problem:** Continue extension installed but not connecting to Ollama.
 
 **Solution:**
 
@@ -152,81 +152,82 @@ compatible with this version of Visual Studio Code.
    curl http://host.containers.internal:11434/api/tags
    ```
 
-3. **Check extension settings:**
-   - Open VS Code Settings (`Ctrl+,`)
-   - Search for "Kilo Code"
-   - Set API Base URL to: `http://host.containers.internal:11434`
+3. **Check Continue config:**
+   ```bash
+   cat ~/.continue/configs/config.yaml
+   ```
+   
+4. **Ensure apiBase is set:**
+   ```yaml
+   models:
+     - name: qwen2.5-coder
+       provider: ollama
+       model: qwen2.5-coder:7b
+       apiBase: http://localhost:11434
+   ```
 
 ---
 
-## Kilo Code CLI Issues
+## Aider CLI Issues
 
-### CLI Prompts for URL and Provider
+### CLI Not Finding Ollama Model
 
-**Problem:** Running `kilocode` prompts for URL and provider every time.
+**Problem:** Running `aider` prompts for OpenRouter or shows "No LLM model was specified".
 
-**Cause:** Kilo Code CLI is not pre-configured with Ollama settings.
+**Cause:** Aider is not pre-configured with Ollama settings.
 
 **Solution - Pre-configure in Dockerfile:**
 
-The dev-toolbox Dockerfile now pre-configures Kilo Code CLI:
+The dev-toolbox Dockerfile now pre-configures Aider:
 
 ```dockerfile
-# Pre-configure Kilo Code CLI to use Ollama
-RUN mkdir -p /home/node/.kilocode && \
-    echo '{"id":"default","provider":"ollama","ollamaBaseUrl":"http://host.containers.internal:11434","ollamaModelId":"deepseek-coder-v2:latest"}' > /home/node/.kilocode/config.json && \
-    chown -R node:node /home/node/.kilocode
+# Pre-configure Aider CLI to use Ollama
+RUN echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider.conf.yml && \
+    echo 'auto-commits: false' >> /home/node/.aider.conf.yml && \
+    echo 'git: false' >> /home/node/.aider.conf.yml && \
+    echo 'gitignore: false' >> /home/node/.aider.conf.yml && \
+    chown node:node /home/node/.aider.conf.yml
 ```
 
 **Solution - Manual configuration:**
 
-1. **Interactive configuration:**
+1. **Create config file:**
    ```bash
-   kilocode config
-   # Or use the /config command inside kilocode:
-   kilocode
-   > /config
+   cat > ~/.aider.conf.yml << 'EOF'
+   model: ollama/qwen2.5-coder:7b
+   auto-commits: false
+   git: false
+   gitignore: false
+   stream: true
+   EOF
    ```
 
-2. **Manual config file:**
+2. **Set environment variable:**
    ```bash
-   mkdir -p ~/.kilocode
-   cat > ~/.kilocode/config.json << 'EOF'
-   {
-     "id": "default",
-     "provider": "ollama",
-     "ollamaBaseUrl": "http://host.containers.internal:11434",
-     "ollamaModelId": "deepseek-coder-v2:latest",
-     "ollamaApiKey": "",
-     "ollamaNumCtx": 8192
-   }
-   EOF
+   export OLLAMA_API_BASE=http://localhost:11434
    ```
 
 ### CLI Commands Reference
 
 | Command | Description |
 |---------|-------------|
-| `kilocode` | Start interactive mode |
-| `kilocode "prompt"` | Run single prompt |
-| `kilocode config` | Configure provider settings |
-| `/config` | Configure in interactive mode |
-| `/model list` | List available models |
-| `/model select <name>` | Select a model |
+| `aider` | Start interactive mode |
+| `aider --message "prompt"` | Run single prompt |
+| `aider file1.js file2.js` | Add files to context |
+| `/help` | Show help in interactive mode |
+| `/add filename` | Add file to context |
+| `/drop filename` | Remove file from context |
 
-### Wrong kilocode Package Installed
+### Wrong aider Package Version
 
-**Problem:** Installing `kilocode` from npm results in a placeholder package.
+**Problem:** Aider not connecting to Ollama correctly.
 
-**Cause:** The correct package is `@kilocode/cli`, not `kilocode`.
+**Cause:** Older versions of Aider may have different Ollama configuration.
 
 **Solution:**
 ```bash
-# Remove wrong package (if installed)
-npm uninstall -g kilocode
-
-# Install correct package
-npm install -g @kilocode/cli
+# Update to latest version
+pip install --upgrade aider-chat
 
 # Verify
 kilocode --version

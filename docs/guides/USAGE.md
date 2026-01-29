@@ -441,7 +441,7 @@ curl -H "Authorization: token $GITEA_TOKEN" \
 
 ### VS Code Run & Approvals
 
-Use VS Code to quickly run generated code and approve tasks without leaving the editor. This complements the watcher and Kilo Code (kodu) automation.
+Use VS Code to quickly run generated code and approve tasks without leaving the editor. This complements the watcher and Aider/Continue automation.
 
 - **Run generated code**: Open the generated file, then right-click → Run Code. Output appears in the terminal. Requires the Code Runner extension (already enabled in the dev container).
 - **Approve from editor**: With the spec file active (e.g., `spec-123.md`), open Terminal → Run Task and choose:
@@ -455,7 +455,7 @@ Setup details:
 
 Typical flow:
 1. Create or move a spec/task into `backlog/todo/`.
-2. Watcher processes with Kodu, generates code, and moves to `backlog/review/`.
+2. Watcher processes with AI, generates code, and moves to `backlog/review/`.
 3. Open generated code in VS Code. Edit and Run Code to validate.
 4. Run Task → Approve Code for Current Spec (then Approve Docs if required).
 5. The webhook auto-completes on PR merge; task moves to `backlog/completed/`.

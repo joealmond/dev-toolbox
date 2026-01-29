@@ -120,8 +120,8 @@ git blame file.js
 # Test Ollama connection (inside container)
 curl http://host.containers.internal:11434/api/tags
 
-# Check Kilo Code CLI config
-cat ~/.kilocode/config.json
+# Check Aider config
+cat ~/.aider.conf.yml
 ```
 
 ## Dev-Toolbox Specific Issues
@@ -136,16 +136,16 @@ curl http://host.containers.internal:11434/api/tags
 systemctl --user status ollama
 ```
 
-### Kilo Code CLI Issues
+### Aider CLI Issues
 ```bash
 # Check config
-cat ~/.kilocode/config.json
-
-# Reconfigure
-kilocode config
+cat ~/.aider.conf.yml
 
 # Test with simple prompt
-kilocode "hello"
+aider --message "hello"
+
+# Check environment
+echo $OLLAMA_API_BASE
 ```
 
 ### Extension Compatibility

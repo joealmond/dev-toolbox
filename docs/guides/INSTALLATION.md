@@ -339,14 +339,14 @@ systemctl --user status ollama
 curl http://localhost:11434/api/tags
 ```
 
-### Test Kilo Code CLI
+### Test Aider CLI
 
 ```bash
-# First configure for Ollama
-bash scripts/setup-kilocode.sh
+# Test Aider connection to Ollama
+aider --message "Say hello"
 
-# Test with interactive mode
-kilocode chat "Say hello"
+# Or start interactive mode
+aider
 ```
 
 ---

@@ -6,7 +6,7 @@ This project uses **dev-toolbox** as an invisible development environment. All A
 
 ### Aider (Terminal AI)
 - **Model:** `qwen2.5-coder:7b` via Ollama
-- **Config:** `~/.aider/.aider.conf.yml`
+- **Config:** `~/.aider.conf.yml`
 - **Usage:**
   ```bash
   # Interactive mode
@@ -21,7 +21,7 @@ This project uses **dev-toolbox** as an invisible development environment. All A
 
 ### Continue (VS Code AI)
 - **Model:** `qwen2.5-coder:7b` via Ollama
-- **Config:** `~/.continue/config.json`
+- **Config:** `~/.continue/configs/config.yaml`
 - **Usage:**
   - `Ctrl+L` (Cmd+L) - Open chat
   - `Ctrl+I` (Cmd+I) - Inline edit
@@ -39,21 +39,32 @@ Located at `.github/agents/` (mounted from dev-toolbox):
 ## 🔧 Configuration
 
 ### Aider Configuration
-Edit `~/.aider/.aider.conf.yml`:
+Edit `~/.aider.conf.yml`:
 ```yaml
 model: ollama/qwen2.5-coder:7b
-api-base: http://localhost:11434
 auto-commits: false
-editor: code --wait
-watch-files: true
+git: false
+gitignore: false
+stream: true
 ```
 
+> **Note:** Aider uses the `OLLAMA_API_BASE` env var for Ollama connection (set automatically).
+
 ### Continue Configuration
-Edit `~/.continue/config.json` to:
-- Change model
-- Add more models
-- Configure autocomplete
-- Customize context providers
+Edit `~/.continue/configs/config.yaml`:
+```yaml
+name: Dev Toolbox
+version: 0.0.1
+schema: v1
+models:
+  - name: qwen2.5-coder
+    provider: ollama
+    model: qwen2.5-coder:7b
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+```
 
 ### Available Ollama Models
 ```bash
@@ -62,7 +73,8 @@ ollama list  # See installed models
 # Switch model in Aider
 aider --model ollama/qwen2.5-coder:14b
 
-# Or update ~/.aider/.aider.conf.yml
+# Or update ~/.aider.conf.yml
+model: ollama/qwen2.5-coder:14b
 ```
 
 ## 📁 Directory Structure
