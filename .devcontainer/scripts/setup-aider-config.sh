@@ -1,35 +1,61 @@
 #!/bin/bash
 # Configure Aider for the current user with Ollama
+# Based on: https://aider.chat/docs/config/aider_conf.html
 
 set -e
 
 echo "🔧 Configuring Aider for Ollama..."
 
-# Create Aider config directory
-mkdir -p ~/.aider
+# Aider looks for .aider.conf.yml in:
+# 1. Home directory (~/.aider.conf.yml)
+# 2. Git repo root
+# 3. Current directory
 
-# Create Aider config
-cat > ~/.aider/.aider.conf.yml << 'EOF'
+cat > ~/.aider.conf.yml << 'EOF'
+##########################################################
 # Aider configuration for Ollama
+# https://aider.chat/docs/config/aider_conf.html
+##########################################################
+
+# Model to use (Ollama format: ollama/model-name)
 model: ollama/qwen2.5-coder:7b
 
-# Don't ask to create git repo
+# Disable auto git commits (we manage git separately)
 auto-commits: false
 
-# Use Ollama API
-api-base: http://localhost:11434
+# Disable looking for git repo (avoids prompts)
+git: false
 
-# Editor settings
+# Don't add .aider* to .gitignore automatically
+gitignore: false
+
+# Editor for /editor command
 editor: code --wait
 
-# File watching
-watch-files: true
+# Enable file watching for ai coding comments
+watch-files: false
+
+# Disable pretty output if causing issues
+# pretty: false
+
+# Enable streaming responses
+stream: true
 EOF
 
+# Set Ollama API base via environment variable
+# Aider auto-detects Ollama models when using ollama/ prefix
+if ! grep -q "OLLAMA_API_BASE" ~/.bashrc 2>/dev/null; then
+  echo "" >> ~/.bashrc
+  echo "# Aider Ollama configuration" >> ~/.bashrc
+  echo "export OLLAMA_API_BASE=http://localhost:11434" >> ~/.bashrc
+fi
+
 echo "✅ Aider configured:"
+echo "   - Config: ~/.aider.conf.yml"
 echo "   - Model: ollama/qwen2.5-coder:7b"
 echo "   - API: http://localhost:11434"
 echo "   - Auto-commits: disabled"
+echo "   - Git prompts: disabled"
 echo ""
 echo "💡 Usage:"
 echo "   aider                          # Interactive mode"
