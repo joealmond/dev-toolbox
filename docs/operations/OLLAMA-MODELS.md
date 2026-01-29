@@ -110,30 +110,30 @@ Override the default model via environment:
 # Set default model
 export OLLAMA_MODEL="qwen2.5-coder:14b"
 
-# Run setup script
-bash scripts/setup-kilocode.sh
+# For Aider
+export OLLAMA_API_BASE="http://localhost:11434"
 ```
 
-## Kilo Code CLI Compatibility
+## Aider CLI Integration
 
-### Known Issue: v0.13.0+
+### Configuration
 
-Versions of `@kilocode/cli` from v0.13.0 onwards have a bug with the Ollama provider. See [GitHub Issue #4434](https://github.com/Kilo-Org/kilocode/issues/4434).
+Aider uses `~/.aider.conf.yml` for configuration:
 
-**Workaround**: Use v0.12.1:
-
-```bash
-npm install -g @kilocode/cli@0.12.1
+```yaml
+model: ollama/qwen2.5-coder:7b
+auto-commits: false
+git: false
+gitignore: false
 ```
 
 ### Context Length
 
-For large codebases, increase context length:
+For large codebases, increase context length in Ollama:
 
 ```bash
-# Default is 16384 tokens
-export OLLAMA_CTX=32768
-bash scripts/setup-kilocode.sh
+# Set higher context in Modelfile or via API
+ollama run qwen2.5-coder:7b --num-ctx 32768
 ```
 
 ## Model Performance Guidelines
