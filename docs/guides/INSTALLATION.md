@@ -97,6 +97,19 @@ brew services start ollama
 brew install python3
 pip3 install aider-chat==0.86.1
 
+# Configure Aider for Ollama
+cat > ~/.aider.conf.yml << 'EOF'
+model: ollama/qwen2.5-coder:7b
+auto-commits: false
+git: false
+gitignore: false
+yes: true
+check-update: false
+EOF
+
+# Configure Continue extension (runs on host, not in containers)
+./install/setup-continue-host.sh
+
 # Pull recommended model (7B - good balance of speed/quality)
 ollama pull qwen2.5-coder:7b
 
@@ -212,6 +225,19 @@ systemctl --user enable --now ollama.service
 # Install Python and Aider
 sudo apt-get install -y python3 python3-pip
 pip3 install aider-chat==0.86.1
+
+# Configure Aider for Ollama
+cat > ~/.aider.conf.yml << 'EOF'
+model: ollama/qwen2.5-coder:7b
+auto-commits: false
+git: false
+gitignore: false
+yes: true
+check-update: false
+EOF
+
+# Configure Continue extension (runs on host, not in containers)
+./install/setup-continue-host.sh
 
 # Pull recommended model (7B - good balance of speed/quality)
 ollama pull qwen2.5-coder:7b

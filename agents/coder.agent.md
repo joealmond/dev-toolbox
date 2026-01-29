@@ -90,10 +90,18 @@ def do_something(param: str) -> Result:
 In the dev-toolbox environment, you have access to:
 
 - **Aider** (`aider`): AI-powered terminal coding with Ollama
+  - Config at `~/.aider.conf.yml` (auto-loaded)
+  - Usage: just run `aider` in terminal - config handles Ollama connection
   ```bash
-  aider --model ollama/qwen2.5-coder:7b "implement the authentication middleware"
+  # Interactive mode (uses ~/.aider.conf.yml settings)
+  aider
+  
+  # Single command
+  aider --message "implement the authentication middleware"
   ```
 - **Continue** (VS Code): AI-assisted coding in the editor
+  - Runs on HOST machine, config at `~/.continue/configs/config.yaml`
+  - Setup: run `./install/setup-continue-host.sh` on host
 - **Git auto-commit** (`git-auto-commit.js`): Smart commit messages
 - **Semantic search** (`query-search.js`): Find related code
 

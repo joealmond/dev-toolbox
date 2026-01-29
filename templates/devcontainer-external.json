@@ -53,7 +53,9 @@
     "TOOLING_HOME": "/opt/tooling"
   },
   
-  "postCreateCommand": "bash {{TOOLING_ROOT}}/.devcontainer/scripts/setup-aider-config.sh && bash {{TOOLING_ROOT}}/.devcontainer/scripts/setup-continue-config.sh && cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
+  // Continue extension runs on HOST (not in container), so no container config needed for it
+  // Run ./install/setup-continue-host.sh on your host machine to configure Continue
+  "postCreateCommand": "cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
   
   "customizations": {
     "vscode": {

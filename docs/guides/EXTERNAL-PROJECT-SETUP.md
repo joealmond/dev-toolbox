@@ -205,8 +205,43 @@ brew services start ollama    # macOS
 curl http://localhost:11434/api/tags
 
 # Verify Aider config
-cat ~/.aider/.aider.conf.yml
-# Should show: model: ollama/qwen2.5-coder:7b
+cat ~/.aider.conf.yml
+# Should show:
+# model: ollama/qwen2.5-coder:7b
+# auto-commits: false
+# git: false
+# gitignore: false
+# yes: true
+# check-update: false
+```
+
+### Continue Extension Not Working
+
+Continue runs on the **HOST machine** (where VS Code runs), not inside containers!
+
+```bash
+# On your HOST machine (not container), run:
+./install/setup-continue-host.sh
+
+# Or manually create config at ~/.continue/configs/config.yaml
+mkdir -p ~/.continue/configs
+cat > ~/.continue/configs/config.yaml << 'EOF'
+name: Local Config
+version: 1.0.0
+schema: v1
+models:
+  - name: Autodetect
+    provider: ollama
+    model: AUTODETECT
+    apiBase: http://localhost:11434
+    roles:
+      - chat
+      - edit
+      - apply
+      - autocomplete
+EOF
+
+# Then reload VS Code: Ctrl+Shift+P → "Developer: Reload Window"
 ```
 
 ### Tools Not Found in PATH

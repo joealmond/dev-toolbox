@@ -52,7 +52,7 @@ RUN echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider.conf.yml && \
 # Uses YAML config at ~/.continue/configs/config.yaml
 # AUTODETECT will find installed Ollama models automatically
 RUN mkdir -p /home/node/.continue/configs && \
-    printf 'name: Dev Toolbox\nversion: 0.0.1\nschema: v1\nmodels:\n  - name: Autodetect\n    provider: ollama\n    model: AUTODETECT\n    apiBase: http://localhost:11434\n    roles:\n      - chat\n      - edit\n      - apply\n      - autocomplete\n' > /home/node/.continue/configs/config.yaml && \
+    printf 'name: Local Config\nversion: 1.0.0\nschema: v1\nmodels:\n  - name: Autodetect\n    provider: ollama\n    model: AUTODETECT\n    apiBase: http://localhost:11434\n    roles:\n      - chat\n      - edit\n      - apply\n      - autocomplete\n' > /home/node/.continue/configs/config.yaml && \
     chown -R node:node /home/node/.continue
 
 WORKDIR /workspace

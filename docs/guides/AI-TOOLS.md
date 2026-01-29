@@ -34,7 +34,8 @@ model: ollama/qwen2.5-coder:7b
 auto-commits: false
 git: false
 gitignore: false
-stream: true
+yes: true              # Skip confirmations (for automation)
+check-update: false    # Disable update checks (for container stability)
 ```
 
 **Environment variable:**
@@ -91,37 +92,35 @@ Dev-toolbox adapter config (config.json):
 - Process tasks interactively through the UI
 
 **Configure Continue for Ollama (~/.continue/configs/config.yaml):**
-```yaml
-# Continue config - YAML format (config.json is deprecated)
-# https://docs.continue.dev/guides/ollama-guide
-name: Local Ollama Config
-version: 0.0.1
-schema: v1
 
+> ⚠️ **Important:** Continue extension runs on the **HOST machine** (where VS Code runs), not inside containers. You must configure this on your host.
+
+**Quick Setup (run on host):**
+```bash
+# From dev-toolbox directory
+./install/setup-continue-host.sh
+```
+
+**Manual config (~/.continue/configs/config.yaml):**
+```yaml
+# Continue config - YAML format
+# https://docs.continue.dev/guides/ollama-guide
+name: Local Config
+version: 1.0.0
+schema: v1
 models:
-  - name: Qwen 2.5 Coder 7B
+  - name: Autodetect
     provider: ollama
-    model: qwen2.5-coder:7b
+    model: AUTODETECT
     apiBase: http://localhost:11434
     roles:
       - chat
       - edit
       - apply
-    defaultCompletionOptions:
-      temperature: 0.7
-      maxTokens: 2048
-
-  - name: Autodetect Ollama
-    provider: ollama
-    model: AUTODETECT
-    apiBase: http://localhost:11434
-
-context:
-  - provider: file
-  - provider: code
-  - provider: diff
-  - provider: terminal
+      - autocomplete
 ```
+
+After creating the config, reload VS Code: `Ctrl+Shift+P` → "Developer: Reload Window"
 
 ---
 
@@ -368,11 +367,18 @@ export OLLAMA_HOST=http://localhost:11434
 **Problem:** Continue not finding Ollama models
 
 **Solution:**
-1. Open Continue settings
-2. Verify `apiBase` is correct:
-   - Local: `http://localhost:11434`
-   - Docker/Podman: `http://host.containers.internal:11434`
-3. Check Ollama is accessible: `curl $OLLAMA_HOST/api/tags`
+
+1. **Continue runs on HOST, not in container!** Config must exist at:
+   - Linux/macOS: `~/.continue/configs/config.yaml`
+
+2. Run the setup script on your **host machine**:
+   ```bash
+   ./install/setup-continue-host.sh
+   ```
+
+3. Reload VS Code after creating config
+
+4. Verify Ollama is running: `curl http://localhost:11434/api/tags`
 
 **Problem:** Continue tasks not processing
 

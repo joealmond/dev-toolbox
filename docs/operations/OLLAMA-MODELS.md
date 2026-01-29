@@ -125,6 +125,8 @@ model: ollama/qwen2.5-coder:7b
 auto-commits: false
 git: false
 gitignore: false
+yes: true              # Skip confirmations
+check-update: false    # Disable update checks
 ```
 
 ### Context Length

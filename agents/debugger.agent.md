@@ -141,11 +141,31 @@ systemctl --user status ollama
 # Check config
 cat ~/.aider.conf.yml
 
+# Expected config contents:
+# model: ollama/qwen2.5-coder:7b
+# auto-commits: false
+# git: false
+# gitignore: false
+# yes: true
+# check-update: false
+
 # Test with simple prompt
 aider --message "hello"
 
 # Check environment
 echo $OLLAMA_API_BASE
+```
+
+### Continue Extension Issues
+Continue runs on the **HOST machine**, not inside containers!
+```bash
+# Check config on HOST (not container)
+cat ~/.continue/configs/config.yaml
+
+# Setup Continue on host
+./install/setup-continue-host.sh
+
+# Reload VS Code after creating config
 ```
 
 ### Extension Compatibility
