@@ -44,6 +44,8 @@ RUN echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider.conf.yml && \
     echo 'auto-commits: false' >> /home/node/.aider.conf.yml && \
     echo 'git: false' >> /home/node/.aider.conf.yml && \
     echo 'gitignore: false' >> /home/node/.aider.conf.yml && \
+    echo 'yes: true' >> /home/node/.aider.conf.yml && \
+    echo 'check-update: false' >> /home/node/.aider.conf.yml && \
     chown node:node /home/node/.aider.conf.yml
 
 WORKDIR /workspace
