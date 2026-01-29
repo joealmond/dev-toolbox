@@ -49,19 +49,10 @@ RUN echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider.conf.yml && \
     chown node:node /home/node/.aider.conf.yml
 
 # Configure Continue for Ollama (no account needed)
-# See: https://docs.continue.dev/yaml-reference
+# Uses YAML config at ~/.continue/configs/config.yaml
+# AUTODETECT will find installed Ollama models automatically
 RUN mkdir -p /home/node/.continue/configs && \
-    echo 'name: Dev Toolbox' > /home/node/.continue/configs/config.yaml && \
-    echo 'version: 0.0.1' >> /home/node/.continue/configs/config.yaml && \
-    echo 'schema: v1' >> /home/node/.continue/configs/config.yaml && \
-    echo 'models:' >> /home/node/.continue/configs/config.yaml && \
-    echo '  - name: qwen2.5-coder' >> /home/node/.continue/configs/config.yaml && \
-    echo '    provider: ollama' >> /home/node/.continue/configs/config.yaml && \
-    echo '    model: qwen2.5-coder:7b' >> /home/node/.continue/configs/config.yaml && \
-    echo '    apiBase: http://localhost:11434' >> /home/node/.continue/configs/config.yaml && \
-    echo '    roles:' >> /home/node/.continue/configs/config.yaml && \
-    echo '      - chat' >> /home/node/.continue/configs/config.yaml && \
-    echo '      - edit' >> /home/node/.continue/configs/config.yaml && \
+    printf 'name: Dev Toolbox\nversion: 0.0.1\nschema: v1\nmodels:\n  - name: Autodetect\n    provider: ollama\n    model: AUTODETECT\n    apiBase: http://localhost:11434\n    roles:\n      - chat\n      - edit\n      - apply\n      - autocomplete\n' > /home/node/.continue/configs/config.yaml && \
     chown -R node:node /home/node/.continue
 
 WORKDIR /workspace
