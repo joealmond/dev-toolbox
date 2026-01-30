@@ -84,14 +84,15 @@ chat_ui: Open WebUI
 - [ ] Configure Obsidian plugin to use Ollama endpoint
 - [ ] Test mobile access via WireGuard
 
-### Phase 3: Network Architecture 🔴 QUEUED
-- [ ] Document current Cloudflare tunnel config
-- [ ] Set up local DNS on ER605 (*.mandulaj.local → IPs)
-- [ ] Configure WireGuard server on ER605
+### Phase 3: Network Architecture � IN PROGRESS
+> **See [plans/NETWORK-SETUP-PLAN.md](plans/NETWORK-SETUP-PLAN.md)** for detailed setup guide.
+- [ ] **Deploy Pi-hole on Synology NAS** (Container Manager)
+- [ ] Configure Local DNS records (`*.local` → IPs)
+- [ ] Configure Omada LAN DHCP to use Pi-hole DNS
+- [ ] **Configure WireGuard Server** on ER605 (via Omada)
 - [ ] Create WireGuard client configs (MacBook, iPhone)
-- [ ] Test large file push via local network (bypass Cloudflare)
-- [ ] Create network topology diagram
-- [ ] Document local vs remote workflow
+- [ ] Test mobile access via WireGuard (5G test)
+- [ ] Document final configuration in `NETWORK-SETUP.md`
 
 ### Phase 4: Obsidian Integration 🟡 WAITING
 - [ ] Create symlink: Obsidian → backlog/todo

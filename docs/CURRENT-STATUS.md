@@ -16,7 +16,11 @@
 - **UX:** VS Code terminal links disabled for cleaner output.
 
 ## Pending Actions
-*None. The system is ready for use.*
+
+1. **Execute Phase 3 Network Plan:**
+   - Deploy Pi-hole on NAS for Local DNS.
+   - Configure WireGuard on ER605 for VPN access.
+   - See [plans/NETWORK-SETUP-PLAN.md](plans/NETWORK-SETUP-PLAN.md).
 
 ## Usage Reminder
 
