@@ -146,7 +146,7 @@ cat ~/.aider.conf.yml
 # auto-commits: false
 # git: false
 # gitignore: false
-# yes: true
+# yes-always: true
 # check-update: false
 
 # Test with simple prompt

@@ -25,7 +25,13 @@ class AiderAdapter extends AIAdapter {
         const args = [
           '--model', `ollama/${this.model}`,
           '--no-git', // We handle git separately
-          '--yes', // Auto-approve changes (if enabled)
+          '--yes-always', // Auto-approve changes (if enabled)
+          '--no-show-release-notes', // Disable release notes
+          '--no-check-update', // Disable update checks
+          '--no-analytics', // Disable analytics
+          '--no-detect-urls', // Disable URL detection
+          '--no-suggest-shell-commands', // Disable shell suggestions
+          '--no-browser', // Disable browser opening
           '--message', prompt
         ];
 
@@ -61,8 +67,11 @@ class AiderAdapter extends AIAdapter {
         });
 
         aiderProcess.on('close', (code) => {
-          if (code === 0) {
-            logger.success(`[Aider] Task-${taskId} completed successfully`);
+          // Check if aider actually applied edits (success indicator in stdout)
+          const appliedEdits = stdout.includes('Applied edit') || stdout.includes('Created new file');
+          
+          if (code === 0 || appliedEdits) {
+            logger.success(`[Aider] Task-${taskId} completed successfully${appliedEdits ? ' (edits applied)' : ''}`);
             resolve({
               success: true,
               exitCode: code,

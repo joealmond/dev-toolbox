@@ -11,7 +11,7 @@ This guide covers installation on both **macOS** (development) and **Linux** (pr
 - **Podman** - Container runtime (Docker alternative)
 - **Ollama** - Local LLM serving
 - **Python 3** - For Aider terminal tool
-- **Aider** - AI coding assistant (terminal)
+- **Aider** - AI coding assistant (terminal). **Must be installed on the HOST machine** if using devcontainer mount binding.
 - **Continue** - AI coding assistant (VS Code extension)
 
 ### Platform-Specific
@@ -103,7 +103,7 @@ model: ollama/qwen2.5-coder:7b
 auto-commits: false
 git: false
 gitignore: false
-yes: true
+yes-always: true
 check-update: false
 EOF
 
@@ -232,7 +232,7 @@ model: ollama/qwen2.5-coder:7b
 auto-commits: false
 git: false
 gitignore: false
-yes: true
+yes-always: true
 check-update: false
 EOF
 

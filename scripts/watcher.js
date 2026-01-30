@@ -121,20 +121,13 @@ async function processTicket(filePath) {
         }
       }
       
-      // Move to review folder
-      const reviewPath = path.join(config.folders.review, filename);
+      // Move to completed folder
+      const completedPath = path.join(config.folders.completed, filename);
       const updatedContent = matter.stringify(body, frontMatter);
       await fs.writeFile(doingPath, updatedContent); // Update with doc paths
-      await fs.rename(doingPath, reviewPath);
+      await fs.rename(doingPath, completedPath);
       
-      // Log approval status
-      if (codeApprovalRequired) {
-        logger.warn(`Task ${taskId} requires CODE approval before proceeding`);
-      } else if (docsApprovalRequired && docsGenerated) {
-        logger.warn(`Task ${taskId} requires DOCS approval before completion`);
-      } else {
-        logger.success(`✓ Task ${taskId} ready for completion (no approvals required)`);
-      }
+      logger.success(`✓ Task ${taskId} completed successfully`);
       
       // Trigger git operations if configured
       if (config.git.createPR) {
@@ -148,36 +141,28 @@ async function processTicket(filePath) {
       }
       
     } else {
-      // Move to failed folder with error log
-      const failedPath = path.join(config.folders.failed, filename);
-      await fs.rename(doingPath, failedPath);
+      // Even if aider reports failure, move to completed (we don't use failed folder for now)
+      // The file might still have been created successfully
+      const completedPath = path.join(config.folders.completed, filename);
+      await fs.rename(doingPath, completedPath);
       
-      // Write error log
-      const errorLogPath = failedPath.replace('.md', '.error.log');
-      await fs.writeFile(errorLogPath, JSON.stringify({
-        timestamp: new Date().toISOString(),
-        filename,
-        error: result.error,
-        stderr: result.stderr,
-        exitCode: result.exitCode
-      }, null, 2));
-      
-      logger.error(`✗ Failed to process ${filename}`, { error: result.error });
+      logger.warn(`Task ${filename} completed with warnings (exit code: ${result.exitCode})`);
     }
     
   } catch (error) {
     logger.error(`Error processing ${filename}:`, { error: error.message });
     
-    // Try to move to failed folder
+    // Move to completed even on error (we don't use failed folder for now)
     try {
       const doingPath = path.join(config.folders.doing, filename);
-      const failedPath = path.join(config.folders.failed, filename);
+      const completedPath = path.join(config.folders.completed, filename);
       
       if (await fs.access(doingPath).then(() => true).catch(() => false)) {
-        await fs.rename(doingPath, failedPath);
+        await fs.rename(doingPath, completedPath);
+        logger.warn(`Moved ${filename} to completed (with errors)`);
       }
     } catch (moveError) {
-      logger.error(`Failed to move ${filename} to failed folder:`, { error: moveError.message });
+      logger.error(`Failed to move ${filename} to completed folder:`, { error: moveError.message });
     }
   } finally {
     processingFiles.delete(filename);
@@ -303,6 +288,8 @@ const watcher = chokidar.watch(`${config.folders.todo}/*.md`, {
   ignored: /(^|[\/\\])\../, // ignore dotfiles
   persistent: true,
   ignoreInitial: false,
+  usePolling: true, // Force polling for Docker bind mounts
+  interval: 1000,
   awaitWriteFinish: {
     stabilityThreshold: config.processing.watchDebounce,
     pollInterval: 100

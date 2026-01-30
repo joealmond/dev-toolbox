@@ -452,6 +452,46 @@ npm uninstall -g kodu
 npm install -g kodu
 ```
 
+### Aider Not Found (spawn ENOENT)
+
+**Problem:**
+Logs show \`Error: spawn aider ENOENT\` when processing tasks.
+
+**Cause:**
+\`aider\` executable is not found in the \`PATH\` of the environment where the watcher is running.
+
+**Solution:**
+1. Install Aider:
+   \`\`\`bash
+   pip3 install aider-chat
+   \`\`\`
+2. Ensure its location (usually \`~/.local/bin\`) is in the \`PATH\`.
+3. If using Devcontainers with host mounts, ensure Aider is installed on the **Host** machine.
+
+### Task Stuck in 'Doing'
+
+**Problem:**
+Files remain in \`backlog/doing/\` indefinitely.
+
+**Cause:**
+A zombie process (often holding port 3001) is blocking execution.
+
+**Solution:**
+1. Find zombie process:
+   \`\`\`bash
+   lsof -i :3001
+   # OR
+   ps aux | grep "node scripts/watcher.js"
+   \`\`\`
+2. Kill it manually:
+   \`\`\`bash
+   kill -9 <PID>
+   \`\`\`
+3. Restart service:
+   \`\`\`bash
+   pm2 restart dev-toolbox
+   \`\`\`
+
 ### Ollama Connection Failed
 
 **Problem:**

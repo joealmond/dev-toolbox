@@ -38,22 +38,33 @@ RUN npm install -g backlog.md --maxsockets=2
 # v0.86.1 is latest stable with excellent Ollama support
 RUN pip3 install --break-system-packages aider-chat==0.86.1
 
-# Configure Aider for Ollama (config at ~/.aider.conf.yml)
-# See: https://aider.chat/docs/config/aider_conf.html
-RUN echo 'model: ollama/qwen2.5-coder:7b' > /home/node/.aider.conf.yml && \
-    echo 'auto-commits: false' >> /home/node/.aider.conf.yml && \
-    echo 'git: false' >> /home/node/.aider.conf.yml && \
-    echo 'gitignore: false' >> /home/node/.aider.conf.yml && \
-    echo 'yes: true' >> /home/node/.aider.conf.yml && \
-    echo 'check-update: false' >> /home/node/.aider.conf.yml && \
+# Configure Aider for Ollama - Reference Copy
+# We place this in /etc so it survives volume mounts
+RUN echo 'model: ollama/qwen2.5-coder:7b' > /etc/aider.conf.yml && \
+    echo 'auto-commits: false' >> /etc/aider.conf.yml && \
+    echo 'git: false' >> /etc/aider.conf.yml && \
+    echo 'gitignore: false' >> /etc/aider.conf.yml && \
+    echo 'yes-always: true' >> /etc/aider.conf.yml && \
+    echo 'check-update: false' >> /etc/aider.conf.yml
+
+# Also place in home (best effort, but volume might override)
+RUN cp /etc/aider.conf.yml /home/node/.aider.conf.yml && \
     chown node:node /home/node/.aider.conf.yml
 
-# Configure Continue for Ollama (no account needed)
-# Uses YAML config at ~/.continue/configs/config.yaml
-# AUTODETECT will find installed Ollama models automatically
-RUN mkdir -p /home/node/.continue/configs && \
-    printf 'name: Local Config\nversion: 1.0.0\nschema: v1\nmodels:\n  - name: Autodetect\n    provider: ollama\n    model: AUTODETECT\n    apiBase: http://localhost:11434\n    roles:\n      - chat\n      - edit\n      - apply\n      - autocomplete\n' > /home/node/.continue/configs/config.yaml && \
-    chown -R node:node /home/node/.continue
+# Create directory for tooling
+RUN mkdir -p /opt/tooling && chown node:node /opt/tooling
+
+# Install node_modules in a separate directory so they don't get hidden by bind mounts
+# We will symlink them or set NODE_PATH
+RUN mkdir -p /opt/tooling-deps
+COPY package.json /opt/tooling-deps/
+RUN cd /opt/tooling-deps && npm install --production --no-bin-links
+
+# Set NODE_PATH so scripts find modules even if /opt/tooling is mounted read-only
+ENV NODE_PATH=/opt/tooling-deps/node_modules
+
+# Copy the actual tooling code (will be overwritten by bind mount in dev, but good for standalone)
+COPY . /opt/tooling/
 
 WORKDIR /workspace
 

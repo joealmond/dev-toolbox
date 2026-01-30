@@ -3,8 +3,17 @@
  * Provides consistent formatting, levels, colors, and structured output
  */
 
-const chalk = require('chalk');
 const config = require('../../config.json');
+
+// Mock chalk to avoid version compatibility issues (ESM vs CommonJS)
+const chalk = {
+  gray: (text) => text,
+  blue: (text) => text,
+  green: (text) => text,
+  yellow: (text) => text,
+  red: (text) => text,
+  bold: (text) => text
+};
 
 // Log levels
 const LEVELS = {
@@ -16,7 +25,8 @@ const LEVELS = {
 };
 
 // Get current log level from config
-const currentLevel = LEVELS[config.logging?.level || 'INFO'];
+const configLevel = (config.logging?.level || 'INFO').toUpperCase();
+const currentLevel = LEVELS[configLevel] || LEVELS.INFO;
 
 /**
  * Format a log message with timestamp, level, and optional metadata

@@ -23,18 +23,15 @@
   ],
   
   "mounts": [
-    // Mount tooling scripts (read-only, hidden from your app)
-    // NOTE: Don't mount workspace here - use workspaceMount above
-    "source={{TOOLING_ROOT}}/scripts,target=/opt/tooling/scripts,type=bind,readonly",
-    "source={{TOOLING_ROOT}}/config.json,target=/opt/tooling/config.json,type=bind,readonly",
-    "source={{TOOLING_ROOT}}/templates,target=/opt/tooling/templates,type=bind,readonly",
-    "source={{TOOLING_ROOT}}/package.json,target=/opt/tooling/package.json,type=bind,readonly",
+    // Mount the entire tooling environment as one clean unit
+    "source={{TOOLING_ROOT}},target=/opt/tooling,type=bind,readonly",
+    
+    // We need a writable backlog for task processing
+    // This overmounts the read-only backlog from above
+    "source={{TOOLING_ROOT}}/backlog,target=/opt/tooling/backlog,type=bind",
     
     // Shared agents - mounted to .github/agents so VS Code Copilot finds them
     "source={{TOOLING_ROOT}}/agents,target=/workspaces/{{PROJECT_NAME}}/.github/agents,type=bind,readonly",
-    
-    // Backlog folder for task processing (shared across projects)
-    "source={{TOOLING_ROOT}}/backlog,target=/opt/tooling/backlog,type=bind",
     
     // SSH keys for git operations
     "source=${localEnv:HOME}/.ssh,target=/home/node/.ssh,type=bind,readonly"
@@ -55,7 +52,7 @@
   
   // Continue extension runs on HOST (not in container), so no container config needed for it
   // Run ./install/setup-continue-host.sh on your host machine to configure Continue
-  "postCreateCommand": "cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
+  "postCreateCommand": "bash /opt/tooling/scripts/ensure-configs.sh && cd /opt/tooling && npm install --prefix /opt/tooling 2>/dev/null || true",
   
   "customizations": {
     "vscode": {

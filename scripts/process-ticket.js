@@ -59,7 +59,7 @@ async function processTicket(filePath, frontMatter, body, taskId) {
         // Process the task
         const result = await adapter.process({
           prompt,
-          workingDirectory: path.dirname(filePath),
+          workingDirectory: process.cwd(),
           taskId,
           contextFiles: searchResults.map(r => r.path).filter(Boolean)
         });

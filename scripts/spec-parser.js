@@ -4,7 +4,7 @@ const fs = require('fs').promises;
 const path = require('path');
 const matter = require('gray-matter');
 const chalk = require('chalk');
-const { buildPrompt } = require('./utils/prompt-builder');
+const { buildPrompt: buildPromptFromParts } = require('./utils/prompt-builder');
 const logger = require('./utils/logger');
 
 /**
@@ -104,7 +104,7 @@ function isSpecEnabled(frontMatter) {
  * @returns {string} - Enhanced prompt for kodu
  */
 function buildPrompt(spec) {
-  return buildPrompt(spec.frontMatter || spec, spec.body || '', []);
+  return buildPromptFromParts(spec.frontMatter || spec, spec.body || '', []);
 }
 
 /**

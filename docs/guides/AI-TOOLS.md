@@ -34,7 +34,7 @@ model: ollama/qwen2.5-coder:7b
 auto-commits: false
 git: false
 gitignore: false
-yes: true              # Skip confirmations (for automation)
+yes-always: true       # Skip confirmations (for automation)
 check-update: false    # Disable update checks (for container stability)
 ```
 
