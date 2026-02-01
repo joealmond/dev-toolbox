@@ -1,6 +1,6 @@
 # Current Status Report
 
-**Date:** January 30, 2026
+**Date:** January 31, 2026
 **Status:** ✅ Operational / Maintenance
 
 ## System Health
@@ -17,10 +17,19 @@
 
 ## Pending Actions
 
-1. **Execute Phase 3 Network Plan:**
-   - Deploy Pi-hole on NAS for Local DNS.
-   - Configure WireGuard on ER605 for VPN access.
+1. **Execute Phase 3 Network Plan:** ✅ COMPLETED
+   - ✅ Deployment of Pi-hole & Local DNS complete.
+   - ✅ Tailscale running on Synology (Container Manager).
+   - ✅ Tailscale installed on Dev PC + MacBook - all devices connected.
+   - ✅ SSH configurations updated and added to chezmoi.
+   - **WireGuard:** Paused (Omada routing complexity).
+   - **Future:** Add custom domain names (not MagicDNS defaults).
    - See [plans/NETWORK-SETUP-PLAN.md](plans/NETWORK-SETUP-PLAN.md).
+
+**Active Devices:**
+   - arkstead (NAS): 100.86.209.36 - Linux 3.10.108, Tailscale v1.58.2-1
+   - mandulaj-ms-7c02 (Dev PC): 100.71.172.94 - Linux 6.8.0-90-generic, Tailscale v1.94.1
+   - mj-macbook-pro-16 (MacBook): 100.113.21.41 - macOS 26.2.0, Tailscale v1.94.1
 
 ## Usage Reminder
 

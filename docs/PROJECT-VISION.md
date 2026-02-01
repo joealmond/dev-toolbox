@@ -84,15 +84,19 @@ chat_ui: Open WebUI
 - [ ] Configure Obsidian plugin to use Ollama endpoint
 - [ ] Test mobile access via WireGuard
 
-### Phase 3: Network Architecture � IN PROGRESS
+### Phase 3: Network Architecture ✅ COMPLETED (2026-02-01)
 > **See [plans/NETWORK-SETUP-PLAN.md](plans/NETWORK-SETUP-PLAN.md)** for detailed setup guide.
-- [ ] **Deploy Pi-hole on Synology NAS** (Container Manager)
-- [ ] Configure Local DNS records (`*.local` → IPs)
-- [ ] Configure Omada LAN DHCP to use Pi-hole DNS
-- [ ] **Configure WireGuard Server** on ER605 (via Omada)
-- [ ] Create WireGuard client configs (MacBook, iPhone)
-- [ ] Test mobile access via WireGuard (5G test)
-- [ ] Document final configuration in `NETWORK-SETUP.md`
+- [x] **Deploy Pi-hole on Synology NAS** (Container Manager) (2026-01-30)
+- [x] Configure Local DNS records (`*.local` → IPs) (2026-01-30)
+- [x] Configure Omada LAN DHCP to use Pi-hole DNS (2026-01-30)
+- [x] **Deploy Tailscale on Synology NAS** (Container Manager) (2026-01-31)
+- [x] Install Tailscale on Dev PC + MacBook/Phone (2026-02-01)
+- [x] Enable MagicDNS (2026-02-01)
+- [x] Validate access to NAS and Dev PC over Tailscale (2026-02-01)
+- [x] Update SSH configs and integrate with chezmoi (2026-02-01)
+- [x] Document final configuration in `NETWORK-SETUP.md` (2026-02-01)
+- [ ] **WireGuard on ER605** (paused: Omada routing complexity)
+- [ ] **Future Enhancement:** Add custom domain names (not MagicDNS defaults)
 
 ### Phase 4: Obsidian Integration 🟡 WAITING
 - [ ] Create symlink: Obsidian → backlog/todo
